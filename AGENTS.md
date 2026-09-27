@@ -9,6 +9,8 @@ Build a local, validated synth digital-twin experiment incrementally. Preserve t
 - Reusable Python/backend code: `src/agentic_synth_twin/`
 - Tests: `tests/`
 - Architecture and decisions: `docs/`
+- Reproducible feasibility tools: `scripts/`
+- Committed evidence snapshots: `docs/evidence/`
 - Editable documentation assets: `docs/assets/`
 - Repository automation: `.github/`
 
@@ -16,7 +18,7 @@ Do not create a separate frontend unless an independent frontend architecture be
 
 ## Current boundary
 
-PR 0 is documentation and scaffolding only. Do not begin CLAP integration, clone upstream synth code, add runtime dependencies, or implement UI/DSP/ML behavior until the corresponding PR is explicitly authorized.
+PR 1 is CLAP feasibility only: pinned build, load, parameter discovery, state access, one parameter mutation, and restoration. The probe is evidence tooling, not the production host; do not begin canonical state modeling, rendering, UI, DSP, datasets, ML, optimization, or LOCK until the corresponding PR is explicitly authorized.
 
 ## Invariants
 
