@@ -42,7 +42,7 @@ This is a planned responsibility chain. PR 1 proves only the narrow CLAP feasibi
 
 ### Human and local web GUI
 
-The human supplies sonic intent, evaluates controlled A/B movements, chooses active parameters, auditions candidates, and makes KEEP/REJECT/LOCK decisions. Milestone 3 adds only a thin one-button browser preview of committed audio evidence. The future calibration GUI remains a supervisory surface only: it presents state and invokes backend operations.
+The human supplies sonic intent, evaluates controlled A/B movements, chooses active parameters, auditions candidates, and makes KEEP/REJECT/LOCK decisions. Milestone 3 adds only a thin one-button browser preview of committed audio evidence. Milestone 4 keeps calibration terminal-only: it generates and plays one-parameter A/B pairs and records explicit human judgments. Any future GUI remains a supervisory surface only.
 
 ### Experiment controller
 
@@ -105,4 +105,4 @@ Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth 
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md); Milestone 4 remains separately authorized work.
+Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md); Milestone 5 remains separately authorized work.

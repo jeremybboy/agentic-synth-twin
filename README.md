@@ -2,7 +2,7 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 3 produces a deterministic real-synth C3 WAV from exact canonical state and serves it through a thin local browser page with one PLAY button. A/B probing, DSP analysis, datasets, ML, optimization, and LOCK remain unimplemented.
+> **Status:** Milestone 4 adds a terminal-only, one-parameter A/B calibration workflow. Its first real-synth probe recorded a small human-perceived difference for Unison Count `3 → 7`, especially in volume; DSP analysis, datasets, ML, optimization, and LOCK remain unimplemented.
 
 ## Core idea
 
@@ -24,7 +24,7 @@ This does **not** imply that the model understands the entire synthesizer or tha
 
 ## Human calibration
 
-Before dataset generation, a local web interface will present controlled A/B movements for candidate parameters. Human YES/NO judgments will identify roughly 2–5 perceptually relevant active parameters; the rest remain frozen. This human prior is the primary defense against wasteful combinatorial search.
+Before dataset generation, the local terminal workflow presents controlled A/B movements for candidate parameters. Human YES/NO judgments will identify roughly 2–5 perceptually relevant active parameters; the rest remain frozen. This human prior is the primary defense against wasteful combinatorial search, but a level-driven answer is not yet evidence of an independent timbral effect.
 
 ## Synthetic data and surrogate
 
@@ -72,6 +72,7 @@ scripts/build_clap_feasibility.sh
 scripts/run_clap_validation.sh
 scripts/capture_canonical_state.sh
 scripts/render_deterministic_audition.sh
+scripts/run_terminal_ab_probe.sh
 ```
 
 To hear the committed Milestone 3 evidence in the thin local preview:
@@ -101,6 +102,7 @@ Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 - `docs/clap-feasibility.md` — pinned Milestone 1 build, probe evidence, and limitations
 - `docs/canonical-synth-state.md` — Milestone 2 contract, authority boundaries, and reproduction
 - `docs/deterministic-audition.md` — Milestone 3 audio contract, evidence, playback, and limitations
+- `docs/human-ab-probe.md` — Milestone 4 terminal A/B contract, first human judgment, and limitations
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents

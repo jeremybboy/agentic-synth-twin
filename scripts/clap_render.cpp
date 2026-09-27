@@ -11,6 +11,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -269,11 +270,25 @@ void write_u32(std::ofstream &stream, std::uint32_t value) {
 struct RenderResult {
     double peak;
     std::uint64_t clipped_samples;
+    std::optional<clap_id> parameter_id;
+    std::optional<double> parameter_requested;
+    std::optional<double> parameter_applied;
 };
+
+struct ParameterChange {
+    clap_id id;
+    double value;
+};
+
+bool nearly_equal(double left, double right) {
+    return std::abs(left - right) <=
+           1e-9 * std::max({1.0, std::abs(left), std::abs(right)});
+}
 
 RenderResult render(const std::filesystem::path &plugin_path,
                     const std::filesystem::path &state_path,
-                    const std::filesystem::path &wav_path) {
+                    const std::filesystem::path &wav_path,
+                    const std::optional<ParameterChange> &parameter_change) {
     PluginLibrary library(plugin_path);
     auto host = make_host();
     PluginInstance instance(library.factory(), &host);
@@ -292,6 +307,37 @@ RenderResult render(const std::filesystem::path &plugin_path,
         throw std::runtime_error("clap.state.load failed");
     }
 
+    const clap_plugin_params_t *params = nullptr;
+    clap_param_info_t changed_parameter{};
+    if (parameter_change) {
+        params = static_cast<const clap_plugin_params_t *>(
+            plugin->get_extension(plugin, CLAP_EXT_PARAMS));
+        if (!params) {
+            throw std::runtime_error("the plugin does not expose clap.params");
+        }
+        bool found = false;
+        const auto count = params->count(plugin);
+        for (std::uint32_t index = 0; index < count; ++index) {
+            clap_param_info_t info{};
+            if (!params->get_info(plugin, index, &info)) {
+                throw std::runtime_error("clap.params.get_info failed");
+            }
+            if (info.id == parameter_change->id) {
+                changed_parameter = info;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            throw std::runtime_error("requested parameter id was not discovered");
+        }
+        if (parameter_change->value < changed_parameter.min_value ||
+            parameter_change->value > changed_parameter.max_value) {
+            throw std::runtime_error(
+                "requested parameter value is outside the discovered range");
+        }
+    }
+
     std::vector<float> left(total_frames, 0.0F);
     std::vector<float> right(total_frames, 0.0F);
     OutputEvents output_events;
@@ -301,9 +347,24 @@ RenderResult render(const std::filesystem::path &plugin_path,
         const auto frames = std::min(block_size, total_frames - frame);
         clap_event_note_t note_on{};
         clap_event_note_t note_off{};
+        clap_event_param_value_t parameter_event{};
         InputEvents input_events;
 
         if (frame == 0) {
+            if (parameter_change) {
+                parameter_event.header.size = sizeof(parameter_event);
+                parameter_event.header.time = 0;
+                parameter_event.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+                parameter_event.header.type = CLAP_EVENT_PARAM_VALUE;
+                parameter_event.param_id = parameter_change->id;
+                parameter_event.cookie = changed_parameter.cookie;
+                parameter_event.note_id = -1;
+                parameter_event.port_index = -1;
+                parameter_event.channel = -1;
+                parameter_event.key = -1;
+                parameter_event.value = parameter_change->value;
+                input_events.events.push_back(&parameter_event.header);
+            }
             note_on.header.size = sizeof(note_on);
             note_on.header.time = 0;
             note_on.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
@@ -346,6 +407,19 @@ RenderResult render(const std::filesystem::path &plugin_path,
     }
     instance.stop();
 
+    std::optional<double> parameter_applied;
+    if (parameter_change) {
+        double applied = 0.0;
+        if (!params->get_value(plugin, parameter_change->id, &applied)) {
+            throw std::runtime_error("clap.params.get_value failed after render");
+        }
+        if (!nearly_equal(applied, parameter_change->value)) {
+            throw std::runtime_error(
+                "the plugin did not retain the requested parameter value");
+        }
+        parameter_applied = applied;
+    }
+
     std::ofstream wav(wav_path, std::ios::binary);
     if (!wav) {
         throw std::runtime_error("could not open WAV output: " + wav_path.string());
@@ -384,20 +458,53 @@ RenderResult render(const std::filesystem::path &plugin_path,
     if (!wav) {
         throw std::runtime_error("failed while writing WAV output");
     }
-    return {peak, clipped_samples};
+    return {
+        peak,
+        clipped_samples,
+        parameter_change ? std::optional<clap_id>{parameter_change->id}
+                         : std::nullopt,
+        parameter_change ? std::optional<double>{parameter_change->value}
+                         : std::nullopt,
+        parameter_applied,
+    };
+}
+
+clap_id parse_parameter_id(const char *text) {
+    std::size_t consumed = 0;
+    const auto parsed = std::stoul(text, &consumed, 10);
+    if (text[consumed] != '\0' || parsed > CLAP_INVALID_ID - 1) {
+        throw std::runtime_error("parameter id must be a valid unsigned integer");
+    }
+    return static_cast<clap_id>(parsed);
+}
+
+double parse_parameter_value(const char *text) {
+    std::size_t consumed = 0;
+    const auto parsed = std::stod(text, &consumed);
+    if (text[consumed] != '\0' || !std::isfinite(parsed)) {
+        throw std::runtime_error("parameter value must be a finite number");
+    }
+    return parsed;
 }
 
 } // namespace
 
 int main(int argc, char **argv) {
-    if (argc != 4) {
-        std::cerr << "usage: clap-render PLUGIN.clap STATE.bin OUTPUT.wav\n";
+    if (argc != 4 && argc != 6) {
+        std::cerr << "usage: clap-render PLUGIN.clap STATE.bin OUTPUT.wav "
+                     "[PARAMETER_ID PARAMETER_VALUE]\n";
         return 64;
     }
     try {
+        const auto parameter_change = argc == 6
+                                          ? std::optional<ParameterChange>{{
+                                                parse_parameter_id(argv[4]),
+                                                parse_parameter_value(argv[5]),
+                                            }}
+                                          : std::nullopt;
         const auto result = [&]() {
             StdoutToStderr redirect;
-            return render(argv[1], argv[2], argv[3]);
+            return render(argv[1], argv[2], argv[3], parameter_change);
         }();
         std::cout << "{\"sample_rate\":" << sample_rate
                   << ",\"channels\":2,\"bits_per_sample\":16"
@@ -408,7 +515,16 @@ int main(int argc, char **argv) {
                   << ",\"total_frames\":" << total_frames
                   << ",\"block_size\":" << block_size
                   << ",\"peak_float\":" << result.peak
-                  << ",\"clipped_samples\":" << result.clipped_samples << "}\n";
+                  << ",\"clipped_samples\":" << result.clipped_samples
+                  << ",\"parameter_change\":";
+        if (result.parameter_id) {
+            std::cout << "{\"id\":" << *result.parameter_id
+                      << ",\"requested\":" << *result.parameter_requested
+                      << ",\"applied\":" << *result.parameter_applied << "}";
+        } else {
+            std::cout << "null";
+        }
+        std::cout << "}\n";
         return 0;
     } catch (const std::exception &error) {
         std::cerr << "clap-render: " << error.what() << '\n';
