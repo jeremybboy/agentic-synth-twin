@@ -1,0 +1,96 @@
+{
+  "schema": "agentic-synth-twin/surrogate-config/v1",
+  "split_seed": 20260928,
+  "model_seed": 20260929,
+  "input_contract": {
+    "filter_type": {
+      "parameter_id": 14255,
+      "treatment": "categorical one-hot; numeric distance is not assumed",
+      "categories": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "cutoff_keys": {
+      "parameter_id": 17,
+      "treatment": "continuous"
+    },
+    "attack_seconds": {
+      "parameter_id": 2874,
+      "treatment": "continuous"
+    }
+  },
+  "targets": [
+    "rms_dbfs",
+    "peak_dbfs",
+    "spectral_centroid_hz",
+    "spectral_rolloff_85_hz",
+    "attack_10_to_90_seconds",
+    "release_90_to_10_seconds"
+  ],
+  "selection_targets": [
+    "rms_dbfs",
+    "peak_dbfs",
+    "spectral_centroid_hz",
+    "spectral_rolloff_85_hz",
+    "attack_10_to_90_seconds"
+  ],
+  "split": {
+    "train": 166,
+    "validation": 38,
+    "test": 52
+  },
+  "selection_rule": "lowest validation mean normalized MAE across the five predeclared selection targets; ties follow linear then random_forest",
+  "candidate_order": [
+    "mean",
+    "linear",
+    "random_forest"
+  ],
+  "selectable_models": [
+    "linear",
+    "random_forest"
+  ],
+  "models": {
+    "mean": {
+      "strategy": "mean"
+    },
+    "linear": {
+      "alpha": 1.0
+    },
+    "random_forest": {
+      "n_estimators": 256,
+      "max_depth": 12,
+      "min_samples_leaf": 2,
+      "max_features": 1.0,
+      "random_state": 20260929,
+      "n_jobs": -1
+    }
+  },
+  "learning_curve_sizes": [
+    32,
+    64,
+    96,
+    128
+  ],
+  "success_thresholds": {
+    "useful_target_mae_improvement_over_mean": 0.3,
+    "rms_mae_dbfs_max": 2.0,
+    "spectral_centroid_spearman_min": 0.8
+  },
+  "release_low_information_rule": {
+    "training_standard_deviation_seconds_max": 0.01,
+    "training_range_seconds_max": 0.05,
+    "effect": "report and model Release, but exclude it from model selection"
+  },
+  "structured_holdout": {
+    "label": "upper cutoff and attack region",
+    "cutoff_keys_min": 85.0,
+    "attack_seconds_min": 0.6666666666666666,
+    "purpose": "bounded diagnostic only; not part of primary model selection"
+  },
+  "test_policy": "test targets are not materialized for model development; selected family, preprocessing, hyperparameters, thresholds, final fitted artifact, and their hashes are persisted before the single final test evaluation"
+}

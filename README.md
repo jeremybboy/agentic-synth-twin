@@ -2,7 +2,7 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 6 adds a bounded 256-example dataset over Filter Type, Cutoff, and Attack. Every real-synth WAV is rendered twice, hash-traced, unclipped, and measured; WAVs remain local while the committed dataset manifest and read-only explorer preserve reviewability. ML, optimization, and LOCK remain unimplemented.
+> **Status:** Milestone 7 trains and freezes a Random Forest surrogate on the bounded 256-example dataset, with a leakage-safe `166 / 38 / 52` split, one-time final test reveal, transparent diagnostics, and exact real-synth rerender checks. The model beats the mean baseline overall, but the predeclared feasibility result is **FAIL** because RMS narrowly misses `2 dBFS` MAE and Attack does not reach 30% improvement. Optimization and LOCK remain unimplemented.
 
 ## Core idea
 
@@ -30,9 +30,9 @@ Before dataset generation, the local calibration app presents randomized, blinde
 
 The completed calibration pairs are reproduced on the real synth and measured without loudness normalization. RMS, peak, spectral centroid, 85% rolloff, and simple attack/release timing remain traceable to exact WAV hashes. The [Milestone 5 contract and results](docs/dsp-features.md) document the formulas and the key limitation: descriptor magnitude did not reliably predict the listener's YES/NO answer.
 
-## Synthetic dataset and future surrogate
+## Synthetic dataset and bounded surrogate
 
-The first [synthetic dataset](docs/synthetic-dataset.md) contains one exact baseline plus 255 seeded, space-filling states across three human-authorized parameters. Exact parameter values, WAV hashes, render checks, and DSP descriptors are committed; the 256 WAVs stay under ignored `work/`. No surrogate exists yet, and Milestone 7 must earn any modeling claim with an untouched held-out evaluation.
+The first [synthetic dataset](docs/synthetic-dataset.md) contains one exact baseline plus 255 seeded, space-filling states across three human-authorized parameters. Milestone 7 adds a [locally trained surrogate and training cockpit](docs/surrogate-model.md): Filter Type is categorical, TEST remains locked until model/configuration freeze, every target is evaluated honestly, and a structured regional holdout exposes weak generalization. This is evidence that parts of the bounded mapping are learnable—not evidence of timbre understanding or solved inverse sound design.
 
 ## LOCK means reproducibility
 
@@ -53,7 +53,7 @@ The backend remains callable independently of the future Streamlit interface. Sy
 | 4 | Human A/B probe | Local one-parameter-at-a-time YES/NO workflow |
 | 5 | DSP features | Small, documented acoustic descriptor set |
 | 6 | Synthetic dataset | Traceable parameter/audio/feature examples |
-| 7 | Surrogate model | Reproducible training and honest held-out metrics |
+| 7 | Surrogate model | Random Forest selected; aggregate learnability shown, complete predeclared feasibility gate failed |
 | 8 | Inverse optimization | “Darker, similar loudness, no clipping” candidates verified on the real synth |
 | 9 | LOCK workflow | Save, reload, rerender, and compare exact patch state |
 
@@ -81,7 +81,18 @@ scripts/measure_calibration_dsp.sh
 scripts/serve_dsp_report.sh
 scripts/generate_synthetic_dataset.sh
 scripts/serve_dataset_report.sh
+scripts/train_surrogate.sh
+scripts/serve_surrogate_report.sh
 ```
+
+To reproduce the Milestone 7 model, one-time held-out evaluation, diagnostics, and real-synth integrity checks:
+
+```bash
+scripts/train_surrogate.sh
+scripts/serve_surrogate_report.sh
+```
+
+Then open `http://127.0.0.1:8765`. The cockpit verifies its bound evidence before showing split governance, candidate comparisons, learning curves, predicted-versus-actual and residual plots, regional errors, non-causal permutation importance, structured holdout results, and predeclared pass/fail gates.
 
 To regenerate and inspect the Milestone 6 dataset:
 
@@ -139,6 +150,7 @@ Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 - `docs/human-ab-probe.md` — Milestone 4 local calibration contract, SQLite workflow, first pilot judgment, and limitations
 - `docs/dsp-features.md` — Milestone 5 descriptor formulas, real-synth evidence, report workflow, and limitations
 - `docs/synthetic-dataset.md` — Milestone 6 sampling contract, storage policy, evidence, explorer, and limitations
+- `docs/surrogate-model.md` — Milestone 7 training protocol, held-out results, cockpit, rerender checks, and limitations
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents

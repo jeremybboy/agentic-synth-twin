@@ -18,7 +18,11 @@ classifiers = [
   "Topic :: Multimedia :: Sound/Audio :: Sound Synthesis",
 ]
 dependencies = [
+  "joblib==1.5.1",
   "numpy==2.3.5",
+  "scikit-learn==1.6.1",
+  "scipy==1.15.3",
+  "threadpoolctl==3.6.0",
 ]
 
 [project.urls]

@@ -1,0 +1,33 @@
+{
+  "schema": "agentic-synth-twin/surrogate-freeze/v1",
+  "created_at": "2026-09-27T22:47:41.509302+00:00",
+  "test_status": "locked",
+  "dataset_sha256": "9942500229339874cf231e244300cdfe2e70811957119f904646b63290c2c3ae",
+  "config_sha256": "b124d4e4985f8cfcbea917b6aff018280b666181aaaa048143b62d7f691a3b74",
+  "split_sha256": "cd3aec2b4406295ea06e92ae3aee0a0e1ca75030ec5237d0117e0476ce1e8049",
+  "model_artifact_sha256": "8af43579862fde80e14df7837e7bfa45bd59861411481e9020c27ea872d5f221",
+  "selected_model": "random_forest",
+  "selection_rule": "lowest validation mean normalized MAE across the five predeclared selection targets; ties follow linear then random_forest",
+  "selection_targets": [
+    "rms_dbfs",
+    "peak_dbfs",
+    "spectral_centroid_hz",
+    "spectral_rolloff_85_hz",
+    "attack_10_to_90_seconds"
+  ],
+  "candidate_validation_scores": {
+    "mean": 0.14842835647360947,
+    "linear": 0.10915518138089701,
+    "random_forest": 0.09205601596003758
+  },
+  "predeclared_success_thresholds": {
+    "useful_target_mae_improvement_over_mean": 0.3,
+    "rms_mae_dbfs_max": 2.0,
+    "spectral_centroid_spearman_min": 0.8
+  },
+  "preprocessing": {
+    "filter_type": "fixed one-hot categories 0-5",
+    "continuous": "standardized for linear; passed through for mean and random forest"
+  },
+  "proof": "written and hashed before test rows or targets are materialized"
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "agentic-synth-twin/surrogate-status/v1",
+  "updated_at": "2026-09-27T22:47:42.315272+00:00",
+  "phase": "complete",
+  "test": "revealed_after_freeze",
+  "models": {
+    "mean": "complete",
+    "linear": "complete",
+    "random_forest": "complete"
+  },
+  "timeline": [
+    {
+      "at": "2026-09-27T22:47:39.195698+00:00",
+      "event": "config_and_split_persisted"
+    },
+    {
+      "at": "2026-09-27T22:47:39.195700+00:00",
+      "event": "final_test_locked"
+    },
+    {
+      "at": "2026-09-27T22:47:39.196616+00:00",
+      "event": "mean_fitting"
+    },
+    {
+      "at": "2026-09-27T22:47:39.198584+00:00",
+      "event": "mean_evaluating"
+    },
+    {
+      "at": "2026-09-27T22:47:39.227032+00:00",
+      "event": "mean_complete"
+    },
+    {
+      "at": "2026-09-27T22:47:39.228155+00:00",
+      "event": "linear_fitting"
+    },
+    {
+      "at": "2026-09-27T22:47:39.230901+00:00",
+      "event": "linear_evaluating"
+    },
+    {
+      "at": "2026-09-27T22:47:39.273331+00:00",
+      "event": "linear_complete"
+    },
+    {
+      "at": "2026-09-27T22:47:39.274556+00:00",
+      "event": "random_forest_fitting"
+    },
+    {
+      "at": "2026-09-27T22:47:39.431096+00:00",
+      "event": "random_forest_evaluating"
+    },
+    {
+      "at": "2026-09-27T22:47:40.352084+00:00",
+      "event": "random_forest_complete"
+    },
+    {
+      "at": "2026-09-27T22:47:41.511655+00:00",
+      "event": "final_model_frozen_before_test"
+    },
+    {
+      "at": "2026-09-27T22:47:42.315282+00:00",
+      "event": "final_test_evaluated_once"
+    },
+    {
+      "at": "2026-09-27T22:47:42.315284+00:00",
+      "event": "diagnostics_and_rerenders_complete"
+    }
+  ]
+}

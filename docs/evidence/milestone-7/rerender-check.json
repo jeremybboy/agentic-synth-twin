@@ -1,0 +1,119 @@
+{
+  "schema": "agentic-synth-twin/surrogate-rerender-check/v1",
+  "created_at": "2026-09-27T22:47:42.197388+00:00",
+  "purpose": "real-synth integrity check; rerenders are not new training examples",
+  "checks": [
+    {
+      "sample_id": "sample-0012",
+      "split": "test",
+      "parameter_values": {
+        "14255": 1,
+        "17": 2.532738363671,
+        "2874": 0.278939618809
+      },
+      "expected_wav_sha256": "f6490c2d990022bf640f42e114ca9dd7bef403538aa10b3908beed8169ae49aa",
+      "rerendered_wav_sha256": "f6490c2d990022bf640f42e114ca9dd7bef403538aa10b3908beed8169ae49aa",
+      "wav_sha256_match": true,
+      "features_exact_match": true,
+      "expected_features": {
+        "rms_dbfs": -22.65202795,
+        "peak_dbfs": -13.71263495,
+        "spectral_centroid_hz": 476.338979526,
+        "spectral_rolloff_85_hz": 516.796875,
+        "attack_10_to_90_seconds": 0.547256236,
+        "release_90_to_10_seconds": 0.121836735,
+        "release_censored_by_tail": false
+      },
+      "rerendered_features": {
+        "rms_dbfs": -22.65202795,
+        "peak_dbfs": -13.71263495,
+        "spectral_centroid_hz": 476.338979526,
+        "spectral_rolloff_85_hz": 516.796875,
+        "attack_10_to_90_seconds": 0.547256236,
+        "release_90_to_10_seconds": 0.121836735,
+        "release_censored_by_tail": false
+      },
+      "render_verification": {
+        "renders": 2,
+        "byte_identical": true,
+        "clipped_samples": 0
+      },
+      "used_as_additional_training_data": false
+    },
+    {
+      "sample_id": "sample-0032",
+      "split": "test",
+      "parameter_values": {
+        "14255": 3,
+        "17": 69.642741959145,
+        "2874": 0.790721146287
+      },
+      "expected_wav_sha256": "232521dd2b5960927d246fd2c8bfef578c06319ade4046d75de4f48657896ba6",
+      "rerendered_wav_sha256": "232521dd2b5960927d246fd2c8bfef578c06319ade4046d75de4f48657896ba6",
+      "wav_sha256_match": true,
+      "features_exact_match": true,
+      "expected_features": {
+        "rms_dbfs": -26.530210377,
+        "peak_dbfs": -13.945800971,
+        "spectral_centroid_hz": 493.940243955,
+        "spectral_rolloff_85_hz": 387.59765625,
+        "attack_10_to_90_seconds": 1.609569161,
+        "release_90_to_10_seconds": 0.127664399,
+        "release_censored_by_tail": false
+      },
+      "rerendered_features": {
+        "rms_dbfs": -26.530210377,
+        "peak_dbfs": -13.945800971,
+        "spectral_centroid_hz": 493.940243955,
+        "spectral_rolloff_85_hz": 387.59765625,
+        "attack_10_to_90_seconds": 1.609569161,
+        "release_90_to_10_seconds": 0.127664399,
+        "release_censored_by_tail": false
+      },
+      "render_verification": {
+        "renders": 2,
+        "byte_identical": true,
+        "clipped_samples": 0
+      },
+      "used_as_additional_training_data": false
+    },
+    {
+      "sample_id": "sample-0237",
+      "split": "test",
+      "parameter_values": {
+        "14255": 0,
+        "17": 125.145605148226,
+        "2874": 0.171105191726
+      },
+      "expected_wav_sha256": "c5679b2c43dc13ead810037098d9b176443cc9dd783fa6e422721ca987f130ff",
+      "rerendered_wav_sha256": "c5679b2c43dc13ead810037098d9b176443cc9dd783fa6e422721ca987f130ff",
+      "wav_sha256_match": true,
+      "features_exact_match": true,
+      "expected_features": {
+        "rms_dbfs": -22.581912906,
+        "peak_dbfs": -9.896801632,
+        "spectral_centroid_hz": 506.014104345,
+        "spectral_rolloff_85_hz": 516.796875,
+        "attack_10_to_90_seconds": 0.562517007,
+        "release_90_to_10_seconds": 0.121791383,
+        "release_censored_by_tail": false
+      },
+      "rerendered_features": {
+        "rms_dbfs": -22.581912906,
+        "peak_dbfs": -9.896801632,
+        "spectral_centroid_hz": 506.014104345,
+        "spectral_rolloff_85_hz": 516.796875,
+        "attack_10_to_90_seconds": 0.562517007,
+        "release_90_to_10_seconds": 0.121791383,
+        "release_censored_by_tail": false
+      },
+      "render_verification": {
+        "renders": 2,
+        "byte_identical": true,
+        "clipped_samples": 0
+      },
+      "used_as_additional_training_data": false
+    }
+  ],
+  "all_exact": true
+}

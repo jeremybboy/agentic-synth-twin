@@ -18,7 +18,7 @@ Do not create a separate frontend unless an independent frontend architecture be
 
 ## Current boundary
 
-Milestone 6 is a bounded 256-example synthetic dataset over the authorized Filter Type, Cutoff, and Attack parameters: seeded sampling, exact applied states, deterministic real-synth renders, traceable hashes, DSP features, local-only WAV storage, and a read-only explorer. The browser remains a thin client of backend functions. Do not add public hosting, loudness normalization, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
+Milestone 7 is a bounded local surrogate over the frozen 256-example Milestone 6 dataset: categorical Filter Type plus continuous Cutoff and Attack predict the six existing DSP descriptors. The deterministic split, pre-test freeze, serialized model, honest held-out metrics, structured regional diagnostic, exact real-synth rerenders, and read-only cockpit are authoritative. The browser remains a thin client of backend functions. Do not add public hosting, loudness normalization, inverse optimization, new parameters, semantic models, or LOCK until the corresponding milestone is explicitly authorized.
 
 ## Invariants
 
