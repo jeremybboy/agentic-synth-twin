@@ -63,13 +63,24 @@ def _write_json_atomic(value: Mapping[str, Any], path: Path) -> None:
 
 
 def _run_renderer(
-    renderer: Path, plugin: Path, state_bytes: bytes, wav_path: Path
+    renderer: Path,
+    plugin: Path,
+    state_bytes: bytes,
+    wav_path: Path,
+    *,
+    parameter_id: int | None = None,
+    parameter_value: int | float | None = None,
 ) -> dict[str, Any]:
+    if (parameter_id is None) != (parameter_value is None):
+        raise AuditionError("parameter id and value must be supplied together")
     state_path = wav_path.with_suffix(".state.bin")
     state_path.write_bytes(state_bytes)
+    command = [str(renderer), str(plugin), str(state_path), str(wav_path)]
+    if parameter_id is not None and parameter_value is not None:
+        command.extend([str(parameter_id), str(parameter_value)])
     try:
         completed = subprocess.run(
-            [str(renderer), str(plugin), str(state_path), str(wav_path)],
+            command,
             check=True,
             capture_output=True,
             text=True,
@@ -84,6 +95,46 @@ def _run_renderer(
         return json.loads(completed.stdout)
     except json.JSONDecodeError as error:
         raise AuditionError("renderer stdout was not strict JSON") from error
+
+
+def render_verified_wav(
+    *,
+    renderer: Path,
+    plugin: Path,
+    state_bytes: bytes,
+    wav_path: Path,
+    parameter_id: int | None = None,
+    parameter_value: int | float | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Render twice and return verified WAV evidence plus renderer metadata."""
+
+    wav_path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(
+        dir=wav_path.parent, prefix=".audition-render."
+    ) as directory:
+        temporary = Path(directory)
+        first_wav = temporary / "first.wav"
+        second_wav = temporary / "second.wav"
+        options = {
+            "parameter_id": parameter_id,
+            "parameter_value": parameter_value,
+        }
+        first_result = _run_renderer(
+            renderer, plugin, state_bytes, first_wav, **options
+        )
+        second_result = _run_renderer(
+            renderer, plugin, state_bytes, second_wav, **options
+        )
+        first_bytes = first_wav.read_bytes()
+        second_bytes = second_wav.read_bytes()
+        if first_bytes != second_bytes:
+            raise AuditionError("two identical renders produced different WAV bytes")
+        if first_result != second_result:
+            raise AuditionError(
+                "two identical renders produced different renderer metadata"
+            )
+        os.replace(first_wav, wav_path)
+    return _inspect_wav(wav_path), first_result
 
 
 def _inspect_wav(path: Path) -> dict[str, Any]:
@@ -136,24 +187,12 @@ def render_audition(
 
     opaque = state["opaque_state"]
     state_bytes = base64.b64decode(opaque["data"], validate=True)
-    output_wav.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(
-        dir=output_wav.parent, prefix=".audition-render."
-    ) as directory:
-        temporary = Path(directory)
-        first_wav = temporary / "first.wav"
-        second_wav = temporary / "second.wav"
-        first_result = _run_renderer(renderer, plugin, state_bytes, first_wav)
-        second_result = _run_renderer(renderer, plugin, state_bytes, second_wav)
-        first_bytes = first_wav.read_bytes()
-        second_bytes = second_wav.read_bytes()
-        if first_bytes != second_bytes:
-            raise AuditionError("two identical renders produced different WAV bytes")
-        if first_result != second_result:
-            raise AuditionError("two identical renders produced different renderer metadata")
-        os.replace(first_wav, output_wav)
-
-    wav_evidence = _inspect_wav(output_wav)
+    wav_evidence, first_result = render_verified_wav(
+        renderer=renderer,
+        plugin=plugin,
+        state_bytes=state_bytes,
+        wav_path=output_wav,
+    )
     expected_renderer_values = {
         "sample_rate": SAMPLE_RATE,
         "channels": CHANNELS,

@@ -18,7 +18,7 @@ Do not create a separate frontend unless an independent frontend architecture be
 
 ## Current boundary
 
-Milestone 3 is deterministic audition only: exact canonical state, one scientific C3 note, fixed timing/sample rate, verified WAV evidence, and a thin one-button browser preview. The renderer remains offline evidence tooling, not a production host; do not begin A/B probing, parameter controls, DSP, datasets, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
+Milestone 4 is local human A/B calibration only: exact accepted baseline, one real discovered parameter change per probe, deterministic A/B renders, blinded/randomized browser presentation, explicit YES/NO judgments, and local SQLite persistence. The browser remains a thin client of backend functions. Do not add public hosting, loudness normalization, DSP descriptors, synthetic datasets, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
 
 ## Invariants
 

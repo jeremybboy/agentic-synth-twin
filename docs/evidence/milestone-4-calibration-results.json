@@ -1,0 +1,143 @@
+{
+  "schema": "agentic-synth-twin/calibration-results/v1",
+  "session": {
+    "id": "7e12b216-7bba-4924-ae72-efdc8311d5e1",
+    "created_at_utc": "2026-09-27T15:20:13.040847+00:00",
+    "completed_at_utc": "2026-09-27T16:53:13.869796+00:00",
+    "seed": 20260927,
+    "status": "completed",
+    "probe_count": 10
+  },
+  "probes": [
+    {
+      "ordinal": 1,
+      "parameter_id": 728,
+      "parameter_name": "Amplitude Release (s)",
+      "baseline_value": 0.2,
+      "variant_value": 1.0,
+      "left_role": "A",
+      "right_role": "B",
+      "left_play_count": 3,
+      "right_play_count": 2,
+      "meaningful_difference": 0,
+      "judged_at_utc": "2026-09-27T16:51:19.438460+00:00"
+    },
+    {
+      "ordinal": 2,
+      "parameter_id": 8675309,
+      "parameter_name": "Oscillator Detuning (in cents)",
+      "baseline_value": 0.0,
+      "variant_value": 200.0,
+      "left_role": "B",
+      "right_role": "A",
+      "left_play_count": 3,
+      "right_play_count": 1,
+      "meaningful_difference": 1,
+      "judged_at_utc": "2026-09-27T16:51:29.637759+00:00"
+    },
+    {
+      "ordinal": 3,
+      "parameter_id": 2391,
+      "parameter_name": "Unison Spread in Cents",
+      "baseline_value": 10.0,
+      "variant_value": 100.0,
+      "left_role": "A",
+      "right_role": "B",
+      "left_play_count": 2,
+      "right_play_count": 1,
+      "meaningful_difference": 1,
+      "judged_at_utc": "2026-09-27T16:51:46.636496+00:00"
+    },
+    {
+      "ordinal": 4,
+      "parameter_id": 14255,
+      "parameter_name": "Filter Type",
+      "baseline_value": 0.0,
+      "variant_value": 5.0,
+      "left_role": "A",
+      "right_role": "B",
+      "left_play_count": 1,
+      "right_play_count": 1,
+      "meaningful_difference": 1,
+      "judged_at_utc": "2026-09-27T16:51:57.137209+00:00"
+    },
+    {
+      "ordinal": 5,
+      "parameter_id": 94,
+      "parameter_name": "Resonance",
+      "baseline_value": 0.7,
+      "variant_value": 1.0,
+      "left_role": "B",
+      "right_role": "A",
+      "left_play_count": 2,
+      "right_play_count": 2,
+      "meaningful_difference": 0,
+      "judged_at_utc": "2026-09-27T16:52:08.769970+00:00"
+    },
+    {
+      "ordinal": 6,
+      "parameter_id": 87612,
+      "parameter_name": "Pre Filter VCA",
+      "baseline_value": 1.0,
+      "variant_value": 0.5,
+      "left_role": "B",
+      "right_role": "A",
+      "left_play_count": 3,
+      "right_play_count": 2,
+      "meaningful_difference": 0,
+      "judged_at_utc": "2026-09-27T16:52:39.178791+00:00"
+    },
+    {
+      "ordinal": 7,
+      "parameter_id": 1378,
+      "parameter_name": "Unison Count",
+      "baseline_value": 3.0,
+      "variant_value": 7.0,
+      "left_role": "B",
+      "right_role": "A",
+      "left_play_count": 1,
+      "right_play_count": 1,
+      "meaningful_difference": 0,
+      "judged_at_utc": "2026-09-27T16:52:45.233549+00:00"
+    },
+    {
+      "ordinal": 8,
+      "parameter_id": 1942,
+      "parameter_name": "Deactivate Amp Envelope",
+      "baseline_value": 0.0,
+      "variant_value": 1.0,
+      "left_role": "A",
+      "right_role": "B",
+      "left_play_count": 2,
+      "right_play_count": 2,
+      "meaningful_difference": 0,
+      "judged_at_utc": "2026-09-27T16:52:58.869825+00:00"
+    },
+    {
+      "ordinal": 9,
+      "parameter_id": 17,
+      "parameter_name": "Cutoff in Keys",
+      "baseline_value": 69.0,
+      "variant_value": 127.0,
+      "left_role": "A",
+      "right_role": "B",
+      "left_play_count": 1,
+      "right_play_count": 1,
+      "meaningful_difference": 1,
+      "judged_at_utc": "2026-09-27T16:53:05.303214+00:00"
+    },
+    {
+      "ordinal": 10,
+      "parameter_id": 2874,
+      "parameter_name": "Amplitude Attack (s)",
+      "baseline_value": 0.01,
+      "variant_value": 1.0,
+      "left_role": "B",
+      "right_role": "A",
+      "left_play_count": 2,
+      "right_play_count": 1,
+      "meaningful_difference": 1,
+      "judged_at_utc": "2026-09-27T16:53:13.869753+00:00"
+    }
+  ]
+}

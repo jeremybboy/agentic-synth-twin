@@ -9,13 +9,14 @@
 - [CLAP feasibility](docs/clap-feasibility.md): pinned build, probe evidence, and known upstream limitations
 - [Canonical synth state](docs/canonical-synth-state.md): versioned state contract, validation, authority boundaries, and reproduction
 - [Deterministic audition](docs/deterministic-audition.md): fixed C3 render contract, WAV evidence, browser playback, and limitations
+- [Human A/B probe](docs/human-ab-probe.md): local blinded calibration, SQLite persistence, first pilot judgment, and limitations
 - [Agent contract](AGENTS.md): repository rules, current milestone boundary, and checks
 - [Contributing](CONTRIBUTING.md): focused PR workflow
 - [Security](SECURITY.md): private vulnerability reporting guidance
 
 ## Current status
 
-Milestone 3 provides a deterministic real-synth C3 WAV from exact canonical state and a thin local one-button browser preview. A/B probing, DSP, dataset, model, optimization, and LOCK functionality do not exist yet.
+Milestone 4 provides a local blinded A/B app with direct SQLite judgment capture and one completed pilot observation. DSP, synthetic dataset, model, optimization, and LOCK functionality do not exist yet.
 
 ## Source
 
