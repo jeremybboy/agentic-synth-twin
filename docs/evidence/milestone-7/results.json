@@ -1,0 +1,1609 @@
+{
+  "schema": "agentic-synth-twin/surrogate-results/v1",
+  "created_at": "2026-09-27T22:47:42.198414+00:00",
+  "claim": "bounded parameter-to-DSP approximation inside the sampled Filter Type, Cutoff, and Attack region; not timbre understanding or inverse sound design",
+  "code": {
+    "commit": "3c192b7f9954bfba2fafa43c6b2a5b20e0f18343",
+    "branch": "agent/milestone-7-surrogate-training",
+    "dirty": false
+  },
+  "runtime": {
+    "python": "3.12.8",
+    "platform": "macOS-26.7-arm64-arm-64bit",
+    "numpy": "2.3.5",
+    "scikit_learn": "1.6.1",
+    "scipy": "1.15.3",
+    "joblib": "1.5.1",
+    "threadpoolctl": "3.6.0"
+  },
+  "dataset": {
+    "filename": "milestone-6-synthetic-dataset.json",
+    "sha256": "9942500229339874cf231e244300cdfe2e70811957119f904646b63290c2c3ae",
+    "sample_count": 256,
+    "inputs": {
+      "filter_type": {
+        "parameter_id": 14255,
+        "treatment": "categorical one-hot; numeric distance is not assumed",
+        "categories": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "cutoff_keys": {
+        "parameter_id": 17,
+        "treatment": "continuous"
+      },
+      "attack_seconds": {
+        "parameter_id": 2874,
+        "treatment": "continuous"
+      }
+    },
+    "targets": [
+      {
+        "key": "rms_dbfs",
+        "label": "RMS dBFS",
+        "unit": "dBFS"
+      },
+      {
+        "key": "peak_dbfs",
+        "label": "Peak dBFS",
+        "unit": "dBFS"
+      },
+      {
+        "key": "spectral_centroid_hz",
+        "label": "Spectral centroid",
+        "unit": "Hz"
+      },
+      {
+        "key": "spectral_rolloff_85_hz",
+        "label": "Spectral rolloff (85%)",
+        "unit": "Hz"
+      },
+      {
+        "key": "attack_10_to_90_seconds",
+        "label": "Attack duration",
+        "unit": "s"
+      },
+      {
+        "key": "release_90_to_10_seconds",
+        "label": "Release duration",
+        "unit": "s"
+      }
+    ],
+    "release_characterization": {
+      "minimum": 0.099229025,
+      "maximum": 0.128820862,
+      "range": 0.02959183700000001,
+      "standard_deviation": 0.004619427417996522,
+      "low_information_by_predeclared_rule": true,
+      "rule": {
+        "training_standard_deviation_seconds_max": 0.01,
+        "training_range_seconds_max": 0.05,
+        "effect": "report and model Release, but exclude it from model selection"
+      }
+    },
+    "quiet_examples_removed": false
+  },
+  "split": {
+    "counts": {
+      "train": 166,
+      "validation": 38,
+      "test": 52
+    },
+    "manifest_sha256": "cd3aec2b4406295ea06e92ae3aee0a0e1ca75030ec5237d0117e0476ce1e8049",
+    "filter_type_counts": {
+      "train": {
+        "0": 28,
+        "1": 28,
+        "2": 28,
+        "3": 28,
+        "4": 27,
+        "5": 27
+      },
+      "validation": {
+        "0": 6,
+        "1": 6,
+        "2": 6,
+        "3": 6,
+        "4": 7,
+        "5": 7
+      },
+      "test": {
+        "0": 9,
+        "1": 9,
+        "2": 9,
+        "3": 9,
+        "4": 8,
+        "5": 8
+      }
+    }
+  },
+  "protocol": {
+    "test_locked_during_model_selection": true,
+    "freeze_sha256_before_test": "9d06e64ebd32afad41008088a4667523f5b9a29b1fff44148115e11d7d1394c7",
+    "freeze_unchanged_after_test": true,
+    "final_test_evaluations": 1,
+    "test_status": "revealed_after_freeze"
+  },
+  "target_scales_from_train_only": {
+    "rms_dbfs": {
+      "minimum": -59.379155982,
+      "maximum": -14.652878727,
+      "range": 44.726277255,
+      "standard_deviation": 8.227422330948725
+    },
+    "peak_dbfs": {
+      "minimum": -51.321198566,
+      "maximum": -4.010176965,
+      "range": 47.311021601,
+      "standard_deviation": 7.840287507023452
+    },
+    "spectral_centroid_hz": {
+      "minimum": 22.825938201,
+      "maximum": 13452.82854499,
+      "range": 13430.002606789,
+      "standard_deviation": 2163.695641107066
+    },
+    "spectral_rolloff_85_hz": {
+      "minimum": 21.533203125,
+      "maximum": 17506.494140625,
+      "range": 17484.9609375,
+      "standard_deviation": 3046.6901066653777
+    },
+    "attack_10_to_90_seconds": {
+      "minimum": 0.381519274,
+      "maximum": 1.860430839,
+      "range": 1.478911565,
+      "standard_deviation": 0.5523864900726759
+    },
+    "release_90_to_10_seconds": {
+      "minimum": 0.099229025,
+      "maximum": 0.128820862,
+      "range": 0.02959183700000001,
+      "standard_deviation": 0.004619427417996522
+    }
+  },
+  "candidates": {
+    "mean": {
+      "state": "complete",
+      "hyperparameters": {
+        "strategy": "mean"
+      },
+      "train": {
+        "sample_count": 166,
+        "selection_mean_normalized_mae": 0.15152926690531018,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 5.941565271134854,
+            "normalized_mae": 0.1328428305637854,
+            "r2": 0.0,
+            "spearman": null
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 4.44944054428959,
+            "normalized_mae": 0.0940465961993842,
+            "r2": 0.0,
+            "spearman": null
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 1074.2523226555568,
+            "normalized_mae": 0.07998898839472389,
+            "r2": 0.0,
+            "spearman": null
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 1547.0117031567534,
+            "normalized_mae": 0.08847670341881503,
+            "r2": 0.0,
+            "spearman": null
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.5357966691661343,
+            "normalized_mae": 0.36229121594984237,
+            "r2": -2.220446049250313e-16,
+            "spearman": null
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.002882247753229781,
+            "normalized_mae": 0.0974000956152124,
+            "r2": 0.0,
+            "spearman": null
+          }
+        }
+      },
+      "validation": {
+        "sample_count": 38,
+        "selection_mean_normalized_mae": 0.14842835647360947,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 5.95816593069499,
+            "normalized_mae": 0.1332139917821781,
+            "r2": -0.0006711051140617652,
+            "spearman": null
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 4.099595994950221,
+            "normalized_mae": 0.08665202855952636,
+            "r2": -2.136372971861533e-06,
+            "spearman": null
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 1002.8517530357657,
+            "normalized_mae": 0.07467249131648077,
+            "r2": -0.009032900655096876,
+            "spearman": null
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 1489.6142856788995,
+            "normalized_mae": 0.08519402994399165,
+            "r2": -0.004541181145745199,
+            "spearman": null
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.5359712174315154,
+            "normalized_mae": 0.36240924076587056,
+            "r2": -0.01166059587357271,
+            "spearman": null
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.002591633925174376,
+            "normalized_mae": 0.0875793525482847,
+            "r2": -0.001821884833095977,
+            "spearman": null
+          }
+        }
+      }
+    },
+    "linear": {
+      "state": "complete",
+      "hyperparameters": {
+        "alpha": 1.0
+      },
+      "train": {
+        "sample_count": 166,
+        "selection_mean_normalized_mae": 0.10913898483065969,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 4.5311112054421026,
+            "normalized_mae": 0.1013075865806731,
+            "r2": 0.3324576897686399,
+            "spearman": 0.6544444517318048
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 4.015876402574372,
+            "normalized_mae": 0.08488247065223993,
+            "r2": 0.4395854716921901,
+            "spearman": 0.5566186356749809
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 1090.5038207472558,
+            "normalized_mae": 0.08119907736994744,
+            "r2": 0.41409295590795936,
+            "spearman": 0.5259295210236702
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 1557.3935191200846,
+            "normalized_mae": 0.08907046030511526,
+            "r2": 0.41779128281525735,
+            "spearman": 0.5946233823618255
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.2798623169274905,
+            "normalized_mae": 0.18923532924532271,
+            "r2": 0.6362210525562748,
+            "spearman": 0.5541199418136398
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.003053015130937944,
+            "normalized_mae": 0.1031708552239573,
+            "r2": 0.07423303626470712,
+            "spearman": 0.06824294518117817
+          }
+        }
+      },
+      "validation": {
+        "sample_count": 38,
+        "selection_mean_normalized_mae": 0.10915518138089701,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 5.196361391668534,
+            "normalized_mae": 0.11618139739290792,
+            "r2": 0.2832937331270735,
+            "spearman": 0.6343144764197396
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 3.9551098620783725,
+            "normalized_mae": 0.08359806506471157,
+            "r2": 0.43711352676429704,
+            "spearman": 0.5973301236459131
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 925.5042586753622,
+            "normalized_mae": 0.06891318533382194,
+            "r2": 0.45130857395095414,
+            "spearman": 0.2668782142466353
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 1349.1655390382894,
+            "normalized_mae": 0.07716148430990964,
+            "r2": 0.47341408737058255,
+            "spearman": 0.3646831370847348
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.29566662485168044,
+            "normalized_mae": 0.19992177480313397,
+            "r2": 0.596915360575544,
+            "spearman": 0.5843409758705308
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.002730722386328347,
+            "normalized_mae": 0.09227958326238232,
+            "r2": 0.08308500505329153,
+            "spearman": 0.08409067838960047
+          }
+        }
+      }
+    },
+    "random_forest": {
+      "state": "complete",
+      "hyperparameters": {
+        "n_estimators": 256,
+        "max_depth": 12,
+        "min_samples_leaf": 2,
+        "max_features": 1.0,
+        "random_state": 20260929,
+        "n_jobs": -1
+      },
+      "train": {
+        "sample_count": 166,
+        "selection_mean_normalized_mae": 0.060828199901168875,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 1.327393586582598,
+            "normalized_mae": 0.029678159418783448,
+            "r2": 0.9410073887890658,
+            "spearman": 0.9091971588039693
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 0.8453307722787603,
+            "normalized_mae": 0.017867523119832456,
+            "r2": 0.969458155750257,
+            "spearman": 0.9578385397878942
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 183.7676834337003,
+            "normalized_mae": 0.01368336915592287,
+            "r2": 0.9398811472735091,
+            "spearman": 0.9123243108525556
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 267.5513054520251,
+            "normalized_mae": 0.015301796006773324,
+            "r2": 0.9428078255884885,
+            "spearman": 0.9308016163139918
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.3366152858151284,
+            "normalized_mae": 0.22761015180453228,
+            "r2": 0.5305515668548648,
+            "spearman": 0.6655604424744784
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.0013483948383295555,
+            "normalized_mae": 0.0455664458522651,
+            "r2": 0.7917386227406704,
+            "spearman": 0.7001915659134705
+          }
+        }
+      },
+      "validation": {
+        "sample_count": 38,
+        "selection_mean_normalized_mae": 0.09205601596003758,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 2.435875587216317,
+            "normalized_mae": 0.05446184517724439,
+            "r2": 0.8282481073725906,
+            "spearman": 0.8459350038297407
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 1.5612239766928004,
+            "normalized_mae": 0.0329991601081766,
+            "r2": 0.8953577290267463,
+            "spearman": 0.8750410329357698
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 338.52062572172673,
+            "normalized_mae": 0.025206296352511592,
+            "r2": 0.7679417203393273,
+            "spearman": 0.8023853813327497
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 512.2976661983289,
+            "normalized_mae": 0.02929933146716982,
+            "r2": 0.7689692040004652,
+            "spearman": 0.8406823650479238
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.47075743761237304,
+            "normalized_mae": 0.31831344669508554,
+            "r2": 0.11965728503385142,
+            "spearman": 0.35158942986367325
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.0016602367348962457,
+            "normalized_mae": 0.056104551227970235,
+            "r2": 0.6871053851773801,
+            "spearman": 0.5900581586478605
+          }
+        }
+      }
+    }
+  },
+  "selection": {
+    "selected_model": "random_forest",
+    "rule": "lowest validation mean normalized MAE across the five predeclared selection targets; ties follow linear then random_forest",
+    "final_training_rows": "train plus validation after family/config freeze"
+  },
+  "final_test": {
+    "selected_model": {
+      "sample_count": 52,
+      "selection_mean_normalized_mae": 0.0730521191827056,
+      "targets": {
+        "rms_dbfs": {
+          "label": "RMS dBFS",
+          "unit": "dBFS",
+          "mae": 2.058514137053611,
+          "normalized_mae": 0.04602471440485218,
+          "r2": 0.8971745283193742,
+          "spearman": 0.8725347904038246
+        },
+        "peak_dbfs": {
+          "label": "Peak dBFS",
+          "unit": "dBFS",
+          "mae": 0.972975894921205,
+          "normalized_mae": 0.020565522831589828,
+          "r2": 0.9666092676087541,
+          "spearman": 0.9304191923503798
+        },
+        "spectral_centroid_hz": {
+          "label": "Spectral centroid",
+          "unit": "Hz",
+          "mae": 197.76400806580958,
+          "normalized_mae": 0.014725537578513791,
+          "r2": 0.9303532642415497,
+          "spearman": 0.9169299069410057
+        },
+        "spectral_rolloff_85_hz": {
+          "label": "Spectral rolloff (85%)",
+          "unit": "Hz",
+          "mae": 288.2816166477604,
+          "normalized_mae": 0.016487404099913245,
+          "r2": 0.9313880374470985,
+          "spearman": 0.9297070637740311
+        },
+        "attack_10_to_90_seconds": {
+          "label": "Attack duration",
+          "unit": "s",
+          "mae": 0.39554586714434425,
+          "normalized_mae": 0.26745741699865894,
+          "r2": 0.3380119720235635,
+          "spearman": 0.6196533765901134
+        },
+        "release_90_to_10_seconds": {
+          "label": "Release duration",
+          "unit": "s",
+          "mae": 0.0014871396732860157,
+          "normalized_mae": 0.05025506437082683,
+          "r2": 0.5388371606798442,
+          "spearman": 0.44812794204655343
+        }
+      }
+    },
+    "mean_baseline": {
+      "sample_count": 52,
+      "selection_mean_normalized_mae": 0.14874876411966373,
+      "targets": {
+        "rms_dbfs": {
+          "label": "RMS dBFS",
+          "unit": "dBFS",
+          "mae": 6.255183931601432,
+          "normalized_mae": 0.1398547859447023,
+          "r2": -0.0035121997194487165,
+          "spearman": null
+        },
+        "peak_dbfs": {
+          "label": "Peak dBFS",
+          "unit": "dBFS",
+          "mae": 4.222342662075788,
+          "normalized_mae": 0.08924649096959136,
+          "r2": -0.0002830802123716669,
+          "spearman": null
+        },
+        "spectral_centroid_hz": {
+          "label": "Spectral centroid",
+          "unit": "Hz",
+          "mae": 1076.1163113020166,
+          "normalized_mae": 0.0801277812677437,
+          "r2": -0.0021254976431765993,
+          "spearman": null
+        },
+        "spectral_rolloff_85_hz": {
+          "label": "Spectral rolloff (85%)",
+          "unit": "Hz",
+          "mae": 1535.1338796486145,
+          "normalized_mae": 0.08779738685925301,
+          "r2": -0.003295827455431999,
+          "spearman": null
+        },
+        "attack_10_to_90_seconds": {
+          "label": "Attack duration",
+          "unit": "s",
+          "mae": 0.5127643364977374,
+          "normalized_mae": 0.3467173755570283,
+          "r2": -0.0005351890106388701,
+          "spearman": null
+        },
+        "release_90_to_10_seconds": {
+          "label": "Release duration",
+          "unit": "s",
+          "mae": 0.002388929963800921,
+          "normalized_mae": 0.08072935667362997,
+          "r2": -0.06622001988210902,
+          "spearman": null
+        }
+      }
+    },
+    "thresholds": {
+      "predeclared": {
+        "useful_target_mae_improvement_over_mean": 0.3,
+        "rms_mae_dbfs_max": 2.0,
+        "spectral_centroid_spearman_min": 0.8
+      },
+      "per_target": {
+        "rms_dbfs": {
+          "mae_improvement_over_mean": 0.6709106943036611,
+          "threshold": 0.3,
+          "passed": true
+        },
+        "peak_dbfs": {
+          "mae_improvement_over_mean": 0.7695649138900369,
+          "threshold": 0.3,
+          "passed": true
+        },
+        "spectral_centroid_hz": {
+          "mae_improvement_over_mean": 0.8162243188874904,
+          "threshold": 0.3,
+          "passed": true
+        },
+        "spectral_rolloff_85_hz": {
+          "mae_improvement_over_mean": 0.8122107651524526,
+          "threshold": 0.3,
+          "passed": true
+        },
+        "attack_10_to_90_seconds": {
+          "mae_improvement_over_mean": 0.22860105707431627,
+          "threshold": 0.3,
+          "passed": false
+        },
+        "release_90_to_10_seconds": {
+          "mae_improvement_over_mean": 0.3774871194131228,
+          "threshold": 0.3,
+          "passed": true
+        }
+      },
+      "gates": {
+        "aggregate_learned_model_beats_mean": {
+          "selected_normalized_mae": 0.0730521191827056,
+          "mean_normalized_mae": 0.14874876411966373,
+          "passed": true
+        },
+        "all_selection_targets_improve_mae_30_percent": {
+          "targets": [
+            "rms_dbfs",
+            "peak_dbfs",
+            "spectral_centroid_hz",
+            "spectral_rolloff_85_hz",
+            "attack_10_to_90_seconds"
+          ],
+          "minimum_improvement": 0.3,
+          "passed": false
+        },
+        "rms_mae": {
+          "value_dbfs": 2.058514137053611,
+          "maximum_dbfs": 2.0,
+          "passed": false
+        },
+        "spectral_centroid_rank": {
+          "value": 0.9169299069410057,
+          "minimum": 0.8,
+          "passed": true
+        }
+      },
+      "overall_passed": false
+    }
+  },
+  "learning_curves": {
+    "mean": [
+      {
+        "training_samples": 32,
+        "training_mean_normalized_mae": 0.12926693377851722,
+        "validation_mean_normalized_mae": 0.14068619859230136
+      },
+      {
+        "training_samples": 64,
+        "training_mean_normalized_mae": 0.1649389233481934,
+        "validation_mean_normalized_mae": 0.1549426050565783
+      },
+      {
+        "training_samples": 96,
+        "training_mean_normalized_mae": 0.1631751595513811,
+        "validation_mean_normalized_mae": 0.1543683837232233
+      },
+      {
+        "training_samples": 128,
+        "training_mean_normalized_mae": 0.1500564930435357,
+        "validation_mean_normalized_mae": 0.14733074514369768
+      },
+      {
+        "training_samples": 166,
+        "training_mean_normalized_mae": 0.15152926690531018,
+        "validation_mean_normalized_mae": 0.14842835647360947
+      }
+    ],
+    "linear": [
+      {
+        "training_samples": 32,
+        "training_mean_normalized_mae": 0.08564475542535548,
+        "validation_mean_normalized_mae": 0.10713864113477393
+      },
+      {
+        "training_samples": 64,
+        "training_mean_normalized_mae": 0.10711124278596433,
+        "validation_mean_normalized_mae": 0.11560605051077358
+      },
+      {
+        "training_samples": 96,
+        "training_mean_normalized_mae": 0.11441211960997362,
+        "validation_mean_normalized_mae": 0.11191179209930133
+      },
+      {
+        "training_samples": 128,
+        "training_mean_normalized_mae": 0.10399251099421347,
+        "validation_mean_normalized_mae": 0.11113864610071875
+      },
+      {
+        "training_samples": 166,
+        "training_mean_normalized_mae": 0.10913898483065969,
+        "validation_mean_normalized_mae": 0.10915518138089701
+      }
+    ],
+    "random_forest": [
+      {
+        "training_samples": 32,
+        "training_mean_normalized_mae": 0.0833342510146704,
+        "validation_mean_normalized_mae": 0.11158906904773289
+      },
+      {
+        "training_samples": 64,
+        "training_mean_normalized_mae": 0.07161564510133533,
+        "validation_mean_normalized_mae": 0.10782663790994232
+      },
+      {
+        "training_samples": 96,
+        "training_mean_normalized_mae": 0.0711807869566616,
+        "validation_mean_normalized_mae": 0.10413265850878295
+      },
+      {
+        "training_samples": 128,
+        "training_mean_normalized_mae": 0.06268420484612644,
+        "validation_mean_normalized_mae": 0.09571310469259646
+      },
+      {
+        "training_samples": 166,
+        "training_mean_normalized_mae": 0.060828199901168875,
+        "validation_mean_normalized_mae": 0.09205601596003758
+      }
+    ]
+  },
+  "predictions": {
+    "filename": "predictions.json",
+    "sha256": "0b833752e45e561df100f9c34323a34993269d4779ca19a00ba4d1808d7b0c73"
+  },
+  "regional_error_on_final_test": {
+    "filter_type": [
+      {
+        "region": "0",
+        "sample_count": 9,
+        "selection_mean_normalized_mae": 0.07618559772795483,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 2.0188802176933236,
+            "normalized_mae": 0.04513857046905532,
+            "r2": 0.9723571779292077,
+            "spearman": 0.9666666666666667
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 0.6875674920526404,
+            "normalized_mae": 0.014532924227493483,
+            "r2": 0.9967157927012372,
+            "spearman": 0.9
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 182.81857471630352,
+            "normalized_mae": 0.013612698379067098,
+            "r2": -6.159428815220496,
+            "spearman": 1.0
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 259.5299943288167,
+            "normalized_mae": 0.014843041128688065,
+            "r2": -10.645533987998276,
+            "spearman": 0.9233805168766387
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.43302642197534186,
+            "normalized_mae": 0.29280075443547016,
+            "r2": -0.023553055011344748,
+            "spearman": 0.7333333333333334
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.0017674227913741668,
+            "normalized_mae": 0.05972670069026692,
+            "r2": 0.5991623556777812,
+            "spearman": 0.9790880682441959
+          }
+        }
+      },
+      {
+        "region": "1",
+        "sample_count": 9,
+        "selection_mean_normalized_mae": 0.05741621793312927,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 1.3282182844242867,
+            "normalized_mae": 0.029696598195545185,
+            "r2": 0.943906661755532,
+            "spearman": 0.9333333333333332
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 0.7163965992331262,
+            "normalized_mae": 0.015142277105637134,
+            "r2": 0.8918138536680066,
+            "spearman": 0.9166666666666666
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 134.15309439159552,
+            "normalized_mae": 0.009989059445437471,
+            "r2": 0.9942906506802797,
+            "spearman": 0.9333333333333332
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 175.34006085058658,
+            "normalized_mae": 0.01002804990399119,
+            "r2": 0.9951016743477856,
+            "spearman": 0.978945010372561
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.3286512778400753,
+            "normalized_mae": 0.22222510501503537,
+            "r2": 0.4555953752554437,
+            "spearman": 0.8666666666666667
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.002198569543385803,
+            "normalized_mae": 0.0742964873517586,
+            "r2": 0.25355140265873355,
+            "spearman": 0.18333333333333335
+          }
+        }
+      },
+      {
+        "region": "2",
+        "sample_count": 9,
+        "selection_mean_normalized_mae": 0.10310068856507622,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 3.159426553791554,
+            "normalized_mae": 0.07063915773223353,
+            "r2": 0.4872920339922897,
+            "spearman": 0.8499999999999999
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 1.4739498026531483,
+            "normalized_mae": 0.03115446998975803,
+            "r2": 0.0924944633340059,
+            "spearman": 0.43333333333333335
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 643.566502223106,
+            "normalized_mae": 0.047920057878304265,
+            "r2": 0.8257366821382707,
+            "spearman": 1.0
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 906.6979848013984,
+            "normalized_mae": 0.051855877061572554,
+            "r2": 0.8240718234415403,
+            "spearman": 0.9958246164193105
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.464280446019143,
+            "normalized_mae": 0.31393388016351265,
+            "r2": -0.018085868572783825,
+            "spearman": 0.03333333333333333
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.0024803136168571696,
+            "normalized_mae": 0.08381749388715438,
+            "r2": 0.5504696363426775,
+            "spearman": 0.510464719340991
+          }
+        }
+      },
+      {
+        "region": "3",
+        "sample_count": 9,
+        "selection_mean_normalized_mae": 0.06875022752632583,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 1.2921063180587298,
+            "normalized_mae": 0.028889198863835328,
+            "r2": -0.024431811298281314,
+            "spearman": 0.5166666666666667
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 0.3362255941296907,
+            "normalized_mae": 0.007106707544074339,
+            "r2": 0.8148000970714502,
+            "spearman": 0.8333333333333333
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 96.88564490611212,
+            "normalized_mae": 0.00721411959050071,
+            "r2": -27.117499686323274,
+            "spearman": 0.35
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 135.08381790584988,
+            "normalized_mae": 0.007725714594885687,
+            "r2": -13.108082885289443,
+            "spearman": 0.710046946804693
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.4330480770900575,
+            "normalized_mae": 0.29281539703833304,
+            "r2": 0.27252880099668975,
+            "spearman": 0.3
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.0013507180020697895,
+            "normalized_mae": 0.045644952764162264,
+            "r2": 0.49543249554784596,
+            "spearman": 0.1596695032950434
+          }
+        }
+      },
+      {
+        "region": "4",
+        "sample_count": 8,
+        "selection_mean_normalized_mae": 0.0827754069927615,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 2.977789232662865,
+            "normalized_mae": 0.06657807032956169,
+            "r2": 0.47782441964597355,
+            "spearman": 0.9523809523809524
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 1.9401403710733547,
+            "normalized_mae": 0.041008211309314584,
+            "r2": 0.45833638021781475,
+            "spearman": 0.11904761904761905
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 79.02045888973338,
+            "normalized_mae": 0.005883875171385875,
+            "r2": 0.3563630256072401,
+            "spearman": 0.7380952380952381
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 175.13003051280975,
+            "normalized_mae": 0.010016037847542932,
+            "r2": 0.8388092319680309,
+            "spearman": 0.8263621207201486
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.42946237209861504,
+            "normalized_mae": 0.2903908403060024,
+            "r2": 0.2919367835946991,
+            "spearman": 0.523809523809524
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.00024207443258988763,
+            "normalized_mae": 0.00818044626935082,
+            "r2": 0.6564773273579727,
+            "spearman": 0.29940656547831473
+          }
+        }
+      },
+      {
+        "region": "5",
+        "sample_count": 8,
+        "selection_mean_normalized_mae": 0.048429044473277935,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 1.629092362471726,
+            "normalized_mae": 0.03642360738372447,
+            "r2": 0.40672833904876193,
+            "spearman": 0.9047619047619048
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 0.7682960218372956,
+            "normalized_mae": 0.01623926087068592,
+            "r2": 0.477532474596307,
+            "spearman": 0.9047619047619048
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 16.84380027127193,
+            "normalized_mae": 0.0012541918839805155,
+            "r2": -7.4657154821935965,
+            "spearman": 0.1666666666666667
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 37.467137575149536,
+            "normalized_mae": 0.0021428207766134473,
+            "r2": 0.0,
+            "spearman": null
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.27520376354942766,
+            "normalized_mae": 0.18608534145138533,
+            "r2": 0.6866196819256635,
+            "spearman": 0.5714285714285715
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.000652681495871419,
+            "normalized_mae": 0.022056133111013648,
+            "r2": -12.221475893334906,
+            "spearman": -0.3494229522161129
+          }
+        }
+      }
+    ],
+    "cutoff_region": [
+      {
+        "region": "low 1-42",
+        "sample_count": 17,
+        "selection_mean_normalized_mae": 0.058457864923007585,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 1.2610794276767294,
+            "normalized_mae": 0.02819549278574827,
+            "r2": 0.972468097072722,
+            "spearman": 0.911764705882353
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 0.7696047406450467,
+            "normalized_mae": 0.01626692289876023,
+            "r2": 0.9909477410417509,
+            "spearman": 0.9387254901960785
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 14.94562195544086,
+            "normalized_mae": 0.0011128532430727674,
+            "r2": 0.9792663106828073,
+            "spearman": 0.7990196078431374
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 17.807615581043265,
+            "normalized_mae": 0.001018453266478352,
+            "r2": 0.9677327371105164,
+            "spearman": 0.851757122704842
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.3633620678900268,
+            "normalized_mae": 0.2456956024209783,
+            "r2": 0.462503746534776,
+            "spearman": 0.7843137254901962
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.0012138022172901834,
+            "normalized_mae": 0.0410181435268849,
+            "r2": 0.4938493872366798,
+            "spearman": 0.27904249775491013
+          }
+        }
+      },
+      {
+        "region": "mid 43-84",
+        "sample_count": 18,
+        "selection_mean_normalized_mae": 0.0675019148998377,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 2.1844512424925657,
+            "normalized_mae": 0.04884044406464353,
+            "r2": 0.532077169679686,
+            "spearman": 0.8761609907120743
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 0.96081090486173,
+            "normalized_mae": 0.02030839479571546,
+            "r2": 0.7845372746256988,
+            "spearman": 0.9607843137254902
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 51.12462410515169,
+            "normalized_mae": 0.0038067471468179524,
+            "r2": 0.9699075353818181,
+            "spearman": 0.9876160990712075
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 74.51471675526014,
+            "normalized_mae": 0.004261646166760853,
+            "r2": 0.9672379901485612,
+            "spearman": 0.9446480130419846
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.3849493553457523,
+            "normalized_mae": 0.2602923423252507,
+            "r2": 0.05443152262215112,
+            "spearman": 0.23219814241486067
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.002199487326711024,
+            "normalized_mae": 0.07432750209833285,
+            "r2": 0.45338514330220536,
+            "spearman": 0.42002063983488136
+          }
+        }
+      },
+      {
+        "region": "high 85-127",
+        "sample_count": 17,
+        "selection_mean_normalized_mae": 0.09352306033014605,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 2.722603675965717,
+            "normalized_mae": 0.060872575207706434,
+            "r2": 0.8298448732479776,
+            "spearman": 0.8529411764705884
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 1.1892276269073951,
+            "normalized_mae": 0.02513637597887463,
+            "r2": 0.6681434493244385,
+            "spearman": 0.8602941176470589
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 535.847624252169,
+            "normalized_mae": 0.039899294135750406,
+            "r2": 0.9111961352678186,
+            "spearman": 0.7769607843137256
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 785.0970411300659,
+            "normalized_mae": 0.044901275097862424,
+            "r2": 0.9089751534822337,
+            "spearman": 0.8518013349942043
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.43894950242070024,
+            "normalized_mae": 0.2968057812305364,
+            "r2": 0.2620301126567455,
+            "spearman": 0.6102941176470589
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.0010062266727141921,
+            "normalized_mae": 0.034003521738585944,
+            "r2": 0.5166583855683786,
+            "spearman": 0.6486214026217602
+          }
+        }
+      }
+    ],
+    "attack_region": [
+      {
+        "region": "short 0-.333",
+        "sample_count": 24,
+        "selection_mean_normalized_mae": 0.059363077738148085,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 1.3896718194513802,
+            "normalized_mae": 0.031070589924763463,
+            "r2": 0.9477385374172138,
+            "spearman": 0.8678260869565216
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 0.7005250573189462,
+            "normalized_mae": 0.014806804706667747,
+            "r2": 0.9802456575970213,
+            "spearman": 0.957391304347826
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 170.78229932371542,
+            "normalized_mae": 0.012716475515602899,
+            "r2": 0.921383133115428,
+            "spearman": 0.9773913043478261
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 267.6445043267626,
+            "normalized_mae": 0.015307126237425294,
+            "r2": 0.9163004620948602,
+            "spearman": 0.93611659445302
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.329670672786706,
+            "normalized_mae": 0.222914392306281,
+            "r2": -87.30084587305339,
+            "spearman": 0.3095652173913043
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.0015523796433488824,
+            "normalized_mae": 0.052459725408357784,
+            "r2": 0.4890935504667676,
+            "spearman": 0.5432797382147319
+          }
+        }
+      },
+      {
+        "region": "mid .333-.667",
+        "sample_count": 10,
+        "selection_mean_normalized_mae": 0.06279936125126322,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 1.0529654768217676,
+            "normalized_mae": 0.02354243503921524,
+            "r2": 0.9787485405979215,
+            "spearman": 0.7818181818181817
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 0.42127501828102415,
+            "normalized_mae": 0.008904373738404326,
+            "r2": 0.9968979247202118,
+            "spearman": 0.8424242424242423
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 101.14799337313036,
+            "normalized_mae": 0.007531494693977129,
+            "r2": 0.8836468174194974,
+            "spearman": 0.6363636363636362
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 128.0568127632141,
+            "normalized_mae": 0.007323826070927653,
+            "r2": 0.9113966952435356,
+            "spearman": 0.8433738561749831
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.39441784171596284,
+            "normalized_mae": 0.26669467671379177,
+            "r2": 0.29778956521319877,
+            "spearman": 0.5393939393939393
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.001109782429253113,
+            "normalized_mae": 0.0375029921005956,
+            "r2": 0.6398424409459709,
+            "spearman": 0.29268836799317
+          }
+        }
+      },
+      {
+        "region": "long .667-1",
+        "sample_count": 18,
+        "selection_mean_normalized_mae": 0.09700015107069469,
+        "targets": {
+          "rms_dbfs": {
+            "label": "RMS dBFS",
+            "unit": "dBFS",
+            "mae": 3.508942038429832,
+            "normalized_mae": 0.07845370224810212,
+            "r2": 0.726990323466233,
+            "spearman": 0.8802889576883385
+          },
+          "peak_dbfs": {
+            "label": "Peak dBFS",
+            "unit": "dBFS",
+            "mae": 1.6427441654132058,
+            "normalized_mae": 0.034722229827700096,
+            "r2": 0.9147892031369416,
+            "spearman": 0.9174406604747163
+          },
+          "spectral_centroid_hz": {
+            "label": "Spectral centroid",
+            "unit": "Hz",
+            "mae": 287.41518344009023,
+            "normalized_mae": 0.021400977487137568,
+            "r2": 0.9317901027686643,
+            "spearman": 0.8988648090815273
+          },
+          "spectral_rolloff_85_hz": {
+            "label": "Spectral rolloff (85%)",
+            "unit": "Hz",
+            "mae": 404.8115463449497,
+            "normalized_mae": 0.023151984599333608,
+            "r2": 0.933843612721852,
+            "spearman": 0.9307836487139972
+          },
+          "attack_10_to_90_seconds": {
+            "label": "Attack duration",
+            "unit": "s",
+            "mae": 0.4840061404147405,
+            "normalized_mae": 0.3272718611912001,
+            "r2": -139.115578131112,
+            "spearman": -0.13519091847265222
+          },
+          "release_90_to_10_seconds": {
+            "label": "Release duration",
+            "unit": "s",
+            "mae": 0.0016097959598871392,
+            "normalized_mae": 0.054400000915358473,
+            "r2": 0.488514743004255,
+            "spearman": 0.27376047665830844
+          }
+        }
+      }
+    ]
+  },
+  "permutation_importance_on_validation": [
+    {
+      "input": "filter_type",
+      "mean_validation_normalized_mae_increase": 0.04349738668696464,
+      "standard_deviation": 0.010282350038087813,
+      "repeats": 16,
+      "interpretation": "predictive permutation importance, not causality"
+    },
+    {
+      "input": "cutoff_keys",
+      "mean_validation_normalized_mae_increase": 0.0369862306879443,
+      "standard_deviation": 0.008401618051115098,
+      "repeats": 16,
+      "interpretation": "predictive permutation importance, not causality"
+    },
+    {
+      "input": "attack_seconds",
+      "mean_validation_normalized_mae_increase": 0.019029239518194428,
+      "standard_deviation": 0.002875321902336694,
+      "repeats": 16,
+      "interpretation": "predictive permutation importance, not causality"
+    }
+  ],
+  "structured_holdout_diagnostic": {
+    "label": "upper cutoff and attack region",
+    "purpose": "bounded diagnostic only; not part of primary model selection",
+    "definition": {
+      "cutoff_keys_min": 85.0,
+      "attack_seconds_min": 0.6666666666666666
+    },
+    "training_sample_count": 225,
+    "holdout_sample_count": 31,
+    "holdout_sample_ids": [
+      "sample-0045",
+      "sample-0057",
+      "sample-0074",
+      "sample-0076",
+      "sample-0098",
+      "sample-0104",
+      "sample-0111",
+      "sample-0112",
+      "sample-0123",
+      "sample-0134",
+      "sample-0143",
+      "sample-0146",
+      "sample-0153",
+      "sample-0161",
+      "sample-0162",
+      "sample-0176",
+      "sample-0184",
+      "sample-0191",
+      "sample-0195",
+      "sample-0204",
+      "sample-0205",
+      "sample-0207",
+      "sample-0214",
+      "sample-0218",
+      "sample-0223",
+      "sample-0229",
+      "sample-0234",
+      "sample-0241",
+      "sample-0248",
+      "sample-0249",
+      "sample-0255"
+    ],
+    "metrics": {
+      "sample_count": 31,
+      "selection_mean_normalized_mae": 0.188843271096031,
+      "targets": {
+        "rms_dbfs": {
+          "label": "RMS dBFS",
+          "unit": "dBFS",
+          "mae": 5.83256876990561,
+          "normalized_mae": 0.13040586268005527,
+          "r2": 0.3591648944848227,
+          "spearman": 0.7032258064516129
+        },
+        "peak_dbfs": {
+          "label": "Peak dBFS",
+          "unit": "dBFS",
+          "mae": 2.199688336824766,
+          "normalized_mae": 0.046494204994682924,
+          "r2": 0.2688504445346852,
+          "spearman": 0.8467741935483871
+        },
+        "spectral_centroid_hz": {
+          "label": "Spectral centroid",
+          "unit": "Hz",
+          "mae": 871.4673314684372,
+          "normalized_mae": 0.06488958766306582,
+          "r2": 0.7917714872350752,
+          "spearman": 0.9778225806451613
+        },
+        "spectral_rolloff_85_hz": {
+          "label": "Spectral rolloff (85%)",
+          "unit": "Hz",
+          "mae": 1155.7559472025314,
+          "normalized_mae": 0.06610000167193862,
+          "r2": 0.8183332860849342,
+          "spearman": 0.9472700266799062
+        },
+        "attack_10_to_90_seconds": {
+          "label": "Attack duration",
+          "unit": "s",
+          "mae": 0.9410709134861608,
+          "normalized_mae": 0.6363266984704125,
+          "r2": -408.88126267039803,
+          "spearman": 0.16555757545727717
+        },
+        "release_90_to_10_seconds": {
+          "label": "Release duration",
+          "unit": "s",
+          "mae": 0.0012494341223082326,
+          "normalized_mae": 0.042222256168423476,
+          "r2": 0.140984304604586,
+          "spearman": 0.6283982981987091
+        }
+      }
+    }
+  },
+  "real_synth_rerender": {
+    "filename": "rerender-check.json",
+    "sha256": "e696462bb4274e9575ed2fd2345170e6ceeb14305747ea2486528499ff00d840",
+    "all_exact": true,
+    "sample_count": 3
+  },
+  "artifacts": {
+    "config": {
+      "filename": "config.json",
+      "sha256": "b124d4e4985f8cfcbea917b6aff018280b666181aaaa048143b62d7f691a3b74"
+    },
+    "split": {
+      "filename": "split.json",
+      "sha256": "cd3aec2b4406295ea06e92ae3aee0a0e1ca75030ec5237d0117e0476ce1e8049"
+    },
+    "freeze": {
+      "filename": "freeze.json",
+      "sha256": "9d06e64ebd32afad41008088a4667523f5b9a29b1fff44148115e11d7d1394c7"
+    },
+    "model": {
+      "filename": "model.joblib",
+      "sha256": "8af43579862fde80e14df7837e7bfa45bd59861411481e9020c27ea872d5f221",
+      "format": "joblib serialized scikit-learn pipeline; load only from trusted repository evidence"
+    }
+  },
+  "limitations": [
+    "256 samples test feasibility, not robust generalization.",
+    "Filter Type categories are opaque plugin values rather than semantic filter names.",
+    "DSP descriptors do not establish human perceptual quality or timbre understanding.",
+    "The structured holdout is a bounded diagnostic, not a broad extrapolation claim.",
+    "No inverse search, candidate ranking, or LOCK workflow is implemented."
+  ]
+}
