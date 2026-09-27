@@ -12,13 +12,14 @@
 - [Human A/B probe](docs/human-ab-probe.md): local blinded calibration, SQLite persistence, first pilot judgment, and limitations
 - [DSP features](docs/dsp-features.md): deterministic formulas, regenerated A/B measurements, local report, and limitations
 - [Synthetic dataset](docs/synthetic-dataset.md): three-parameter sampling, local WAV policy, committed evidence, explorer, and limitations
+- [Surrogate model](docs/surrogate-model.md): leakage-safe training, frozen test protocol, diagnostics, cockpit, rerender checks, and limitations
 - [Agent contract](AGENTS.md): repository rules, current milestone boundary, and checks
 - [Contributing](CONTRIBUTING.md): focused PR workflow
 - [Security](SECURITY.md): private vulnerability reporting guidance
 
 ## Current status
 
-Milestone 6 provides 256 deterministic, hash-traced real-synth examples across Filter Type, Cutoff, and Attack plus a read-only local explorer. No model, optimization, or LOCK functionality exists yet.
+Milestone 7 provides a locally trained Random Forest surrogate over the 256 real-synth examples, an untouched-test protocol, transparent diagnostics, a read-only training cockpit, and exact held-out rerenders. It beats the mean predictor overall but fails the complete predeclared RMS/Attack feasibility gate; no optimization or LOCK exists yet.
 
 ## Source
 

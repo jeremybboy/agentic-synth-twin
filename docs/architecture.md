@@ -62,7 +62,9 @@ Milestone 5 implements deterministic whole-file RMS and peak, power-spectrum cen
 
 ### Surrogate model and optimizer
 
-The surrogate will model only the sampled local region of approximately 2–5 human-selected active parameters. An initial simple model will predict acoustic descriptors from parameter values and report held-out error. The optimizer will search predictions cheaply, nominate only a few candidates, and never substitute its predictions for real-synth evidence.
+Milestone 7 models only the sampled local region of three human-selected active parameters. Filter Type is one-hot categorical data; Cutoff and Attack are continuous. Mean, regularized linear, and Random Forest candidates train locally under a persisted `166 / 38 / 52` split. Model family, preprocessing, hyperparameters, thresholds, and a serialized final artifact are frozen and hashed before the TEST targets are evaluated once. Learning curves, per-target metrics, predicted-versus-actual plots, residuals, regional errors, validation permutation importance, and a separate structured holdout expose both useful prediction and failure modes.
+
+The selected Random Forest beats the mean predictor overall, but Milestone 7's complete predeclared feasibility gate fails on RMS and Attack. Three untouched-test states rerender exactly on the real synth, which validates dataset integrity rather than model correctness. The optimizer remains unimplemented; a later milestone may search predictions cheaply, nominate only a few candidates, and must never substitute predictions for real-synth evidence.
 
 ### Real synth verification, human validation, and LOCK
 
@@ -85,8 +87,9 @@ Names may evolve as evidence arrives, but the backend should expose operations e
 3. Every important render has an exact synth state and audition configuration.
 4. Random processes use recorded fixed seeds.
 5. Generated datasets and audio artifacts are not casually committed; manifests and storage policy arrive with the generating milestone.
-6. Surrogate predictions are labeled as predictions until measured on the real synth.
-7. LOCK is incomplete until reload, restoration, rerender, and comparison succeed.
+6. Surrogate predictions are labeled as predictions; dataset rerenders validate integrity, not predicted values.
+7. TEST remains untouched until model family, preprocessing, relevant settings, thresholds, and fitted artifact are frozen.
+8. LOCK is incomplete until reload, restoration, rerender, and comparison succeed.
 
 ## Scope boundary
 
@@ -105,4 +108,4 @@ Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth 
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md); Milestone 7 remains separately authorized work.
+Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md). Milestone 7 owns the leakage-safe training, frozen model, honest test metrics, local cockpit, and bounded rerender checks documented in [`surrogate-model.md`](surrogate-model.md); inverse optimization remains separate future work.
