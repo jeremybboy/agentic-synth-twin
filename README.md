@@ -2,7 +2,7 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 5 reproduces and measures all ten completed A/B probes with a small deterministic DSP descriptor set and a read-only local comparison report. Human judgments and acoustic measurements remain separate evidence; synthetic datasets, ML, optimization, and LOCK remain unimplemented.
+> **Status:** Milestone 6 adds a bounded 256-example dataset over Filter Type, Cutoff, and Attack. Every real-synth WAV is rendered twice, hash-traced, unclipped, and measured; WAVs remain local while the committed dataset manifest and read-only explorer preserve reviewability. ML, optimization, and LOCK remain unimplemented.
 
 ## Core idea
 
@@ -30,9 +30,9 @@ Before dataset generation, the local calibration app presents randomized, blinde
 
 The completed calibration pairs are reproduced on the real synth and measured without loudness normalization. RMS, peak, spectral centroid, 85% rolloff, and simple attack/release timing remain traceable to exact WAV hashes. The [Milestone 5 contract and results](docs/dsp-features.md) document the formulas and the key limitation: descriptor magnitude did not reliably predict the listener's YES/NO answer.
 
-## Synthetic data and surrogate
+## Synthetic dataset and future surrogate
 
-For each future example, the system will save the exact synth state, deterministic audition render, experiment metadata, and a small set of DSP descriptors. A deliberately simple model will learn only the locally sampled relationship and report held-out error honestly.
+The first [synthetic dataset](docs/synthetic-dataset.md) contains one exact baseline plus 255 seeded, space-filling states across three human-authorized parameters. Exact parameter values, WAV hashes, render checks, and DSP descriptors are committed; the 256 WAVs stay under ignored `work/`. No surrogate exists yet, and Milestone 7 must earn any modeling claim with an untouched held-out evaluation.
 
 ## LOCK means reproducibility
 
@@ -79,7 +79,18 @@ scripts/render_deterministic_audition.sh
 scripts/run_local_calibration.sh
 scripts/measure_calibration_dsp.sh
 scripts/serve_dsp_report.sh
+scripts/generate_synthetic_dataset.sh
+scripts/serve_dataset_report.sh
 ```
+
+To regenerate and inspect the Milestone 6 dataset:
+
+```bash
+scripts/generate_synthetic_dataset.sh
+scripts/serve_dataset_report.sh
+```
+
+Then open `http://127.0.0.1:8765`. The explorer verifies all local WAV hashes before showing parameter-space coverage, exact features, and playback.
 
 To regenerate the ten DSP comparisons and open the read-only report:
 
@@ -127,6 +138,7 @@ Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 - `docs/deterministic-audition.md` — Milestone 3 audio contract, evidence, playback, and limitations
 - `docs/human-ab-probe.md` — Milestone 4 local calibration contract, SQLite workflow, first pilot judgment, and limitations
 - `docs/dsp-features.md` — Milestone 5 descriptor formulas, real-synth evidence, report workflow, and limitations
+- `docs/synthetic-dataset.md` — Milestone 6 sampling contract, storage policy, evidence, explorer, and limitations
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents

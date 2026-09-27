@@ -58,7 +58,7 @@ Milestone 3 applies scientific C3 (MIDI 48), velocity 100, a two-second hold, a 
 
 ### DSP analyzer and dataset
 
-Milestone 5 implements deterministic whole-file RMS and peak, power-spectrum centroid and 85% rolloff, plus simple moving-RMS attack and release estimates. Stereo energy and spectra are aggregated across channels without changing or normalizing the render. Each measurement remains traceable to exact calibration results, synth state, input configuration, WAV hashes, formulas, and software versions. Dataset generation remains a separate, unimplemented boundary.
+Milestone 5 implements deterministic whole-file RMS and peak, power-spectrum centroid and 85% rolloff, plus simple moving-RMS attack and release estimates. Stereo energy and spectra are aggregated across channels without changing or normalizing the render. Milestone 6 adds one exact baseline plus 255 seeded states across Filter Type, Cutoff, and Attack, with balanced stepped categories and stratified continuous dimensions. Each row remains traceable to exact prior evidence, synth state, input configuration, WAV hash, render verification, and features; the WAV files stay local while the manifest is committed.
 
 ### Surrogate model and optimizer
 
@@ -105,4 +105,4 @@ Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth 
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer and read-only comparison report documented in [`dsp-features.md`](dsp-features.md); Milestone 6 remains separately authorized work.
+Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md); Milestone 7 remains separately authorized work.

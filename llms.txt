@@ -11,13 +11,14 @@
 - [Deterministic audition](docs/deterministic-audition.md): fixed C3 render contract, WAV evidence, browser playback, and limitations
 - [Human A/B probe](docs/human-ab-probe.md): local blinded calibration, SQLite persistence, first pilot judgment, and limitations
 - [DSP features](docs/dsp-features.md): deterministic formulas, regenerated A/B measurements, local report, and limitations
+- [Synthetic dataset](docs/synthetic-dataset.md): three-parameter sampling, local WAV policy, committed evidence, explorer, and limitations
 - [Agent contract](AGENTS.md): repository rules, current milestone boundary, and checks
 - [Contributing](CONTRIBUTING.md): focused PR workflow
 - [Security](SECURITY.md): private vulnerability reporting guidance
 
 ## Current status
 
-Milestone 5 provides deterministic DSP measurements for all ten completed A/B probes plus a read-only local comparison report. Human judgments and measured changes remain separate; synthetic dataset, model, optimization, and LOCK functionality do not exist yet.
+Milestone 6 provides 256 deterministic, hash-traced real-synth examples across Filter Type, Cutoff, and Attack plus a read-only local explorer. No model, optimization, or LOCK functionality exists yet.
 
 ## Source
 
