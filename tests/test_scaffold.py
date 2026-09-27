@@ -1,4 +1,4 @@
-"""Structural checks for the PR 0 repository scaffold."""
+"""Structural checks for the Milestone 0 repository scaffold."""
 
 from __future__ import annotations
 
@@ -21,6 +21,8 @@ class ScaffoldTests(unittest.TestCase):
             "AGENTS.md",
             "llms.txt",
             "docs/architecture.md",
+            "docs/canonical-synth-state.md",
+            "docs/schemas/canonical-synth-state-v1.schema.json",
             "docs/assets/repository-overview.svg",
         )
         for relative_path in required:

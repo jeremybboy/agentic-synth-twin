@@ -2,7 +2,7 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** PR 1 proves macOS CLAP feasibility against a pinned `clap-saw-demo`: build, load, parameter enumeration, state read/save, one parameter mutation, and restoration. Audio rendering, the web UI, DSP analysis, datasets, ML, optimization, and LOCK remain unimplemented.
+> **Status:** Milestone 2 defines and validates canonical synth state from the pinned real `clap-saw-demo`: plugin identity, 10 discovered parameters, and the exact opaque CLAP state payload. Audio rendering, the web UI, DSP analysis, datasets, ML, optimization, and LOCK remain unimplemented.
 
 ## Core idea
 
@@ -14,7 +14,7 @@ Human listening first constrains the experiment. Controlled renders then connect
 
 ## Why `clap-saw-demo`
 
-[`clap-saw-demo`](https://github.com/abique/clap-saw-demo) is intentionally small, CLAP-native, and pedagogical. That makes it a suitable first instrument for exposing parameter/state behavior without hiding the experiment behind a production synthesizer's complexity. PR 1 pins upstream commit `f33b31fff459d66ac18207ec152b323aaa9306f9`; see [CLAP feasibility](docs/clap-feasibility.md) for verified evidence and limitations.
+[`clap-saw-demo`](https://github.com/abique/clap-saw-demo) is intentionally small, CLAP-native, and pedagogical. That makes it a suitable first instrument for exposing parameter/state behavior without hiding the experiment behind a production synthesizer's complexity. Milestone 1 pins upstream commit `f33b31fff459d66ac18207ec152b323aaa9306f9`; see [CLAP feasibility](docs/clap-feasibility.md) for verified evidence and limitations.
 
 ## Research hypothesis
 
@@ -40,7 +40,7 @@ The backend remains callable independently of the future Streamlit interface. Sy
 
 ## Incremental roadmap
 
-| PR | Milestone | Evidence required |
+| Milestone | Capability | Evidence required |
 |---:|---|---|
 | 0 | Repository architecture | Reviewed structure, docs, governance, and diagram |
 | 1 | CLAP feasibility | Pinned `clap-saw-demo` build; load, enumerate, change, and restore one parameter |
@@ -53,11 +53,11 @@ The backend remains callable independently of the future Streamlit interface. Sy
 | 8 | Inverse optimization | “Darker, similar loudness, no clipping” candidates verified on the real synth |
 | 9 | LOCK workflow | Save, reload, rerender, and compare exact patch state |
 
-Each milestone is a separate human-reviewed PR. Agents never merge PRs.
+Each milestone is delivered through a separate human-reviewed GitHub pull request. Milestone numbers and GitHub pull-request numbers are independent. Agents never merge pull requests.
 
 ## Validate locally
 
-PR 0 has no runtime application. From the repository root:
+There is no GUI or audio application yet. From the repository root:
 
 ```bash
 PYTHONPATH=src python3 -m unittest discover -s tests -v
@@ -70,6 +70,7 @@ The repository checks above validate the committed code and evidence. The opt-in
 ```bash
 scripts/build_clap_feasibility.sh
 scripts/run_clap_validation.sh
+scripts/capture_canonical_state.sh
 ```
 
 ## Deliberately out of scope
@@ -85,10 +86,11 @@ scripts/run_clap_validation.sh
 
 ## Repository map
 
-- `src/agentic_synth_twin/` — future reusable backend; currently package metadata only
-- `tests/` — repository/scaffold checks in PR 0; behavioral tests in later PRs
+- `src/agentic_synth_twin/` — reusable backend, currently including canonical synth-state validation
+- `tests/` — scaffold, feasibility-evidence, and canonical-state checks
 - `docs/architecture.md` — conceptual components, boundaries, and decisions
-- `docs/clap-feasibility.md` — pinned PR 1 build, probe evidence, and limitations
+- `docs/clap-feasibility.md` — pinned Milestone 1 build, probe evidence, and limitations
+- `docs/canonical-synth-state.md` — Milestone 2 contract, authority boundaries, and reproduction
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents

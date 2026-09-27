@@ -7,13 +7,14 @@
 - [Project overview](README.md): hypothesis, human calibration, LOCK principle, roadmap, and scope
 - [Architecture](docs/architecture.md): conceptual chain, boundaries, invariants, and decisions
 - [CLAP feasibility](docs/clap-feasibility.md): pinned build, probe evidence, and known upstream limitations
+- [Canonical synth state](docs/canonical-synth-state.md): versioned state contract, validation, authority boundaries, and reproduction
 - [Agent contract](AGENTS.md): repository rules, current milestone boundary, and checks
 - [Contributing](CONTRIBUTING.md): focused PR workflow
 - [Security](SECURITY.md): private vulnerability reporting guidance
 
 ## Current status
 
-PR 1 proves that the pinned `clap-saw-demo` can be built and loaded on Apple Silicon, its real parameters enumerated, one value changed, and saved state restored. No audio rendering, GUI, DSP, dataset, model, optimization, or LOCK functionality exists yet.
+Milestone 2 provides validated canonical state for the pinned `clap-saw-demo`, including its 10 real parameters and exact opaque CLAP state payload. No audio rendering, GUI, DSP, dataset, model, optimization, or LOCK functionality exists yet.
 
 ## Source
 
