@@ -24,6 +24,7 @@ from agentic_synth_twin.synth_state import load_canonical_state
 ROOT = Path(__file__).resolve().parents[1]
 CANONICAL = ROOT / "docs" / "evidence" / "milestone-2-canonical-state.json"
 PROBE = ROOT / "docs" / "evidence" / "milestone-4-unison-count" / "ab-probe.json"
+RESULTS = ROOT / "docs" / "evidence" / "milestone-4-calibration-results.json"
 
 
 def post_json(url: str, value: dict):
@@ -111,6 +112,49 @@ class CalibrationPageTests(unittest.TestCase):
         self.assertIn("NO · NOT MEANINGFUL", page)
         self.assertIn("DOWNLOAD RESULTS JSON", page)
         self.assertNotIn("Unison Count", page)
+
+
+class CompletedCalibrationEvidenceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.results = json.loads(RESULTS.read_text(encoding="utf-8"))
+        cls.state = load_canonical_state(CANONICAL)
+
+    def test_session_is_complete_and_every_probe_was_heard(self) -> None:
+        session = self.results["session"]
+        probes = self.results["probes"]
+        self.assertEqual(
+            self.results["schema"], "agentic-synth-twin/calibration-results/v1"
+        )
+        self.assertEqual(session["status"], "completed")
+        self.assertEqual(session["probe_count"], 10)
+        self.assertEqual(len(probes), 10)
+        self.assertEqual([probe["ordinal"] for probe in probes], list(range(1, 11)))
+        for probe in probes:
+            self.assertGreaterEqual(probe["left_play_count"], 1)
+            self.assertGreaterEqual(probe["right_play_count"], 1)
+            self.assertEqual({probe["left_role"], probe["right_role"]}, {"A", "B"})
+            self.assertIn(probe["meaningful_difference"], (0, 1))
+
+    def test_results_match_real_inventory_and_declared_plan(self) -> None:
+        inventory = {parameter["id"]: parameter for parameter in self.state["parameters"]}
+        plan = {
+            item["parameter_id"]: item["parameter_value"]
+            for item in default_probe_plan(self.state)
+        }
+        for probe in self.results["probes"]:
+            parameter = inventory[probe["parameter_id"]]
+            self.assertEqual(probe["parameter_name"], parameter["name"])
+            self.assertEqual(probe["baseline_value"], parameter["current"])
+            self.assertEqual(probe["variant_value"], plan[parameter["id"]])
+
+    def test_five_parameters_received_yes(self) -> None:
+        yes_ids = {
+            probe["parameter_id"]
+            for probe in self.results["probes"]
+            if probe["meaningful_difference"] == 1
+        }
+        self.assertEqual(yes_ids, {17, 2391, 2874, 14255, 8675309})
 
 
 class CalibrationHTTPTests(unittest.TestCase):

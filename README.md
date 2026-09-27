@@ -2,7 +2,7 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 4 adds a local, blinded A/B calibration app with clickable playback, YES/NO judgments, automatic progression, and SQLite persistence. Its first pilot probe recorded a small human-perceived difference for Unison Count `3 → 7`, especially in volume; DSP analysis, synthetic datasets, ML, optimization, and LOCK remain unimplemented.
+> **Status:** Milestone 4 adds a local, blinded A/B calibration app with clickable playback, automatic progression, and SQLite persistence. The completed ten-probe session selected five perceptible movements—Detuning, Unison Spread, Filter Type, Cutoff, and Attack—while DSP analysis, synthetic datasets, ML, optimization, and LOCK remain unimplemented.
 
 ## Core idea
 
