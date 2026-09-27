@@ -42,7 +42,7 @@ This is a planned responsibility chain. PR 1 proves only the narrow CLAP feasibi
 
 ### Human and local web GUI
 
-The human supplies sonic intent, evaluates controlled A/B movements, chooses active parameters, auditions candidates, and makes KEEP/REJECT/LOCK decisions. Milestone 3 adds only a thin one-button browser preview of committed audio evidence. Milestone 4 adds a local thin client that presents randomized Sound 1/Sound 2 pairs, records YES/NO directly through backend APIs, and advances automatically. SQLite persistence, probe generation, and authority rules remain backend responsibilities.
+The human supplies sonic intent, evaluates controlled A/B movements, chooses active parameters, auditions candidates, and makes KEEP/REJECT/LOCK decisions. Milestone 3 adds only a thin one-button browser preview of committed audio evidence. Milestone 4 adds a local thin client that presents randomized Sound 1/Sound 2 pairs, records YES/NO directly through backend APIs, and advances automatically. Milestone 5 adds a read-only local report that places those answers beside verified measurements and exact A/B playback. SQLite persistence, probe generation, measurement, and authority rules remain backend responsibilities.
 
 ### Experiment controller
 
@@ -58,7 +58,7 @@ Milestone 3 applies scientific C3 (MIDI 48), velocity 100, a two-second hold, a 
 
 ### DSP analyzer and dataset
 
-The analyzer will compute a deliberately small descriptor set such as RMS proxy, peak, spectral centroid, rolloff, and simple envelope estimates. Each dataset row must remain traceable to exact synth state, input configuration, audio, features, software versions, and experiment metadata.
+Milestone 5 implements deterministic whole-file RMS and peak, power-spectrum centroid and 85% rolloff, plus simple moving-RMS attack and release estimates. Stereo energy and spectra are aggregated across channels without changing or normalizing the render. Each measurement remains traceable to exact calibration results, synth state, input configuration, WAV hashes, formulas, and software versions. Dataset generation remains a separate, unimplemented boundary.
 
 ### Surrogate model and optimizer
 
@@ -105,4 +105,4 @@ Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth 
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md); Milestone 5 remains separately authorized work.
+Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer and read-only comparison report documented in [`dsp-features.md`](dsp-features.md); Milestone 6 remains separately authorized work.

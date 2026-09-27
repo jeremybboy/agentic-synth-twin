@@ -24,6 +24,7 @@ class ScaffoldTests(unittest.TestCase):
             "docs/canonical-synth-state.md",
             "docs/deterministic-audition.md",
             "docs/human-ab-probe.md",
+            "docs/dsp-features.md",
             "docs/schemas/canonical-synth-state-v1.schema.json",
             "docs/assets/repository-overview.svg",
         )

@@ -18,7 +18,7 @@ Do not create a separate frontend unless an independent frontend architecture be
 
 ## Current boundary
 
-Milestone 4 is local human A/B calibration only: exact accepted baseline, one real discovered parameter change per probe, deterministic A/B renders, blinded/randomized browser presentation, explicit YES/NO judgments, and local SQLite persistence. The browser remains a thin client of backend functions. Do not add public hosting, loudness normalization, DSP descriptors, synthetic datasets, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
+Milestone 5 is deterministic DSP measurement of the completed Milestone 4 A/B probes: exact regenerated audio, traceable WAV hashes, documented level/spectrum/envelope descriptors, preserved human labels, and a read-only local report. The browser remains a thin client of backend functions. Do not add public hosting, loudness normalization, synthetic datasets, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
 
 ## Invariants
 

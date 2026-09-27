@@ -2,7 +2,7 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 4 adds a local, blinded A/B calibration app with clickable playback, automatic progression, and SQLite persistence. The completed ten-probe session selected five perceptible movements—Detuning, Unison Spread, Filter Type, Cutoff, and Attack—while DSP analysis, synthetic datasets, ML, optimization, and LOCK remain unimplemented.
+> **Status:** Milestone 5 reproduces and measures all ten completed A/B probes with a small deterministic DSP descriptor set and a read-only local comparison report. Human judgments and acoustic measurements remain separate evidence; synthetic datasets, ML, optimization, and LOCK remain unimplemented.
 
 ## Core idea
 
@@ -25,6 +25,10 @@ This does **not** imply that the model understands the entire synthesizer or tha
 ## Human calibration
 
 Before dataset generation, the local calibration app presents randomized, blinded A/B movements for candidate parameters. The listener plays both sounds, clicks YES or NO, and advances without conversational round trips; judgments are written directly to a local SQLite database. This human prior should constrain later sampling, but a level-driven answer is not yet evidence of an independent timbral effect.
+
+## DSP measurements
+
+The completed calibration pairs are reproduced on the real synth and measured without loudness normalization. RMS, peak, spectral centroid, 85% rolloff, and simple attack/release timing remain traceable to exact WAV hashes. The [Milestone 5 contract and results](docs/dsp-features.md) document the formulas and the key limitation: descriptor magnitude did not reliably predict the listener's YES/NO answer.
 
 ## Synthetic data and surrogate
 
@@ -73,7 +77,18 @@ scripts/run_clap_validation.sh
 scripts/capture_canonical_state.sh
 scripts/render_deterministic_audition.sh
 scripts/run_local_calibration.sh
+scripts/measure_calibration_dsp.sh
+scripts/serve_dsp_report.sh
 ```
+
+To regenerate the ten DSP comparisons and open the read-only report:
+
+```bash
+scripts/measure_calibration_dsp.sh
+scripts/serve_dsp_report.sh
+```
+
+Then open `http://127.0.0.1:8765`. The report verifies the regenerated A/B WAV hashes before serving audio and displays human judgment beside B-minus-A descriptor deltas.
 
 To run the Milestone 4 calibration app:
 
@@ -104,13 +119,14 @@ Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 
 ## Repository map
 
-- `src/agentic_synth_twin/` — reusable backend, currently including canonical synth-state validation
-- `tests/` — scaffold, feasibility-evidence, and canonical-state checks
+- `src/agentic_synth_twin/` — reusable state, rendering, calibration, DSP, and local-report backend
+- `tests/` — contract, evidence-integrity, DSP, and local-server checks
 - `docs/architecture.md` — conceptual components, boundaries, and decisions
 - `docs/clap-feasibility.md` — pinned Milestone 1 build, probe evidence, and limitations
 - `docs/canonical-synth-state.md` — Milestone 2 contract, authority boundaries, and reproduction
 - `docs/deterministic-audition.md` — Milestone 3 audio contract, evidence, playback, and limitations
 - `docs/human-ab-probe.md` — Milestone 4 local calibration contract, SQLite workflow, first pilot judgment, and limitations
+- `docs/dsp-features.md` — Milestone 5 descriptor formulas, real-synth evidence, report workflow, and limitations
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents
