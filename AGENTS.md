@@ -18,7 +18,7 @@ Do not create a separate frontend unless an independent frontend architecture be
 
 ## Current boundary
 
-Milestone 5 is deterministic DSP measurement of the completed Milestone 4 A/B probes: exact regenerated audio, traceable WAV hashes, documented level/spectrum/envelope descriptors, preserved human labels, and a read-only local report. The browser remains a thin client of backend functions. Do not add public hosting, loudness normalization, synthetic datasets, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
+Milestone 6 is a bounded 256-example synthetic dataset over the authorized Filter Type, Cutoff, and Attack parameters: seeded sampling, exact applied states, deterministic real-synth renders, traceable hashes, DSP features, local-only WAV storage, and a read-only explorer. The browser remains a thin client of backend functions. Do not add public hosting, loudness normalization, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
 
 ## Invariants
 

@@ -10,8 +10,8 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
-#include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -270,9 +270,12 @@ void write_u32(std::ofstream &stream, std::uint32_t value) {
 struct RenderResult {
     double peak;
     std::uint64_t clipped_samples;
-    std::optional<clap_id> parameter_id;
-    std::optional<double> parameter_requested;
-    std::optional<double> parameter_applied;
+    struct AppliedParameter {
+        clap_id id;
+        double requested;
+        double applied;
+    };
+    std::vector<AppliedParameter> parameter_changes;
 };
 
 struct ParameterChange {
@@ -288,7 +291,7 @@ bool nearly_equal(double left, double right) {
 RenderResult render(const std::filesystem::path &plugin_path,
                     const std::filesystem::path &state_path,
                     const std::filesystem::path &wav_path,
-                    const std::optional<ParameterChange> &parameter_change) {
+                    const std::vector<ParameterChange> &parameter_changes) {
     PluginLibrary library(plugin_path);
     auto host = make_host();
     PluginInstance instance(library.factory(), &host);
@@ -308,33 +311,45 @@ RenderResult render(const std::filesystem::path &plugin_path,
     }
 
     const clap_plugin_params_t *params = nullptr;
-    clap_param_info_t changed_parameter{};
-    if (parameter_change) {
+    std::vector<clap_param_info_t> changed_parameters;
+    if (!parameter_changes.empty()) {
         params = static_cast<const clap_plugin_params_t *>(
             plugin->get_extension(plugin, CLAP_EXT_PARAMS));
         if (!params) {
             throw std::runtime_error("the plugin does not expose clap.params");
         }
-        bool found = false;
         const auto count = params->count(plugin);
-        for (std::uint32_t index = 0; index < count; ++index) {
-            clap_param_info_t info{};
-            if (!params->get_info(plugin, index, &info)) {
-                throw std::runtime_error("clap.params.get_info failed");
+        changed_parameters.reserve(parameter_changes.size());
+        for (std::size_t change_index = 0; change_index < parameter_changes.size();
+             ++change_index) {
+            const auto &change = parameter_changes[change_index];
+            for (std::size_t previous = 0; previous < change_index; ++previous) {
+                if (parameter_changes[previous].id == change.id) {
+                    throw std::runtime_error("parameter ids must be unique");
+                }
             }
-            if (info.id == parameter_change->id) {
-                changed_parameter = info;
-                found = true;
-                break;
+            bool found = false;
+            clap_param_info_t changed_parameter{};
+            for (std::uint32_t index = 0; index < count; ++index) {
+                clap_param_info_t info{};
+                if (!params->get_info(plugin, index, &info)) {
+                    throw std::runtime_error("clap.params.get_info failed");
+                }
+                if (info.id == change.id) {
+                    changed_parameter = info;
+                    found = true;
+                    break;
+                }
             }
-        }
-        if (!found) {
-            throw std::runtime_error("requested parameter id was not discovered");
-        }
-        if (parameter_change->value < changed_parameter.min_value ||
-            parameter_change->value > changed_parameter.max_value) {
-            throw std::runtime_error(
-                "requested parameter value is outside the discovered range");
+            if (!found) {
+                throw std::runtime_error("requested parameter id was not discovered");
+            }
+            if (change.value < changed_parameter.min_value ||
+                change.value > changed_parameter.max_value) {
+                throw std::runtime_error(
+                    "requested parameter value is outside the discovered range");
+            }
+            changed_parameters.push_back(changed_parameter);
         }
     }
 
@@ -347,23 +362,30 @@ RenderResult render(const std::filesystem::path &plugin_path,
         const auto frames = std::min(block_size, total_frames - frame);
         clap_event_note_t note_on{};
         clap_event_note_t note_off{};
-        clap_event_param_value_t parameter_event{};
+        std::vector<clap_event_param_value_t> parameter_events;
         InputEvents input_events;
 
         if (frame == 0) {
-            if (parameter_change) {
+            parameter_events.reserve(parameter_changes.size());
+            for (std::size_t index = 0; index < parameter_changes.size(); ++index) {
+                const auto &change = parameter_changes[index];
+                const auto &info = changed_parameters[index];
+                clap_event_param_value_t parameter_event{};
                 parameter_event.header.size = sizeof(parameter_event);
                 parameter_event.header.time = 0;
                 parameter_event.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
                 parameter_event.header.type = CLAP_EVENT_PARAM_VALUE;
-                parameter_event.param_id = parameter_change->id;
-                parameter_event.cookie = changed_parameter.cookie;
+                parameter_event.param_id = change.id;
+                parameter_event.cookie = info.cookie;
                 parameter_event.note_id = -1;
                 parameter_event.port_index = -1;
                 parameter_event.channel = -1;
                 parameter_event.key = -1;
-                parameter_event.value = parameter_change->value;
-                input_events.events.push_back(&parameter_event.header);
+                parameter_event.value = change.value;
+                parameter_events.push_back(parameter_event);
+            }
+            for (const auto &event : parameter_events) {
+                input_events.events.push_back(&event.header);
             }
             note_on.header.size = sizeof(note_on);
             note_on.header.time = 0;
@@ -407,17 +429,18 @@ RenderResult render(const std::filesystem::path &plugin_path,
     }
     instance.stop();
 
-    std::optional<double> parameter_applied;
-    if (parameter_change) {
+    std::vector<RenderResult::AppliedParameter> applied_parameters;
+    applied_parameters.reserve(parameter_changes.size());
+    for (const auto &change : parameter_changes) {
         double applied = 0.0;
-        if (!params->get_value(plugin, parameter_change->id, &applied)) {
+        if (!params->get_value(plugin, change.id, &applied)) {
             throw std::runtime_error("clap.params.get_value failed after render");
         }
-        if (!nearly_equal(applied, parameter_change->value)) {
+        if (!nearly_equal(applied, change.value)) {
             throw std::runtime_error(
                 "the plugin did not retain the requested parameter value");
         }
-        parameter_applied = applied;
+        applied_parameters.push_back({change.id, change.value, applied});
     }
 
     std::ofstream wav(wav_path, std::ios::binary);
@@ -461,11 +484,7 @@ RenderResult render(const std::filesystem::path &plugin_path,
     return {
         peak,
         clipped_samples,
-        parameter_change ? std::optional<clap_id>{parameter_change->id}
-                         : std::nullopt,
-        parameter_change ? std::optional<double>{parameter_change->value}
-                         : std::nullopt,
-        parameter_applied,
+        applied_parameters,
     };
 }
 
@@ -490,22 +509,24 @@ double parse_parameter_value(const char *text) {
 } // namespace
 
 int main(int argc, char **argv) {
-    if (argc != 4 && argc != 6) {
+    if (argc < 4 || (argc - 4) % 2 != 0) {
         std::cerr << "usage: clap-render PLUGIN.clap STATE.bin OUTPUT.wav "
-                     "[PARAMETER_ID PARAMETER_VALUE]\n";
+                     "[PARAMETER_ID PARAMETER_VALUE ...]\n";
         return 64;
     }
     try {
-        const auto parameter_change = argc == 6
-                                          ? std::optional<ParameterChange>{{
-                                                parse_parameter_id(argv[4]),
-                                                parse_parameter_value(argv[5]),
-                                            }}
-                                          : std::nullopt;
+        std::vector<ParameterChange> parameter_changes;
+        for (int index = 4; index < argc; index += 2) {
+            parameter_changes.push_back({
+                parse_parameter_id(argv[index]),
+                parse_parameter_value(argv[index + 1]),
+            });
+        }
         const auto result = [&]() {
             StdoutToStderr redirect;
-            return render(argv[1], argv[2], argv[3], parameter_change);
+            return render(argv[1], argv[2], argv[3], parameter_changes);
         }();
+        std::cout << std::setprecision(17);
         std::cout << "{\"sample_rate\":" << sample_rate
                   << ",\"channels\":2,\"bits_per_sample\":16"
                   << ",\"midi_key\":" << midi_key
@@ -517,14 +538,25 @@ int main(int argc, char **argv) {
                   << ",\"peak_float\":" << result.peak
                   << ",\"clipped_samples\":" << result.clipped_samples
                   << ",\"parameter_change\":";
-        if (result.parameter_id) {
-            std::cout << "{\"id\":" << *result.parameter_id
-                      << ",\"requested\":" << *result.parameter_requested
-                      << ",\"applied\":" << *result.parameter_applied << "}";
+        if (result.parameter_changes.size() == 1) {
+            const auto &change = result.parameter_changes.front();
+            std::cout << "{\"id\":" << change.id
+                      << ",\"requested\":" << change.requested
+                      << ",\"applied\":" << change.applied << "}";
         } else {
             std::cout << "null";
         }
-        std::cout << "}\n";
+        std::cout << ",\"parameter_changes\":[";
+        for (std::size_t index = 0; index < result.parameter_changes.size(); ++index) {
+            if (index != 0) {
+                std::cout << ',';
+            }
+            const auto &change = result.parameter_changes[index];
+            std::cout << "{\"id\":" << change.id
+                      << ",\"requested\":" << change.requested
+                      << ",\"applied\":" << change.applied << "}";
+        }
+        std::cout << "]}\n";
         return 0;
     } catch (const std::exception &error) {
         std::cerr << "clap-render: " << error.what() << '\n';
