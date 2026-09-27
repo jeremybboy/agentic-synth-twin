@@ -18,7 +18,7 @@ Do not create a separate frontend unless an independent frontend architecture be
 
 ## Current boundary
 
-Milestone 2 is canonical synth state only: versioned plugin identity, real parameter inventory, exact opaque CLAP state, validation, and reproducible capture. The probe remains evidence tooling, not the production host; do not begin rendering, UI, DSP, datasets, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
+Milestone 3 is deterministic audition only: exact canonical state, one scientific C3 note, fixed timing/sample rate, verified WAV evidence, and a thin one-button browser preview. The renderer remains offline evidence tooling, not a production host; do not begin A/B probing, parameter controls, DSP, datasets, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
 
 ## Invariants
 

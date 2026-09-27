@@ -2,7 +2,7 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 2 defines and validates canonical synth state from the pinned real `clap-saw-demo`: plugin identity, 10 discovered parameters, and the exact opaque CLAP state payload. Audio rendering, the web UI, DSP analysis, datasets, ML, optimization, and LOCK remain unimplemented.
+> **Status:** Milestone 3 produces a deterministic real-synth C3 WAV from exact canonical state and serves it through a thin local browser page with one PLAY button. A/B probing, DSP analysis, datasets, ML, optimization, and LOCK remain unimplemented.
 
 ## Core idea
 
@@ -45,7 +45,7 @@ The backend remains callable independently of the future Streamlit interface. Sy
 | 0 | Repository architecture | Reviewed structure, docs, governance, and diagram |
 | 1 | CLAP feasibility | Pinned `clap-saw-demo` build; load, enumerate, change, and restore one parameter |
 | 2 | Canonical synth state | Machine-readable inventory discovered from the plugin |
-| 3 | Deterministic rendering | Fixed input, timing, sample rate, and reproducible render path |
+| 3 | Deterministic rendering | Fixed input, timing, sample rate, byte-identical render proof, and one-button browser playback |
 | 4 | Human A/B probe | Local one-parameter-at-a-time YES/NO workflow |
 | 5 | DSP features | Small, documented acoustic descriptor set |
 | 6 | Synthetic dataset | Traceable parameter/audio/feature examples |
@@ -57,7 +57,7 @@ Each milestone is delivered through a separate human-reviewed GitHub pull reques
 
 ## Validate locally
 
-There is no GUI or audio application yet. From the repository root:
+From the repository root:
 
 ```bash
 PYTHONPATH=src python3 -m unittest discover -s tests -v
@@ -71,7 +71,16 @@ The repository checks above validate the committed code and evidence. The opt-in
 scripts/build_clap_feasibility.sh
 scripts/run_clap_validation.sh
 scripts/capture_canonical_state.sh
+scripts/render_deterministic_audition.sh
 ```
+
+To hear the committed Milestone 3 evidence in the thin local preview:
+
+```bash
+scripts/serve_audition_preview.sh
+```
+
+Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 
 ## Deliberately out of scope
 
@@ -91,6 +100,7 @@ scripts/capture_canonical_state.sh
 - `docs/architecture.md` — conceptual components, boundaries, and decisions
 - `docs/clap-feasibility.md` — pinned Milestone 1 build, probe evidence, and limitations
 - `docs/canonical-synth-state.md` — Milestone 2 contract, authority boundaries, and reproduction
+- `docs/deterministic-audition.md` — Milestone 3 audio contract, evidence, playback, and limitations
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents
