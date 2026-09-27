@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  scaffold:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test scaffold
+        env:
+          PYTHONPATH: src
+        run: python -m unittest discover -s tests -v
+      - name: Compile Python sources
+        run: python -m compileall -q src tests
