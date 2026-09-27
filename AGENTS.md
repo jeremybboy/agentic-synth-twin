@@ -18,7 +18,7 @@ Do not create a separate frontend unless an independent frontend architecture be
 
 ## Current boundary
 
-PR 1 is CLAP feasibility only: pinned build, load, parameter discovery, state access, one parameter mutation, and restoration. The probe is evidence tooling, not the production host; do not begin canonical state modeling, rendering, UI, DSP, datasets, ML, optimization, or LOCK until the corresponding PR is explicitly authorized.
+Milestone 2 is canonical synth state only: versioned plugin identity, real parameter inventory, exact opaque CLAP state, validation, and reproducible capture. The probe remains evidence tooling, not the production host; do not begin rendering, UI, DSP, datasets, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
 
 ## Invariants
 

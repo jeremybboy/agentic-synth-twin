@@ -1,9 +1,11 @@
 #include <clap/clap.h>
 
 #include <dlfcn.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
@@ -15,6 +17,39 @@
 #include <vector>
 
 namespace {
+
+struct ProbeResult {
+    std::string json;
+    int exit_code;
+};
+
+class StdoutToStderr {
+  public:
+    StdoutToStderr() {
+        std::fflush(stdout);
+        saved_stdout_ = dup(STDOUT_FILENO);
+        if (saved_stdout_ < 0 || dup2(STDERR_FILENO, STDOUT_FILENO) < 0) {
+            if (saved_stdout_ >= 0) {
+                close(saved_stdout_);
+            }
+            throw std::runtime_error("could not redirect plugin diagnostics");
+        }
+    }
+
+    ~StdoutToStderr() {
+        std::fflush(stdout);
+        if (saved_stdout_ >= 0) {
+            dup2(saved_stdout_, STDOUT_FILENO);
+            close(saved_stdout_);
+        }
+    }
+
+    StdoutToStderr(const StdoutToStderr &) = delete;
+    StdoutToStderr &operator=(const StdoutToStderr &) = delete;
+
+  private:
+    int saved_stdout_{-1};
+};
 
 std::string json_escape(const char *text) {
     std::ostringstream out;
@@ -37,6 +72,25 @@ std::string json_escape(const char *text) {
         }
     }
     return out.str();
+}
+
+std::string base64_encode(const std::vector<std::uint8_t> &bytes) {
+    static constexpr char alphabet[] =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string encoded;
+    encoded.reserve(4 * ((bytes.size() + 2) / 3));
+    for (std::size_t offset = 0; offset < bytes.size(); offset += 3) {
+        const auto remaining = bytes.size() - offset;
+        const std::uint32_t first = bytes[offset];
+        const std::uint32_t second = remaining > 1 ? bytes[offset + 1] : 0;
+        const std::uint32_t third = remaining > 2 ? bytes[offset + 2] : 0;
+        const std::uint32_t value = (first << 16) | (second << 8) | third;
+        encoded.push_back(alphabet[(value >> 18) & 0x3F]);
+        encoded.push_back(alphabet[(value >> 12) & 0x3F]);
+        encoded.push_back(remaining > 1 ? alphabet[(value >> 6) & 0x3F] : '=');
+        encoded.push_back(remaining > 2 ? alphabet[value & 0x3F] : '=');
+    }
+    return encoded;
 }
 
 std::filesystem::path executable_path(const std::filesystem::path &plugin_path) {
@@ -287,7 +341,7 @@ double mutation_value(const clap_param_info_t &info, double current) {
     return info.max_value;
 }
 
-int run(const std::filesystem::path &plugin_path) {
+ProbeResult run(const std::filesystem::path &plugin_path) {
     PluginLibrary library(plugin_path);
     const auto *factory = library.factory();
     auto host = make_host();
@@ -357,44 +411,46 @@ int run(const std::filesystem::path &plugin_path) {
     const bool restored_ok = nearly_equal(restored, before);
 
     const auto *descriptor = instance.descriptor();
-    std::cout << std::setprecision(17);
-    std::cout << "{\n"
-              << "  \"plugin\": {\"id\": \"" << json_escape(descriptor->id)
-              << "\", \"name\": \"" << json_escape(descriptor->name)
-              << "\", \"vendor\": \"" << json_escape(descriptor->vendor)
-              << "\", \"version\": \"" << json_escape(descriptor->version) << "\"},\n"
-              << "  \"parameter_count\": " << inventory.size() << ",\n"
-              << "  \"parameters\": [\n";
+    std::ostringstream output;
+    output << std::setprecision(17);
+    output << "{\n"
+           << "  \"plugin\": {\"id\": \"" << json_escape(descriptor->id)
+           << "\", \"name\": \"" << json_escape(descriptor->name)
+           << "\", \"vendor\": \"" << json_escape(descriptor->vendor)
+           << "\", \"version\": \"" << json_escape(descriptor->version) << "\"},\n"
+           << "  \"parameter_count\": " << inventory.size() << ",\n"
+           << "  \"parameters\": [\n";
     for (std::size_t index = 0; index < inventory.size(); ++index) {
         const auto &info = inventory[index];
         double current = 0.0;
         if (!params->get_value(plugin, info.id, &current)) {
             throw std::runtime_error("clap.params.get_value failed while writing inventory");
         }
-        std::cout << "    {\"index\": " << index << ", \"id\": " << info.id
-                  << ", \"name\": \"" << json_escape(info.name)
-                  << "\", \"module\": \"" << json_escape(info.module)
-                  << "\", \"min\": " << info.min_value << ", \"max\": "
-                  << info.max_value << ", \"default\": " << info.default_value
-                  << ", \"current\": " << current << ", \"flags\": " << info.flags
-                  << ", \"automatable\": "
-                  << ((info.flags & CLAP_PARAM_IS_AUTOMATABLE) ? "true" : "false")
-                  << ", \"modulatable\": "
-                  << ((info.flags & CLAP_PARAM_IS_MODULATABLE) ? "true" : "false") << "}";
-        std::cout << (index + 1 == inventory.size() ? "\n" : ",\n");
+        output << "    {\"index\": " << index << ", \"id\": " << info.id
+               << ", \"name\": \"" << json_escape(info.name)
+               << "\", \"module\": \"" << json_escape(info.module)
+               << "\", \"min\": " << info.min_value << ", \"max\": "
+               << info.max_value << ", \"default\": " << info.default_value
+               << ", \"current\": " << current << ", \"flags\": " << info.flags
+               << ", \"automatable\": "
+               << ((info.flags & CLAP_PARAM_IS_AUTOMATABLE) ? "true" : "false")
+               << ", \"modulatable\": "
+               << ((info.flags & CLAP_PARAM_IS_MODULATABLE) ? "true" : "false") << "}";
+        output << (index + 1 == inventory.size() ? "\n" : ",\n");
     }
-    std::cout << "  ],\n"
-              << "  \"state_bytes\": " << saved_state.bytes.size() << ",\n"
-              << "  \"mutation\": {\"parameter_id\": " << selected->id
-              << ", \"parameter_name\": \"" << json_escape(selected->name)
-              << "\", \"before\": " << before << ", \"requested\": " << requested
-              << ", \"after\": " << after << ", \"restored\": " << restored
-              << ", \"changed\": " << (changed ? "true" : "false")
-              << ", \"restore_verified\": " << (restored_ok ? "true" : "false")
-              << "}\n"
-              << "}\n";
+    output << "  ],\n"
+           << "  \"state_bytes\": " << saved_state.bytes.size() << ",\n"
+           << "  \"state_base64\": \"" << base64_encode(saved_state.bytes) << "\",\n"
+           << "  \"mutation\": {\"parameter_id\": " << selected->id
+           << ", \"parameter_name\": \"" << json_escape(selected->name)
+           << "\", \"before\": " << before << ", \"requested\": " << requested
+           << ", \"after\": " << after << ", \"restored\": " << restored
+           << ", \"changed\": " << (changed ? "true" : "false")
+           << ", \"restore_verified\": " << (restored_ok ? "true" : "false")
+           << "}\n"
+           << "}\n";
 
-    return changed && restored_ok ? 0 : 2;
+    return {output.str(), changed && restored_ok ? 0 : 2};
 }
 
 } // namespace
@@ -405,7 +461,12 @@ int main(int argc, char **argv) {
         return 64;
     }
     try {
-        return run(argv[1]);
+        const auto result = [&]() {
+            StdoutToStderr redirect;
+            return run(argv[1]);
+        }();
+        std::cout << result.json;
+        return result.exit_code;
     } catch (const std::exception &error) {
         std::cerr << "clap-probe: " << error.what() << '\n';
         return 1;

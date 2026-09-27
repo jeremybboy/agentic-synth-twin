@@ -1,6 +1,6 @@
 # Architecture
 
-## Decision record: PR 0
+## Decision record: Milestone 0
 
 Agentic Synth Twin is a local macOS experiment, not a general-purpose DAW, hosted service, or autonomous agent platform. Prototype 0 uses Python for orchestration, experiment data, analysis, and learning; a thin Streamlit interface is planned because it can support supervised audio comparison without introducing a separate frontend stack.
 
@@ -50,7 +50,7 @@ The controller coordinates deterministic auditions and records configuration, se
 
 ### CLAP host and synth controller
 
-PR 1 proves that a small CLAP C API probe can load the pinned `clap-saw-demo` build, discover parameters directly from the plugin, read and modify one value, and restore saved state. This probe is feasibility evidence rather than the canonical host/state API. No parameter names or semantics may be invented.
+Milestone 1 proves that a small CLAP C API probe can load the pinned `clap-saw-demo` build, discover parameters directly from the plugin, read and modify one value, and restore saved state. Milestone 2 converts that direct evidence into a validated canonical contract containing both a readable parameter inventory and the exact opaque CLAP state. The probe remains feasibility evidence rather than a general-purpose host. No parameter names or semantics may be invented.
 
 ### Audio renderer
 
@@ -105,4 +105,4 @@ Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth 
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small PR with independently reviewable evidence. PR 0 contains only architecture, governance, package boundaries, and validation scaffolding. PR 1 owns only the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md); PR 2 remains separately authorized work.
+Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 0 contains only architecture, governance, package boundaries, and validation scaffolding. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md); Milestone 3 remains separately authorized work.
