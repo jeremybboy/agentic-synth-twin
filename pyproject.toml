@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentic-synth-twin"
+version = "0.0.0"
+description = "A local validated digital-twin experiment for a CLAP synthesizer"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Agentic Synth Twin contributors" }]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3",
+  "Topic :: Multimedia :: Sound/Audio :: Sound Synthesis",
+]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/jeremybboy/agentic-synth-twin"
+Documentation = "https://github.com/jeremybboy/agentic-synth-twin/tree/main/docs"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,19 @@
+# Agentic Synth Twin
+
+> Local macOS research prototype for learning and validating a reproducible digital twin of a CLAP synthesizer.
+
+## Canonical documentation
+
+- [Project overview](README.md): hypothesis, human calibration, LOCK principle, roadmap, and scope
+- [Architecture](docs/architecture.md): conceptual chain, boundaries, invariants, and decisions
+- [Agent contract](AGENTS.md): repository rules, current milestone boundary, and checks
+- [Contributing](CONTRIBUTING.md): focused PR workflow
+- [Security](SECURITY.md): private vulnerability reporting guidance
+
+## Current status
+
+PR 0 is architecture and repository scaffolding only. No synth, rendering, GUI, DSP, dataset, model, optimization, or LOCK functionality exists yet.
+
+## Source
+
+- https://github.com/jeremybboy/agentic-synth-twin
