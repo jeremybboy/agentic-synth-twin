@@ -22,6 +22,7 @@ class ScaffoldTests(unittest.TestCase):
             "llms.txt",
             "docs/architecture.md",
             "docs/canonical-synth-state.md",
+            "docs/deterministic-audition.md",
             "docs/schemas/canonical-synth-state-v1.schema.json",
             "docs/assets/repository-overview.svg",
         )

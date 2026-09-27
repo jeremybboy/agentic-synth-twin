@@ -1,0 +1,46 @@
+{
+  "schema": "agentic-synth-twin/deterministic-audition/v1",
+  "plugin": {
+    "clap_id": "org.surge-synth-team.clap-saw-demo",
+    "name": "Clap Saw Demo Synth",
+    "version": "1.0.0",
+    "source_commit": "f33b31fff459d66ac18207ec152b323aaa9306f9"
+  },
+  "canonical_state": {
+    "filename": "milestone-2-canonical-state.json",
+    "json_sha256": "85878c7666449d67e9a01c10e36f0f0dafd65ab743769b039e1837885ac0adbc",
+    "opaque_state_sha256": "8e9ad156e9e8ab9a0cf001acdfd9aa84a4c4e7c20138e6bf8c53c05021a7c022"
+  },
+  "audition": {
+    "note_name": "C3",
+    "midi_key": 48,
+    "velocity": 100,
+    "velocity_normalized": 0.7874015748031497,
+    "note_duration_seconds": 2.0,
+    "release_tail_seconds": 0.5,
+    "sample_rate": 44100,
+    "block_size": 64
+  },
+  "wav": {
+    "filename": "milestone-3-c3.wav",
+    "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+    "pcm_sha256": "a4b8c56662be99d2eb3eb4be57849da54a8027916a59ec5387d0dc6b7dec701f",
+    "byte_size": 441044,
+    "channels": 2,
+    "bits_per_sample": 16,
+    "sample_rate": 44100,
+    "frames": 110250,
+    "duration_seconds": 2.5,
+    "non_silent": true,
+    "peak_float": 0.296464,
+    "clipped_samples": 0
+  },
+  "determinism": {
+    "verification_runs": 2,
+    "byte_identical": true
+  },
+  "known_limitations": {
+    "velocity_affects_sound": false,
+    "velocity_note": "The pinned clap-saw-demo note handler ignores event velocity; velocity 100 is recorded but is not sonically effective."
+  }
+}

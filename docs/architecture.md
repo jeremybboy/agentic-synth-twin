@@ -42,7 +42,7 @@ This is a planned responsibility chain. PR 1 proves only the narrow CLAP feasibi
 
 ### Human and local web GUI
 
-The human supplies sonic intent, evaluates controlled A/B movements, chooses active parameters, auditions candidates, and makes KEEP/REJECT/LOCK decisions. The future GUI is a supervisory surface only: it presents state and invokes backend operations.
+The human supplies sonic intent, evaluates controlled A/B movements, chooses active parameters, auditions candidates, and makes KEEP/REJECT/LOCK decisions. Milestone 3 adds only a thin one-button browser preview of committed audio evidence. The future calibration GUI remains a supervisory surface only: it presents state and invokes backend operations.
 
 ### Experiment controller
 
@@ -54,7 +54,7 @@ Milestone 1 proves that a small CLAP C API probe can load the pinned `clap-saw-d
 
 ### Audio renderer
 
-The renderer will apply one fixed audition input with explicit pitch or chord, velocity, note duration, sample rate, and deterministic timing. Rendering must be callable without the GUI.
+Milestone 3 applies scientific C3 (MIDI 48), velocity 100, a two-second hold, a fixed half-second release tail, 44.1 kHz sample rate, and 64-frame processing blocks. Rendering is callable without the browser, and two runs must produce byte-identical WAV evidence on the test system.
 
 ### DSP analyzer and dataset
 
@@ -105,4 +105,4 @@ Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth 
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 0 contains only architecture, governance, package boundaries, and validation scaffolding. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md); Milestone 3 remains separately authorized work.
+Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md); Milestone 4 remains separately authorized work.

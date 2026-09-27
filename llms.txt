@@ -8,13 +8,14 @@
 - [Architecture](docs/architecture.md): conceptual chain, boundaries, invariants, and decisions
 - [CLAP feasibility](docs/clap-feasibility.md): pinned build, probe evidence, and known upstream limitations
 - [Canonical synth state](docs/canonical-synth-state.md): versioned state contract, validation, authority boundaries, and reproduction
+- [Deterministic audition](docs/deterministic-audition.md): fixed C3 render contract, WAV evidence, browser playback, and limitations
 - [Agent contract](AGENTS.md): repository rules, current milestone boundary, and checks
 - [Contributing](CONTRIBUTING.md): focused PR workflow
 - [Security](SECURITY.md): private vulnerability reporting guidance
 
 ## Current status
 
-Milestone 2 provides validated canonical state for the pinned `clap-saw-demo`, including its 10 real parameters and exact opaque CLAP state payload. No audio rendering, GUI, DSP, dataset, model, optimization, or LOCK functionality exists yet.
+Milestone 3 provides a deterministic real-synth C3 WAV from exact canonical state and a thin local one-button browser preview. A/B probing, DSP, dataset, model, optimization, and LOCK functionality do not exist yet.
 
 ## Source
 
