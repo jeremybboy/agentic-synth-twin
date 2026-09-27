@@ -1,0 +1,27 @@
+diff --git a/vstgui/lib/CMakeLists.txt b/vstgui/lib/CMakeLists.txt
+index a0e473b0..2647fea7 100644
+--- a/vstgui/lib/CMakeLists.txt
++++ b/vstgui/lib/CMakeLists.txt
+@@ -343,3 +343,3 @@
+ if(CMAKE_HOST_APPLE)
+-  target_compile_options(${target} PRIVATE -Wall -Werror)
++  target_compile_options(${target} PRIVATE -Wall)
+   set(PLATFORM_LIBRARIES
+diff --git a/vstgui/standalone/CMakeLists.txt b/vstgui/standalone/CMakeLists.txt
+index f7b00b64..2b8db24b 100644
+--- a/vstgui/standalone/CMakeLists.txt
++++ b/vstgui/standalone/CMakeLists.txt
+@@ -140,3 +140,3 @@
+ if(CMAKE_HOST_APPLE)
+-  target_compile_options(${target} PRIVATE -Wall -Werror)
++  target_compile_options(${target} PRIVATE -Wall)
+ endif()
+diff --git a/vstgui/uidescription/CMakeLists.txt b/vstgui/uidescription/CMakeLists.txt
+index e5039060..6b02cee7 100644
+--- a/vstgui/uidescription/CMakeLists.txt
++++ b/vstgui/uidescription/CMakeLists.txt
+@@ -217,3 +217,3 @@
+ if(CMAKE_HOST_APPLE)
+-  target_compile_options(${target} PRIVATE -Wall -Werror)
++  target_compile_options(${target} PRIVATE -Wall)
+ endif()

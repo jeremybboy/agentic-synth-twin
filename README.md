@@ -2,7 +2,7 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** PR 0 defines architecture and governance only. Synth control, audio rendering, the web UI, DSP analysis, datasets, ML, optimization, and LOCK are not implemented yet.
+> **Status:** PR 1 proves macOS CLAP feasibility against a pinned `clap-saw-demo`: build, load, parameter enumeration, state read/save, one parameter mutation, and restoration. Audio rendering, the web UI, DSP analysis, datasets, ML, optimization, and LOCK remain unimplemented.
 
 ## Core idea
 
@@ -14,7 +14,7 @@ Human listening first constrains the experiment. Controlled renders then connect
 
 ## Why `clap-saw-demo`
 
-[`clap-saw-demo`](https://github.com/abique/clap-saw-demo) is intentionally small, CLAP-native, and pedagogical. That makes it a suitable first instrument for exposing parameter/state behavior without hiding the experiment behind a production synthesizer's complexity. The exact upstream commit will be recorded in PR 1; this repository does not yet clone, build, or modify it.
+[`clap-saw-demo`](https://github.com/abique/clap-saw-demo) is intentionally small, CLAP-native, and pedagogical. That makes it a suitable first instrument for exposing parameter/state behavior without hiding the experiment behind a production synthesizer's complexity. PR 1 pins upstream commit `f33b31fff459d66ac18207ec152b323aaa9306f9`; see [CLAP feasibility](docs/clap-feasibility.md) for verified evidence and limitations.
 
 ## Research hypothesis
 
@@ -55,7 +55,7 @@ The backend remains callable independently of the future Streamlit interface. Sy
 
 Each milestone is a separate human-reviewed PR. Agents never merge PRs.
 
-## Validate PR 0 locally
+## Validate locally
 
 PR 0 has no runtime application. From the repository root:
 
@@ -63,6 +63,13 @@ PR 0 has no runtime application. From the repository root:
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 python3 -m compileall -q src tests
 git diff --check main...HEAD
+```
+
+The repository checks above validate the committed code and evidence. The opt-in macOS CLAP feasibility checks require Apple Silicon, Xcode command-line tools, CMake, Git, and GitHub CLI:
+
+```bash
+scripts/build_clap_feasibility.sh
+scripts/run_clap_validation.sh
 ```
 
 ## Deliberately out of scope
@@ -81,6 +88,7 @@ git diff --check main...HEAD
 - `src/agentic_synth_twin/` — future reusable backend; currently package metadata only
 - `tests/` — repository/scaffold checks in PR 0; behavioral tests in later PRs
 - `docs/architecture.md` — conceptual components, boundaries, and decisions
+- `docs/clap-feasibility.md` — pinned PR 1 build, probe evidence, and limitations
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents

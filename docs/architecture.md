@@ -36,7 +36,7 @@ Human Validation
 LOCK
 ```
 
-This is a planned responsibility chain, not a claim that these components exist in PR 0.
+This is a planned responsibility chain. PR 1 proves only the narrow CLAP feasibility boundary; it does not claim that the remaining components exist.
 
 ## Component responsibilities
 
@@ -50,7 +50,7 @@ The controller coordinates deterministic auditions and records configuration, se
 
 ### CLAP host and synth controller
 
-This boundary will load the pinned `clap-saw-demo` build, discover parameters directly from the plugin, read and modify state, and restore prior or locked state. PR 1 must evaluate existing reliable host/library options before custom host work. No parameter names or semantics may be invented.
+PR 1 proves that a small CLAP C API probe can load the pinned `clap-saw-demo` build, discover parameters directly from the plugin, read and modify one value, and restore saved state. This probe is feasibility evidence rather than the canonical host/state API. No parameter names or semantics may be invented.
 
 ### Audio renderer
 
@@ -105,4 +105,4 @@ Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth 
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small PR with independently reviewable evidence. PR 0 contains only architecture, governance, package boundaries, and validation scaffolding. PR 1 alone owns CLAP feasibility and must not begin before human approval of PR 0.
+Every roadmap milestone is a small PR with independently reviewable evidence. PR 0 contains only architecture, governance, package boundaries, and validation scaffolding. PR 1 owns only the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md); PR 2 remains separately authorized work.
