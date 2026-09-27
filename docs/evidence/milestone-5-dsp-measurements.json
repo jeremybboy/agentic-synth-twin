@@ -1,0 +1,648 @@
+{
+  "schema": "agentic-synth-twin/dsp-measurements/v1",
+  "source": {
+    "calibration_results_filename": "milestone-4-calibration-results.json",
+    "calibration_results_sha256": "c9de3d790a22affba799356e6acadcbabcbf41bd3e4d832813a322dbc544f2db",
+    "session_id": "7e12b216-7bba-4924-ae72-efdc8311d5e1",
+    "accepted_manifest_filename": "milestone-3-c3.json",
+    "accepted_manifest_sha256": "cc3e39e2cc540dc6d238c17be46b07edeb23c93262948502284915e88df6812d",
+    "accepted_wav_filename": "milestone-3-c3.wav",
+    "accepted_wav_sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+    "plugin": {
+      "clap_id": "org.surge-synth-team.clap-saw-demo",
+      "name": "Clap Saw Demo Synth",
+      "version": "1.0.0",
+      "source_commit": "f33b31fff459d66ac18207ec152b323aaa9306f9"
+    },
+    "canonical_state": {
+      "filename": "milestone-2-canonical-state.json",
+      "json_sha256": "85878c7666449d67e9a01c10e36f0f0dafd65ab743769b039e1837885ac0adbc",
+      "opaque_state_sha256": "8e9ad156e9e8ab9a0cf001acdfd9aa84a4c4e7c20138e6bf8c53c05021a7c022"
+    },
+    "audition": {
+      "note_name": "C3",
+      "midi_key": 48,
+      "velocity": 100,
+      "note_duration_seconds": 2.0,
+      "release_tail_seconds": 0.5,
+      "sample_rate": 44100,
+      "block_size": 64
+    }
+  },
+  "analyzer": {
+    "python_version": "3.12.8",
+    "numpy_version": "2.3.5",
+    "channel_aggregation": "mean-square across PCM channels for level/envelope; power spectra summed across channels",
+    "level": "whole-file RMS and absolute peak in dBFS",
+    "spectrum": "summed Hann-windowed power spectra",
+    "fft_size": 2048,
+    "hop_size": 512,
+    "rolloff_fraction": 0.85,
+    "envelope": "10 ms moving RMS",
+    "attack": "first 10% to first 90% of note-region envelope peak",
+    "release": "90% to 10% of 50 ms pre-note-off median; null when tail-censored"
+  },
+  "summary": {
+    "measurement_count": 10,
+    "human_yes_count": 5,
+    "human_yes_parameters": [
+      "Oscillator Detuning (in cents)",
+      "Unison Spread in Cents",
+      "Filter Type",
+      "Cutoff in Keys",
+      "Amplitude Attack (s)"
+    ]
+  },
+  "measurements": [
+    {
+      "ordinal": 1,
+      "parameter_id": 728,
+      "parameter_name": "Amplitude Release (s)",
+      "baseline_value": 0.2,
+      "variant_value": 1.0,
+      "variant_applied": 1,
+      "human_meaningful_difference": false,
+      "render_verification": {
+        "renders_per_side": 2,
+        "A_byte_identical": true,
+        "B_byte_identical": true,
+        "A_matches_milestone_3": true,
+        "A_clipped_samples": 0,
+        "B_clipped_samples": 0
+      },
+      "A": {
+        "filename": "A-baseline.wav",
+        "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.561919512,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 225.738672017,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "B": {
+        "filename": "B-variant.wav",
+        "sha256": "a9627649dd2a151df7bb6c7183bee152c1d77f63b560868ced9509350f6eb3d2",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -20.790419976,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 223.492762658,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": null,
+          "release_censored_by_tail": true
+        }
+      },
+      "deltas": {
+        "rms_dbfs_B_minus_A": 0.771499536,
+        "peak_dbfs_B_minus_A": 0.0,
+        "spectral_centroid_hz_B_minus_A": -2.245909359,
+        "spectral_rolloff_85_hz_B_minus_A": 0.0,
+        "attack_10_to_90_seconds_B_minus_A": 0.0,
+        "release_90_to_10_seconds_B_minus_A": null
+      }
+    },
+    {
+      "ordinal": 2,
+      "parameter_id": 8675309,
+      "parameter_name": "Oscillator Detuning (in cents)",
+      "baseline_value": 0,
+      "variant_value": 200.0,
+      "variant_applied": 200,
+      "human_meaningful_difference": true,
+      "render_verification": {
+        "renders_per_side": 2,
+        "A_byte_identical": true,
+        "B_byte_identical": true,
+        "A_matches_milestone_3": true,
+        "A_clipped_samples": 0,
+        "B_clipped_samples": 0
+      },
+      "A": {
+        "filename": "A-baseline.wav",
+        "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.561919512,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 225.738672017,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "B": {
+        "filename": "B-variant.wav",
+        "sha256": "05823a5d09cb7bad999e5e6f6197aff3648f948265015250b2f1add25d7cc1c5",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.397529634,
+          "peak_dbfs": -10.734435156,
+          "spectral_centroid_hz": 235.66306854,
+          "spectral_rolloff_85_hz": 430.6640625,
+          "attack_10_to_90_seconds": 0.489092971,
+          "release_90_to_10_seconds": 0.124013605,
+          "release_censored_by_tail": false
+        }
+      },
+      "deltas": {
+        "rms_dbfs_B_minus_A": 0.164389878,
+        "peak_dbfs_B_minus_A": -0.17339844,
+        "spectral_centroid_hz_B_minus_A": 9.924396523,
+        "spectral_rolloff_85_hz_B_minus_A": 43.06640625,
+        "attack_10_to_90_seconds_B_minus_A": -0.069773242,
+        "release_90_to_10_seconds_B_minus_A": 0.002040816
+      }
+    },
+    {
+      "ordinal": 3,
+      "parameter_id": 2391,
+      "parameter_name": "Unison Spread in Cents",
+      "baseline_value": 10,
+      "variant_value": 100.0,
+      "variant_applied": 100,
+      "human_meaningful_difference": true,
+      "render_verification": {
+        "renders_per_side": 2,
+        "A_byte_identical": true,
+        "B_byte_identical": true,
+        "A_matches_milestone_3": true,
+        "A_clipped_samples": 0,
+        "B_clipped_samples": 0
+      },
+      "A": {
+        "filename": "A-baseline.wav",
+        "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.561919512,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 225.738672017,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "B": {
+        "filename": "B-variant.wav",
+        "sha256": "ad52671cd55395b02b6b7be3968ac12d2450b605b3e5779577668dab21b35481",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.693548913,
+          "peak_dbfs": -10.529797291,
+          "spectral_centroid_hz": 226.72024054,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.049115646,
+          "release_90_to_10_seconds": 0.1230839,
+          "release_censored_by_tail": false
+        }
+      },
+      "deltas": {
+        "rms_dbfs_B_minus_A": -0.131629401,
+        "peak_dbfs_B_minus_A": 0.031239425,
+        "spectral_centroid_hz_B_minus_A": 0.981568523,
+        "spectral_rolloff_85_hz_B_minus_A": 0.0,
+        "attack_10_to_90_seconds_B_minus_A": -0.509750567,
+        "release_90_to_10_seconds_B_minus_A": 0.001111111
+      }
+    },
+    {
+      "ordinal": 4,
+      "parameter_id": 14255,
+      "parameter_name": "Filter Type",
+      "baseline_value": 0,
+      "variant_value": 5.0,
+      "variant_applied": 5,
+      "human_meaningful_difference": true,
+      "render_verification": {
+        "renders_per_side": 2,
+        "A_byte_identical": true,
+        "B_byte_identical": true,
+        "A_matches_milestone_3": true,
+        "A_clipped_samples": 0,
+        "B_clipped_samples": 0
+      },
+      "A": {
+        "filename": "A-baseline.wav",
+        "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.561919512,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 225.738672017,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "B": {
+        "filename": "B-variant.wav",
+        "sha256": "670bf4927d98687346bba4e3baf68dbba44b4922ca801880003ea9f62d62300a",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -22.572071686,
+          "peak_dbfs": -11.879431092,
+          "spectral_centroid_hz": 485.944146514,
+          "spectral_rolloff_85_hz": 516.796875,
+          "attack_10_to_90_seconds": 0.567755102,
+          "release_90_to_10_seconds": 0.127959184,
+          "release_censored_by_tail": false
+        }
+      },
+      "deltas": {
+        "rms_dbfs_B_minus_A": -1.010152174,
+        "peak_dbfs_B_minus_A": -1.318394376,
+        "spectral_centroid_hz_B_minus_A": 260.205474497,
+        "spectral_rolloff_85_hz_B_minus_A": 129.19921875,
+        "attack_10_to_90_seconds_B_minus_A": 0.008888889,
+        "release_90_to_10_seconds_B_minus_A": 0.005986395
+      }
+    },
+    {
+      "ordinal": 5,
+      "parameter_id": 94,
+      "parameter_name": "Resonance",
+      "baseline_value": 0.7,
+      "variant_value": 1.0,
+      "variant_applied": 1,
+      "human_meaningful_difference": false,
+      "render_verification": {
+        "renders_per_side": 2,
+        "A_byte_identical": true,
+        "B_byte_identical": true,
+        "A_matches_milestone_3": true,
+        "A_clipped_samples": 0,
+        "B_clipped_samples": 0
+      },
+      "A": {
+        "filename": "A-baseline.wav",
+        "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.561919512,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 225.738672017,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "B": {
+        "filename": "B-variant.wav",
+        "sha256": "0a82af518729250418c560a5b77afdaeabc47f7d117e12bef892b6afbf92fb33",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -17.87036843,
+          "peak_dbfs": -8.132964217,
+          "spectral_centroid_hz": 322.943621688,
+          "spectral_rolloff_85_hz": 409.130859375,
+          "attack_10_to_90_seconds": 0.590385488,
+          "release_90_to_10_seconds": 0.117573696,
+          "release_censored_by_tail": false
+        }
+      },
+      "deltas": {
+        "rms_dbfs_B_minus_A": 3.691551082,
+        "peak_dbfs_B_minus_A": 2.428072499,
+        "spectral_centroid_hz_B_minus_A": 97.204949671,
+        "spectral_rolloff_85_hz_B_minus_A": 21.533203125,
+        "attack_10_to_90_seconds_B_minus_A": 0.031519275,
+        "release_90_to_10_seconds_B_minus_A": -0.004399093
+      }
+    },
+    {
+      "ordinal": 6,
+      "parameter_id": 87612,
+      "parameter_name": "Pre Filter VCA",
+      "baseline_value": 1,
+      "variant_value": 0.5,
+      "variant_applied": 0.5,
+      "human_meaningful_difference": false,
+      "render_verification": {
+        "renders_per_side": 2,
+        "A_byte_identical": true,
+        "B_byte_identical": true,
+        "A_matches_milestone_3": true,
+        "A_clipped_samples": 0,
+        "B_clipped_samples": 0
+      },
+      "A": {
+        "filename": "A-baseline.wav",
+        "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.561919512,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 225.738672017,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "B": {
+        "filename": "B-variant.wav",
+        "sha256": "a0ce7f9e5ecc3e242c62fa2bead9bc731016e6842c7f59356a0c8d3bfd3c392c",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -27.58251819,
+          "peak_dbfs": -16.58163663,
+          "spectral_centroid_hz": 225.739112538,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "deltas": {
+        "rms_dbfs_B_minus_A": -6.020598678,
+        "peak_dbfs_B_minus_A": -6.020599914,
+        "spectral_centroid_hz_B_minus_A": 0.000440521,
+        "spectral_rolloff_85_hz_B_minus_A": 0.0,
+        "attack_10_to_90_seconds_B_minus_A": 0.0,
+        "release_90_to_10_seconds_B_minus_A": 0.0
+      }
+    },
+    {
+      "ordinal": 7,
+      "parameter_id": 1378,
+      "parameter_name": "Unison Count",
+      "baseline_value": 3,
+      "variant_value": 7.0,
+      "variant_applied": 7,
+      "human_meaningful_difference": false,
+      "render_verification": {
+        "renders_per_side": 2,
+        "A_byte_identical": true,
+        "B_byte_identical": true,
+        "A_matches_milestone_3": true,
+        "A_clipped_samples": 0,
+        "B_clipped_samples": 0
+      },
+      "A": {
+        "filename": "A-baseline.wav",
+        "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.561919512,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 225.738672017,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "B": {
+        "filename": "B-variant.wav",
+        "sha256": "646168eece2baa0f464faad0ac93b01975e009f694bc6eac3f05c885202248e6",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -24.567956113,
+          "peak_dbfs": -12.763876037,
+          "spectral_centroid_hz": 327.77941281,
+          "spectral_rolloff_85_hz": 409.130859375,
+          "attack_10_to_90_seconds": 1.230725624,
+          "release_90_to_10_seconds": 0.110090703,
+          "release_censored_by_tail": false
+        }
+      },
+      "deltas": {
+        "rms_dbfs_B_minus_A": -3.006036601,
+        "peak_dbfs_B_minus_A": -2.202839321,
+        "spectral_centroid_hz_B_minus_A": 102.040740793,
+        "spectral_rolloff_85_hz_B_minus_A": 21.533203125,
+        "attack_10_to_90_seconds_B_minus_A": 0.671859411,
+        "release_90_to_10_seconds_B_minus_A": -0.011882086
+      }
+    },
+    {
+      "ordinal": 8,
+      "parameter_id": 1942,
+      "parameter_name": "Deactivate Amp Envelope",
+      "baseline_value": 0,
+      "variant_value": 1.0,
+      "variant_applied": 1,
+      "human_meaningful_difference": false,
+      "render_verification": {
+        "renders_per_side": 2,
+        "A_byte_identical": true,
+        "B_byte_identical": true,
+        "A_matches_milestone_3": true,
+        "A_clipped_samples": 0,
+        "B_clipped_samples": 0
+      },
+      "A": {
+        "filename": "A-baseline.wav",
+        "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.561919512,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 225.738672017,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "B": {
+        "filename": "B-variant.wav",
+        "sha256": "4a554493e4567994889df35c516340a812985970871a0f2e7be85e2212e61f7a",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.220300479,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 224.463407152,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.573945578,
+          "release_90_to_10_seconds": 0.14122449,
+          "release_censored_by_tail": false
+        }
+      },
+      "deltas": {
+        "rms_dbfs_B_minus_A": 0.341619033,
+        "peak_dbfs_B_minus_A": 0.0,
+        "spectral_centroid_hz_B_minus_A": -1.275264865,
+        "spectral_rolloff_85_hz_B_minus_A": 0.0,
+        "attack_10_to_90_seconds_B_minus_A": 0.015079365,
+        "release_90_to_10_seconds_B_minus_A": 0.019251701
+      }
+    },
+    {
+      "ordinal": 9,
+      "parameter_id": 17,
+      "parameter_name": "Cutoff in Keys",
+      "baseline_value": 69,
+      "variant_value": 127.0,
+      "variant_applied": 127,
+      "human_meaningful_difference": true,
+      "render_verification": {
+        "renders_per_side": 2,
+        "A_byte_identical": true,
+        "B_byte_identical": true,
+        "A_matches_milestone_3": true,
+        "A_clipped_samples": 0,
+        "B_clipped_samples": 0
+      },
+      "A": {
+        "filename": "A-baseline.wav",
+        "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.561919512,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 225.738672017,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "B": {
+        "filename": "B-variant.wav",
+        "sha256": "fb363bd3ed1a1bfb44f79ea19a972b402675fb3cc5b311ee53d918b262ed20cb",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -22.54011754,
+          "peak_dbfs": -10.552099696,
+          "spectral_centroid_hz": 514.482485519,
+          "spectral_rolloff_85_hz": 516.796875,
+          "attack_10_to_90_seconds": 0.574126984,
+          "release_90_to_10_seconds": 0.121791383,
+          "release_censored_by_tail": false
+        }
+      },
+      "deltas": {
+        "rms_dbfs_B_minus_A": -0.978198028,
+        "peak_dbfs_B_minus_A": 0.00893702,
+        "spectral_centroid_hz_B_minus_A": 288.743813502,
+        "spectral_rolloff_85_hz_B_minus_A": 129.19921875,
+        "attack_10_to_90_seconds_B_minus_A": 0.015260771,
+        "release_90_to_10_seconds_B_minus_A": -0.000181406
+      }
+    },
+    {
+      "ordinal": 10,
+      "parameter_id": 2874,
+      "parameter_name": "Amplitude Attack (s)",
+      "baseline_value": 0.01,
+      "variant_value": 1.0,
+      "variant_applied": 1,
+      "human_meaningful_difference": true,
+      "render_verification": {
+        "renders_per_side": 2,
+        "A_byte_identical": true,
+        "B_byte_identical": true,
+        "A_matches_milestone_3": true,
+        "A_clipped_samples": 0,
+        "B_clipped_samples": 0
+      },
+      "A": {
+        "filename": "A-baseline.wav",
+        "sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -21.561919512,
+          "peak_dbfs": -10.561036716,
+          "spectral_centroid_hz": 225.738672017,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 0.558866213,
+          "release_90_to_10_seconds": 0.121972789,
+          "release_censored_by_tail": false
+        }
+      },
+      "B": {
+        "filename": "B-variant.wav",
+        "sha256": "b7de4ca56c80ca78fcb00cc340a67538b0b63bcbe799ee11b4cbe1939b6f4dac",
+        "sample_rate": 44100,
+        "channels": 2,
+        "frames": 110250,
+        "duration_seconds": 2.5,
+        "features": {
+          "rms_dbfs": -31.764113952,
+          "peak_dbfs": -16.597746476,
+          "spectral_centroid_hz": 223.475687849,
+          "spectral_rolloff_85_hz": 387.59765625,
+          "attack_10_to_90_seconds": 1.573333333,
+          "release_90_to_10_seconds": 0.121950113,
+          "release_censored_by_tail": false
+        }
+      },
+      "deltas": {
+        "rms_dbfs_B_minus_A": -10.20219444,
+        "peak_dbfs_B_minus_A": -6.03670976,
+        "spectral_centroid_hz_B_minus_A": -2.262984168,
+        "spectral_rolloff_85_hz_B_minus_A": 0.0,
+        "attack_10_to_90_seconds_B_minus_A": 1.01446712,
+        "release_90_to_10_seconds_B_minus_A": -2.2676e-05
+      }
+    }
+  ]
+}
