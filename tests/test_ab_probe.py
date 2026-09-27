@@ -1,4 +1,4 @@
-"""Contract checks for terminal-only human A/B calibration."""
+"""Contract checks for deterministic human A/B evidence."""
 
 from __future__ import annotations
 

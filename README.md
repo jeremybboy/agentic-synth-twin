@@ -2,7 +2,7 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 4 adds a terminal-only, one-parameter A/B calibration workflow. Its first real-synth probe recorded a small human-perceived difference for Unison Count `3 → 7`, especially in volume; DSP analysis, datasets, ML, optimization, and LOCK remain unimplemented.
+> **Status:** Milestone 4 adds a local, blinded A/B calibration app with clickable playback, YES/NO judgments, automatic progression, and SQLite persistence. Its first pilot probe recorded a small human-perceived difference for Unison Count `3 → 7`, especially in volume; DSP analysis, synthetic datasets, ML, optimization, and LOCK remain unimplemented.
 
 ## Core idea
 
@@ -24,7 +24,7 @@ This does **not** imply that the model understands the entire synthesizer or tha
 
 ## Human calibration
 
-Before dataset generation, the local terminal workflow presents controlled A/B movements for candidate parameters. Human YES/NO judgments will identify roughly 2–5 perceptually relevant active parameters; the rest remain frozen. This human prior is the primary defense against wasteful combinatorial search, but a level-driven answer is not yet evidence of an independent timbral effect.
+Before dataset generation, the local calibration app presents randomized, blinded A/B movements for candidate parameters. The listener plays both sounds, clicks YES or NO, and advances without conversational round trips; judgments are written directly to a local SQLite database. This human prior should constrain later sampling, but a level-driven answer is not yet evidence of an independent timbral effect.
 
 ## Synthetic data and surrogate
 
@@ -72,10 +72,18 @@ scripts/build_clap_feasibility.sh
 scripts/run_clap_validation.sh
 scripts/capture_canonical_state.sh
 scripts/render_deterministic_audition.sh
-scripts/run_terminal_ab_probe.sh
+scripts/run_local_calibration.sh
 ```
 
-To hear the committed Milestone 3 evidence in the thin local preview:
+To run the Milestone 4 calibration app:
+
+```bash
+scripts/run_local_calibration.sh
+```
+
+Then open `http://127.0.0.1:8765`. The first run renders the planned probes and creates `work/calibration/calibration.sqlite3`; later runs resume that local session. Pass another output directory as the first argument to create an independent session.
+
+To hear only the committed Milestone 3 evidence in its original thin preview:
 
 ```bash
 scripts/serve_audition_preview.sh
@@ -102,7 +110,7 @@ Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 - `docs/clap-feasibility.md` — pinned Milestone 1 build, probe evidence, and limitations
 - `docs/canonical-synth-state.md` — Milestone 2 contract, authority boundaries, and reproduction
 - `docs/deterministic-audition.md` — Milestone 3 audio contract, evidence, playback, and limitations
-- `docs/human-ab-probe.md` — Milestone 4 terminal A/B contract, first human judgment, and limitations
+- `docs/human-ab-probe.md` — Milestone 4 local calibration contract, SQLite workflow, first pilot judgment, and limitations
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents

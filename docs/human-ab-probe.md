@@ -1,38 +1,37 @@
-# Milestone 4: terminal human A/B probe
+# Milestone 4: local human A/B calibration
 
 ## Result
 
-Milestone 4 adds a local, terminal-only workflow for changing one real CLAP parameter at a time, rendering deterministic A/B files, playing them in a fixed order, and recording a human YES/NO judgment. It does not add or depend on a browser interface.
+Milestone 4 adds a local server-based calibration app. It prepares deterministic one-parameter A/B probes from the real CLAP inventory, randomizes probe order and A/B placement, presents them as neutral **Sound 1** and **Sound 2**, requires both to be heard, records a clicked YES/NO judgment directly in SQLite, and advances automatically.
 
-The first completed probe used the real discovered parameter **Unison Count** (`id 1378`), with A at the accepted canonical value `3` and B at `7`. The renderer reported that the plugin applied `7`; both sides were byte-identical across two renders and contained no clipped samples. A reproduced the accepted Milestone 3 WAV exactly.
-
-The human answer was **YES**, with the note: “Small difference, especially the volume, but audibly different.” This establishes only that this particular A/B movement was perceptible in this listening event.
+The browser is a thin client: it does not render the synth, choose parameter values, own experiment state, or write files directly. The Python backend validates audio evidence, controls the session, enforces the listening rule, persists judgments transactionally, and exports machine-readable results. The server binds only to loopback and adds no public hosting or cloud service.
 
 ## Probe contract
 
-- A is always rerendered from the exact accepted canonical state.
-- B starts from that same opaque state and changes exactly one parameter discovered from the real plugin.
-- The requested value must be within the discovered range and differ from the baseline.
-- The renderer reports the requested and retained parameter value.
+- Every probe starts from the exact accepted canonical state.
+- B changes exactly one parameter discovered from the real plugin.
+- The default plan uses a strong discovered-range movement without assigning invented semantics: maximum when available; for a continuous parameter already at maximum, midpoint; for a stepped parameter already at maximum, minimum. Silent renders are rejected.
+- The renderer reports the requested and retained real-synth value.
 - A and B are each rendered twice and must be byte-identical within their side.
 - A must reproduce the accepted Milestone 3 WAV hash.
-- The machine records structure, hashes, parameter application, peak, and clipping.
-- Only the listener can answer whether the difference is meaningful.
+- Probe order and left/right A/B placement are randomized and stored with the session seed.
+- The browser does not reveal parameter identity or A/B placement during listening.
+- YES/NO remains a human observation, separate from render verification.
 
-The completed [probe manifest](evidence/milestone-4-unison-count/ab-probe.json), [A baseline](evidence/milestone-4-unison-count/A-baseline.wav), and [B variant](evidence/milestone-4-unison-count/B-variant.wav) are committed as the first bounded evidence set.
-
-## Run another probe
-
-On the validated macOS environment:
+## Run locally
 
 ```bash
-scripts/run_terminal_ab_probe.sh PARAMETER_ID PARAMETER_VALUE
+scripts/run_local_calibration.sh
 ```
 
-With no arguments, the script reproduces the first probe (`1378`, `7`). It builds the pinned synth and renderer, verifies the A/B evidence, plays A then B with `afplay`, and accepts `y`, `n`, or `r` to replay. Runtime results are written under `work/` unless an explicit output directory is provided.
+Open [http://127.0.0.1:8765](http://127.0.0.1:8765). The first run builds the pinned synth and renderer, prepares the probe files under `work/calibration/probes/`, and creates `work/calibration/calibration.sqlite3`. Later runs resume the same session; pass another output directory as the first argument to create an independent session.
 
-## Honest interpretation
+For each probe, play Sound 1 and Sound 2 in either order. The answer buttons remain disabled until both have been played. Click YES when the difference is meaningful or NO when it is not; the response is committed to SQLite and the next randomized probe appears. On completion, the app exposes a JSON export derived from the database.
 
-This was not a blind test and contained one presentation of each sound. More importantly, no loudness normalization or DSP measurement exists yet: B's floating-point peak (`0.230041`) differs from A's (`0.296464`), and the listener specifically noticed volume. Therefore the result does **not** yet prove that Unison Count creates a meaningful timbral difference independent of level.
+## Pilot evidence and honest interpretation
 
-Milestone 5 may measure a small declared descriptor set, including level, but must not retroactively convert this human observation into a stronger claim. Datasets, ML, optimization, and LOCK remain unimplemented.
+Before the browser workflow was finalized, the first pilot used the real discovered parameter **Unison Count** (`id 1378`), with A at `3` and B at `7`. The renderer confirmed that the plugin retained `7`; both sides were deterministic and unclipped, and A reproduced Milestone 3 exactly. The human answer was **YES**, with the note: “Small difference, especially the volume, but audibly different.” The [pilot manifest](evidence/milestone-4-unison-count/ab-probe.json) and WAV files remain committed as evidence of the backend path, not as a substitute for the blinded session.
+
+The default range plan is intentionally crude: it tests whether a parameter can create a perceptible movement, not whether the chosen value is musically useful or defines a sensible local sampling range. No loudness normalization or DSP measurement exists yet. In the pilot, B's floating-point peak (`0.230041`) differed from A's (`0.296464`), and the listener noticed volume; this does not prove an independent timbral effect.
+
+Milestone 5 may measure a small declared descriptor set, including level, but must not retroactively strengthen human observations. Synthetic datasets, ML, optimization, and LOCK remain unimplemented.

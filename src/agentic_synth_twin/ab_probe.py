@@ -1,4 +1,4 @@
-"""Terminal-only human A/B calibration for one real CLAP parameter."""
+"""Deterministic human A/B evidence for one real CLAP parameter."""
 
 from __future__ import annotations
 

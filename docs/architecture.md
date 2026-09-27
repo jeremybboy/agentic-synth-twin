@@ -42,7 +42,7 @@ This is a planned responsibility chain. PR 1 proves only the narrow CLAP feasibi
 
 ### Human and local web GUI
 
-The human supplies sonic intent, evaluates controlled A/B movements, chooses active parameters, auditions candidates, and makes KEEP/REJECT/LOCK decisions. Milestone 3 adds only a thin one-button browser preview of committed audio evidence. Milestone 4 keeps calibration terminal-only: it generates and plays one-parameter A/B pairs and records explicit human judgments. Any future GUI remains a supervisory surface only.
+The human supplies sonic intent, evaluates controlled A/B movements, chooses active parameters, auditions candidates, and makes KEEP/REJECT/LOCK decisions. Milestone 3 adds only a thin one-button browser preview of committed audio evidence. Milestone 4 adds a local thin client that presents randomized Sound 1/Sound 2 pairs, records YES/NO directly through backend APIs, and advances automatically. SQLite persistence, probe generation, and authority rules remain backend responsibilities.
 
 ### Experiment controller
 

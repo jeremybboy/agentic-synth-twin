@@ -50,6 +50,6 @@ This rebuilds the pinned plugin, compiles the renderer, restores canonical state
 - The pinned synth ignores the velocity value in its note handler. Velocity 100 is sent and recorded for a stable future contract, but it has no sonic effect in this upstream revision.
 - Byte identity is verified across two runs on the test Mac. Cross-platform or cross-toolchain byte identity is not claimed.
 - Automated checks prove structure, traceability, non-silence, lack of clipping, and repeatability; they do not prove musical or perceptual quality.
-- The browser remains a one-action Milestone 3 artifact. Milestone 4 A/B probing and judgments are implemented separately in the terminal; no browser controls were added.
+- The one-action preview remains a Milestone 3 artifact. Milestone 4 uses a separate local calibration route and database rather than adding experiment state to this preview.
 
 Human listening remains required acceptance evidence.
