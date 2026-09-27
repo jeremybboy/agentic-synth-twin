@@ -44,6 +44,8 @@ Add milestone-specific checks only when the implementation exists.
 - Work on a dedicated branch and stage only explicit paths; never use `git add .`, `-A`, or `--all`.
 - Preserve unrelated or unfamiliar files and changes.
 - Never force-push, enable auto-merge, merge a PR, or delete user work.
-- Open one focused PR, report verification and uncertainty, then stop for human review and merge.
+- Open one focused PR as ready for review once its checks pass; use draft status only for explicitly unfinished work.
+- Keep solo-repository governance frictionless: require the PR and applicable CI, but do not require the owner to assign or obtain a separate approving reviewer.
+- Hand the owner a direct PR link for visual inspection and manual merge; never merge or enable auto-merge on the owner's behalf.
 
 See `docs/architecture.md` for component ownership and scope.

@@ -8,7 +8,7 @@ Agentic Synth Twin is intentionally developed as a sequence of small, evidence-b
 2. Keep the change inside one roadmap milestone.
 3. Add or update tests and documentation appropriate to the evidence claimed.
 4. Run the documented checks and disclose anything that cannot be verified locally.
-5. Open a pull request; do not merge it yourself.
+5. Open a ready-for-review pull request after checks pass; the repository owner inspects and merges it directly without assigning a separate reviewer.
 
 Do not introduce cloud services, LLM APIs, additional synthesizers, semantic embeddings, diffusion models, MIDI 2.0, or a large agent framework during Prototype 0.
 
