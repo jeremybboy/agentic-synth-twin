@@ -50,4 +50,11 @@ Add milestone-specific checks only when the implementation exists.
 - Keep solo-repository governance frictionless: require the PR and applicable CI, but do not require the owner to assign or obtain a separate approving reviewer.
 - Hand the owner a direct PR link for visual inspection and manual merge; never merge or enable auto-merge on the owner's behalf.
 
+## PR communication
+
+- Every implementation PR must include a concise, verified technical brief and a synchronized visual summary. Follow `docs/pr-visual-brief-standard.md`.
+- The brief must distinguish current state, user-visible changes, touched layers, explicitly untouched scope, persistence/undo impact, audio/realtime impact, C2PA/provenance impact, automated evidence, and human acceptance still required.
+- Store project-bound visuals in `docs/assets/`, link them from the brief and PR description, and label proposed, implemented, automated, and manually accepted states accurately.
+- Keep visual documentation subordinate to the implementation scope; it must not introduce features, imply validation that did not occur, or replace listening and hardware checks.
+
 See `docs/architecture.md` for component ownership and scope.
