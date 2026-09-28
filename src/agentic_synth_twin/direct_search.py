@@ -48,6 +48,7 @@ RANDOM_SEARCH_SEED = 20_260_929
 DEFAULT_GENERATIONS = 20
 DEFAULT_POPULATION_SIZE = 8
 DEFAULT_BUDGET = DEFAULT_GENERATIONS * DEFAULT_POPULATION_SIZE
+PLAYABLE_NOTE_FRAMES = SAMPLE_RATE * 6
 FILTER_TYPE_ID = 14_255
 
 ACTIVE_PARAMETER_IDS = (8_675_309, 2_391, 17, 2_874)
@@ -356,6 +357,81 @@ def _run_renderer(
     return metadata
 
 
+def _run_playable_renderer(
+    *,
+    renderer: Path,
+    plugin: Path,
+    state_path: Path,
+    wav_path: Path,
+    parameter_values: Mapping[str, float],
+    midi_key: int,
+    velocity: int,
+) -> dict[str, Any]:
+    command = [
+        str(renderer),
+        str(plugin),
+        str(state_path),
+        str(wav_path),
+        "--midi-key",
+        str(midi_key),
+        "--velocity",
+        str(velocity),
+        "--note-frames",
+        str(PLAYABLE_NOTE_FRAMES),
+    ]
+    for parameter_id in ACTIVE_PARAMETER_IDS:
+        command.extend([str(parameter_id), str(parameter_values[str(parameter_id)])])
+    try:
+        completed = subprocess.run(command, check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as error:
+        raise DirectSearchError(
+            f"playable real-synth render failed ({error.returncode}): "
+            f"{error.stderr.strip()}"
+        ) from error
+    try:
+        metadata = json.loads(completed.stdout)
+    except json.JSONDecodeError as error:
+        raise DirectSearchError("playable renderer stdout was not strict JSON") from error
+    expected = {
+        "sample_rate": SAMPLE_RATE,
+        "channels": CHANNELS,
+        "bits_per_sample": BITS_PER_SAMPLE,
+        "midi_key": midi_key,
+        "velocity": velocity,
+        "note_frames": PLAYABLE_NOTE_FRAMES,
+        "tail_frames": TAIL_FRAMES,
+        "total_frames": PLAYABLE_NOTE_FRAMES + TAIL_FRAMES,
+        "block_size": BLOCK_SIZE,
+        "clipped_samples": 0,
+    }
+    for key, value in expected.items():
+        if metadata.get(key) != value:
+            raise DirectSearchError(
+                f"playable renderer {key} mismatch: expected {value}, "
+                f"got {metadata.get(key)}"
+            )
+    changes = metadata.get("parameter_changes")
+    if not isinstance(changes, list) or len(changes) != len(ACTIVE_PARAMETER_IDS):
+        raise DirectSearchError("playable renderer did not report all active parameters")
+    for change, parameter_id in zip(changes, ACTIVE_PARAMETER_IDS, strict=True):
+        requested = float(parameter_values[str(parameter_id)])
+        if change.get("id") != parameter_id:
+            raise DirectSearchError(
+                "playable renderer reported active parameters out of order"
+            )
+        if not math.isclose(float(change.get("requested")), requested, abs_tol=1e-10):
+            raise DirectSearchError(
+                "playable renderer reported a different requested value"
+            )
+        if not math.isclose(float(change.get("applied")), requested, abs_tol=1e-10):
+            raise DirectSearchError(
+                "real synth did not retain a playable active parameter"
+            )
+    if not wav_path.is_file() or wav_path.stat().st_size == 0:
+        raise DirectSearchError("playable renderer did not produce a WAV")
+    return metadata
+
+
 def render_candidate(
     *,
     renderer: str | Path,
@@ -500,6 +576,7 @@ class SearchRun:
         self._thread: threading.Thread | None = None
         self._lock = threading.RLock()
         self._condition = threading.Condition(self._lock)
+        self._playable_lock = threading.Lock()
         self._pause_requested = False
         self._stop_requested = False
         self._optimizer_state = {
@@ -872,6 +949,67 @@ class SearchRun:
     def history_public(self) -> list[dict[str, Any]]:
         with self._lock:
             return [dict(record) for record in self.history]
+
+    def render_playable_note(
+        self,
+        *,
+        source: str,
+        midi_key: int,
+        velocity: int,
+        normalized: Sequence[float] | None = None,
+    ) -> Path:
+        """Render and cache one exact real-synth note for cockpit performance."""
+
+        if not 21 <= midi_key <= 108:
+            raise DirectSearchError("playable MIDI key must be in the piano range 21..108")
+        if not 1 <= velocity <= 127:
+            raise DirectSearchError("playable velocity must be in 1..127")
+        if source == "custom":
+            if normalized is None or len(normalized) != len(self.parameters):
+                raise DirectSearchError("custom patch requires four normalized values")
+            vector = [float(value) for value in normalized]
+        elif source == "target":
+            vector = list(self.target_vector)
+        elif source == "starting":
+            vector = list(self.start_vector)
+        elif source == "best":
+            vector = list(
+                self.best["parameter_values_normalized"]
+                if self.best is not None
+                else self.start_vector
+            )
+        else:
+            raise DirectSearchError("playable source must be target, starting, best, or custom")
+        if any(not math.isfinite(value) or value < 0.0 or value > 1.0 for value in vector):
+            raise DirectSearchError("playable normalized values must be within 0..1")
+        rounded = [_rounded(value) for value in vector]
+        signature = hashlib.sha256(
+            json.dumps(
+                {
+                    "source": source,
+                    "normalized": rounded,
+                    "midi_key": midi_key,
+                    "velocity": velocity,
+                    "note_frames": PLAYABLE_NOTE_FRAMES,
+                },
+                sort_keys=True,
+            ).encode("utf-8")
+        ).hexdigest()[:20]
+        directory = self.audio_directory / "playable"
+        directory.mkdir(exist_ok=True)
+        path = directory / f"{source}-n{midi_key}-v{velocity}-{signature}.wav"
+        with self._playable_lock:
+            if not path.is_file():
+                _run_playable_renderer(
+                    renderer=self.renderer_path,
+                    plugin=self.plugin_path,
+                    state_path=self.state_path,
+                    wav_path=path,
+                    parameter_values=vector_to_real(rounded, self.parameters),
+                    midi_key=midi_key,
+                    velocity=velocity,
+                )
+        return path
 
     def audio_path_for_url(self, url_path: str) -> Path:
         name = url_path.removeprefix("/audio/")

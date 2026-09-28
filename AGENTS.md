@@ -18,7 +18,7 @@ Do not create a separate frontend unless an independent frontend architecture be
 
 ## Current boundary
 
-Milestone 8A is a bounded direct real-synth search over Oscillator Detuning, Unison Spread, Cutoff, and Attack with Filter Type fixed. The transparent audio objective, fixed-budget CMA-ES, equal-budget random control, target secrecy/reveal, exact rerenders, complete history, and local read-only/live-control cockpit are authoritative. The browser remains a thin client of backend functions. Do not add public hosting, loudness normalization, Bayesian optimization, Filter Type search, semantic models, or LOCK until the corresponding milestone is explicitly authorized.
+Milestone 8B is a playable extension of the Milestone 8A patch cockpit. The editable working copy, real-CLAP rendered-note cache, on-screen and computer keyboards, optional browser Web MIDI input, piano range, velocity bounds, and explicit non-realtime limitation are authoritative. Search evidence remains immutable when the working copy is edited. The browser remains a thin client of backend functions. Do not add a native realtime host, public hosting, loudness normalization, new optimizers, Filter Type search, semantic models, or LOCK until the corresponding milestone is explicitly authorized.
 
 ## Invariants
 

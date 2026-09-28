@@ -2,7 +2,9 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 8A adds a live, direct real-synth CMA-ES search over four discovered continuous parameters. The fixed 160-evaluation run improved the audio objective by 86.8%, but equal-budget random search scored slightly better, so adaptive-search value is explicitly a failed gate; human audition remains pending and LOCK remains unimplemented.
+> **Status:** Milestone 8B turns the direct-search cockpit into a playable patch workbench. The current best can be loaded into four editable, plugin-discovered controls and played across the piano range with the on-screen keyboard, computer keys, or browser-supported USB MIDI. Notes are exact cached CLAP renders, not a low-latency native host; LOCK remains unimplemented.
+
+![Local playable patch cockpit showing reference playback, editable real-synth parameters, a two-octave keyboard, and search telemetry.](docs/assets/playable-cockpit.png)
 
 ## Core idea
 
@@ -55,6 +57,7 @@ The backend remains callable independently of the future Streamlit interface. Sy
 | 6 | Synthetic dataset | Traceable parameter/audio/feature examples |
 | 7 | Surrogate experiment | Reproducible training and honest held-out metrics; retained even if the model fails its gate |
 | 8A | Direct inverse search | Live real-synth CMA-ES, transparent audio objective, equal-budget random control, and audition |
+| 8B | Playable patch cockpit | Editable best patch, real-synth note renders, virtual/computer keyboard, and optional USB MIDI |
 | 9 | LOCK workflow | Save, reload, rerender, and compare exact patch state |
 
 Each milestone is delivered through a separate human-reviewed GitHub pull request. Milestone numbers and GitHub pull-request numbers are independent. Agents never merge pull requests.
@@ -100,7 +103,7 @@ To run the Milestone 8A direct real-synth search cockpit:
 scripts/run_direct_search.sh
 ```
 
-Open `http://127.0.0.1:8765`, press **Start search**, and audition Target, Starting Patch, and Current Best. Run `scripts/reproduce_direct_search.sh` separately to reproduce the fixed CMA-ES demonstration and equal-budget random-search control.
+Open `http://127.0.0.1:8765`, press **Start search**, and audition Target, Starting Patch, and Current Best. The **Playable patch** panel can load Current Best or Starting, edit the four searched parameters, and play two visible octaves; octave buttons cover the wider piano range, and **Connect USB MIDI** uses Web MIDI when the browser supports it. The computer keyboard follows Ableton's layout: `A S D F G H J K L` are white notes, `W E T Y U O` are black notes, `Z/X` changes octave, and `C/V` changes velocity. The first strike of a pitch/velocity/patch combination renders the real CLAP synth and may lag; later strikes use the local cache. Run `scripts/reproduce_direct_search.sh` separately to reproduce the fixed CMA-ES demonstration and equal-budget random-search control.
 
 To regenerate the ten DSP comparisons and open the read-only report:
 
@@ -150,6 +153,7 @@ Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 - `docs/dsp-features.md` — Milestone 5 descriptor formulas, real-synth evidence, report workflow, and limitations
 - `docs/synthetic-dataset.md` — Milestone 6 sampling contract, storage policy, evidence, explorer, and limitations
 - `docs/direct-real-synth-search.md` — Milestone 8A objective, live cockpit, benchmark, evidence, and honest failed gate
+- `docs/playable-cockpit.md` — Milestone 8B editable patch, keyboard inputs, rendered-note contract, and limitations
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents

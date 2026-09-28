@@ -35,6 +35,20 @@ class _FakeRun:
     def audio_path_for_url(self, path: str) -> Path:
         return self.audio
 
+    def render_playable_note(
+        self,
+        *,
+        source: str,
+        midi_key: int,
+        velocity: int,
+        normalized: list[float] | None = None,
+    ) -> Path:
+        if source != "custom" or midi_key != 60 or velocity != 96:
+            raise AssertionError("unexpected playable note request")
+        if normalized != [0.1, 0.2, 0.3, 0.4]:
+            raise AssertionError("unexpected playable patch")
+        return self.audio
+
     def start_search(self) -> dict[str, object]:
         self.status = "SEARCHING"
         return self.public_status()
@@ -58,6 +72,13 @@ class SearchCockpitTests(unittest.TestCase):
             "TARGET",
             "STARTING PATCH",
             "CURRENT BEST",
+            "Playable patch",
+            "CONNECT USB MIDI",
+            "LOAD CURRENT BEST",
+            "Edited patch ready",
+            "Computer keyboard (Ableton layout)",
+            "white notes A S D F G H J K L",
+            "Z/X changes octave",
             "REVEAL TARGET PARAMETERS",
         ):
             self.assertIn(text, page)
@@ -84,6 +105,14 @@ class SearchCockpitTests(unittest.TestCase):
                     self.assertEqual(json.load(response)["status"], "SEARCHING")
                 with urllib.request.urlopen(base + "/audio/target.wav", timeout=5) as response:
                     self.assertEqual(response.headers.get_content_type(), "audio/wav")
+                playable_url = (
+                    base
+                    + "/api/playable/note?source=custom&note=60&velocity=96"
+                    + "&values=0.1,0.2,0.3,0.4"
+                )
+                with urllib.request.urlopen(playable_url, timeout=5) as response:
+                    self.assertEqual(response.headers.get_content_type(), "audio/wav")
+                    self.assertEqual(response.read(), b"RIFF-test")
             finally:
                 server.shutdown()
                 server.server_close()
