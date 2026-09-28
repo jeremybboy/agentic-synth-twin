@@ -7,7 +7,8 @@
 - Repository: `jeremybboy/agentic-synth-twin`
 - Starting point: `main` at merge commit `44b531e`, after the playable-cockpit pull request was merged
 - Branch: `codex/milestone-9-surge-one-note`
-- Status: implemented and locally verified; pull request and owner acceptance pending
+- Pull request: [#13](https://github.com/jeremybboy/agentic-synth-twin/pull/13)
+- Status: implemented and locally verified; owner review and perceptual acceptance pending
 - Real synth: Surge XT CLAP `1.3.4`, plugin ID `org.surge-synth-team.surge-xt`
 
 ## Goal and user-visible workflow
