@@ -80,9 +80,13 @@ class SearchCockpitTests(unittest.TestCase):
             "white notes A S D F G H J K L",
             "Z/X changes octave",
             "REVEAL TARGET PARAMETERS",
+            "Select external target",
+            "/api/targets/select",
+            "[hidden]{display:none!important}",
         ):
             self.assertIn(text, page)
         self.assertNotIn("0.72, 0.68, 0.28, 0.62", page)
+        self.assertNotIn('id="targetSlider"', page)
 
     def test_loopback_server_exposes_status_controls_and_audio(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -99,7 +103,10 @@ class SearchCockpitTests(unittest.TestCase):
                 with urllib.request.urlopen(base + "/api/status", timeout=5) as response:
                     self.assertEqual(json.load(response)["status"], "IDLE")
                 request = urllib.request.Request(
-                    base + "/api/run/start", data=b"{}", method="POST"
+                    base + "/api/run/start",
+                    data=b"{}",
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
                 )
                 with urllib.request.urlopen(request, timeout=5) as response:
                     self.assertEqual(json.load(response)["status"], "SEARCHING")
@@ -133,11 +140,56 @@ class SearchCockpitTests(unittest.TestCase):
                 request = urllib.request.Request(
                     f"http://127.0.0.1:{server.server_port}/api/run/reset",
                     data=b"{}",
+                    headers={"Content-Type": "application/json"},
                     method="POST",
                 )
                 with self.assertRaises(urllib.error.HTTPError) as rejected:
                     urllib.request.urlopen(request, timeout=5)
                 self.assertEqual(rejected.exception.code, 404)
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join(timeout=5)
+
+    def test_external_target_selection_api_uses_discrete_json_contract(self) -> None:
+        class TargetRun(_FakeRun):
+            selected = "analog-sub-bass"
+
+            def targets_public(self) -> dict[str, object]:
+                return {"selected_target_id": self.selected, "targets": [
+                    {"target_id": "analog-sub-bass", "title": "Analog Sub Bass"},
+                    {"target_id": "fm-bell", "title": "FM Bell"},
+                ]}
+
+            def select_target(self, target_id: str) -> dict[str, object]:
+                if self.status in {"SEARCHING", "PAUSING", "PAUSED"}:
+                    raise RuntimeError("stop the active search")
+                self.selected = target_id
+                return self.targets_public()
+
+        with tempfile.TemporaryDirectory() as directory:
+            audio = Path(directory) / "audio.wav"
+            audio.write_bytes(b"RIFF-test")
+            run = TargetRun(audio)
+            server = create_cockpit_server(run, host="127.0.0.1", port=0)
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            base = f"http://127.0.0.1:{server.server_port}"
+            try:
+                with urllib.request.urlopen(base + "/api/targets", timeout=5) as response:
+                    self.assertEqual(len(json.load(response)["targets"]), 2)
+                request = urllib.request.Request(
+                    base + "/api/targets/select",
+                    data=json.dumps({"target_id": "fm-bell"}).encode(),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(request, timeout=5) as response:
+                    self.assertEqual(json.load(response)["selected_target_id"], "fm-bell")
+                run.status = "SEARCHING"
+                with self.assertRaises(urllib.error.HTTPError) as rejected:
+                    urllib.request.urlopen(request, timeout=5)
+                self.assertEqual(rejected.exception.code, 409)
             finally:
                 server.shutdown()
                 server.server_close()

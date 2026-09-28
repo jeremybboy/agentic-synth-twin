@@ -2,9 +2,9 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 9 additively extends the playable cockpit with a synth-adapter boundary, Surge XT 1.3.4 factory-preset retrieval, and bounded one-note local refinement. Target, Base, and Best remain playable through the same on-screen keyboard, computer keys, and browser-supported USB MIDI path. Notes are exact cached CLAP renders, not a low-latency native host; multi-note validation and LOCK remain unimplemented.
+> **Status:** Milestone 9 now exposes ten named external C3 references in the existing playable cockpit. Selecting one reuses a hash-bound real-Surge preset cache, ranks the closest five eligible factory states, and prepares a fresh target-specific eight-control CMA-ES run; search starts only when the user presses **Start Search**. Base and Best remain playable and editable through the same on-screen keyboard, Ableton-style computer keys, and browser-supported USB MIDI path. This is fixed one-note objective matching, not proof of instrument identity or perceptual equivalence; human listening, multi-note validation, and LOCK remain incomplete.
 
-![Milestone 9 flow from target note through bounded Surge XT preset retrieval and local refinement, with the existing playable cockpit and keyboard preserved.](docs/assets/milestone-9-surge-one-note-visual.png)
+![Milestone 9 implementation map: ten external procedural targets reuse one real Surge preset cache, produce a Top 5 and Base, then enter the preserved playable refinement cockpit.](docs/assets/milestone-9-external-target-bank.svg)
 
 ![Local playable patch cockpit showing reference playback, editable real-synth parameters, a two-octave keyboard, and search telemetry.](docs/assets/playable-cockpit.png)
 
@@ -60,7 +60,7 @@ The backend remains callable independently of the future Streamlit interface. Sy
 | 7 | Surrogate experiment | Reproducible training and honest held-out metrics; retained even if the model fails its gate |
 | 8A | Direct inverse search | Live real-synth CMA-ES, transparent audio objective, equal-budget random control, and audition |
 | 8B | Playable patch cockpit | Editable best patch, real-synth note renders, virtual/computer keyboard, and optional USB MIDI |
-| 9 | Surge one-note match | Bounded factory retrieval, eight-control local refinement, equal-budget random control, and preserved playable cockpit |
+| 9 | Surge one-note match | Ten selectable external references, shared eligible-preset retrieval, eight-control local refinement, preserved playable cockpit, and hidden-target regression fixture |
 | 10 | LOCK workflow | Save, reload, rerender, and compare exact patch state |
 
 Each milestone is delivered through a separate human-reviewed GitHub pull request. Milestone numbers and GitHub pull-request numbers are independent. Agents never merge pull requests.
@@ -91,6 +91,7 @@ scripts/run_direct_search.sh
 scripts/reproduce_direct_search.sh
 scripts/run_surge_match.sh
 scripts/reproduce_surge_match.sh
+scripts/validate_external_targets.sh
 ```
 
 To regenerate and inspect the Milestone 6 dataset:
@@ -116,9 +117,9 @@ To run Milestone 9 through the same cockpit with Surge XT:
 scripts/run_surge_match.sh
 ```
 
-Open `http://127.0.0.1:8879`. Initial startup downloads checksum-pinned Surge XT 1.3.4 plugin/content artifacts into ignored `work/`, compiles the local CLAP helpers, and builds the bounded preset index before the server appears. Target, the Top 5 retrieved presets, Base, and Best are directly auditionable; Base and Best use the unchanged piano/computer/Web MIDI working-patch path. Run `scripts/reproduce_surge_match.sh` for the frozen full experiment and equal-budget control.
+Open `http://127.0.0.1:8879`. Initial startup downloads checksum-pinned Surge XT 1.3.4 plugin/content artifacts into ignored `work/`, compiles the local CLAP helpers, and builds one target-independent eligible-preset cache before the server appears. Choose any of the ten named targets, audition its exact external WAV and Top 5, inspect the selected Base, then press **Start Search**; selection alone never starts CMA-ES. Target switching is disabled during an active/paused search, and every target receives separate run history, audio, hashes, and state. Base and Best use the unchanged piano/computer/Web MIDI working-patch path.
 
-The frozen run accepted 65 of 120 attempted factory presets after deterministic/non-silent/non-clipping screening. CMA-ES reduced the selected Base loss from `0.28177` to `0.02897` (89.7%); equal-budget random reached `0.18438`, and the final Best rerender was byte-identical. These are automated one-note results only—owner Target/Base/Best listening remains pending.
+Real-plugin validation attempted 120 bounded presets and retained 39 that were deterministic, audible, unclipped, and exposed the exact authorized eight-control inventory. The same cache ranked all ten targets. Three 120-evaluation searches reduced objective loss by `12.83%` (Analog Sub Bass), `0.96%` (Plucked Electric Guitar), and `33.27%` (Rhodes-style Electric Piano); every final Best matched its independent real-Surge rerender byte-for-byte. These are automated proxy results only—owner Target/Base/Best listening remains pending. Run `scripts/reproduce_surge_match.sh` for the original reachable hidden-target regression and equal-budget random control.
 
 To regenerate the ten DSP comparisons and open the read-only report:
 

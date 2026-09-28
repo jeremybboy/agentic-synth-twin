@@ -12,6 +12,7 @@ probe="$repository_root/work/bin/clap-probe-surge"
 output=${1:-"$repository_root/work/milestone-9-live"}
 port=${2:-8879}
 python_bin=${PYTHON_BIN:-"$repository_root/.venv/bin/python3"}
+targets="$repository_root/examples/targets/external-v1"
 
 "$repository_root/scripts/setup_surge_xt.sh" >/dev/null
 if [ ! -x "$python_bin" ]; then
@@ -24,5 +25,6 @@ PYTHONPATH="$repository_root/src" "$python_bin" -m agentic_synth_twin.surge_matc
     --renderer "$renderer" \
     --probe "$probe" \
     --output "$output" \
+    --targets "$targets" \
     --host 127.0.0.1 \
     --port "$port"

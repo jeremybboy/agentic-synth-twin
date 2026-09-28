@@ -46,7 +46,7 @@ The human supplies sonic intent, evaluates controlled A/B movements, chooses act
 
 ### Experiment controller
 
-The controller coordinates deterministic auditions and records configuration, seeds, parameter states, judgments, artifact paths, and lifecycle status. It does not implement plugin hosting, signal analysis, or model training.
+The controller coordinates deterministic auditions and records configuration, seeds, parameter states, judgments, artifact paths, and lifecycle status. Milestone 9 adds an external-target controller: it owns the selected immutable target and target-specific run while referencing one target-independent preset-render cache. Changing target is rejected during active or paused search, and a completed target's history, state, hashes, and audio are never reused as another target's run. The controller does not implement plugin hosting, signal analysis, or model training.
 
 ### CLAP host, synth adapter, and synth controllers
 
@@ -64,7 +64,7 @@ Milestone 5 implements deterministic whole-file RMS and peak, power-spectrum cen
 
 The Milestone 7 surrogate experiment is separate evidence about predicting descriptors in a bounded sampled region. Milestone 8A intentionally bypasses it: bounded CMA-ES proposes four normalized continuous parameters, every proposal is rendered on the real synth, and a transparent multi-resolution spectral, envelope, and loudness objective scores the resulting WAV. An equal-budget random search is the scientific control; the fixed demonstration did not establish CMA-ES superiority.
 
-Milestone 9 keeps the same transparent objective but changes initialization. A bounded, category-balanced factory subset is rendered under the same C3 contract; the closest real preset becomes the base, and CMA-ES refines only eight discovered continuous controls. The random control receives the same target, base state, controls, bounds, objective, and budget. This is one-note timbre matching only; other keyboard notes are exploratory audition.
+Milestone 9 keeps the same transparent objective but changes initialization. Ten canonical non-Surge procedural C3 WAVs are validated against an exact manifest and presented as discrete targets. A bounded, category-balanced factory subset is rendered once under the same C3 contract; only presets exposing the exact authorized eight-control inventory remain eligible. Each target rescores that shared cache, the closest eligible real preset becomes its Base, and CMA-ES refines those eight controls only after the user starts search. The equal-budget random control and 25% gate remain attached to the separately reproducible hidden reachable-target regression; interactive external-target runs omit that extra latency. This is one-note timbre matching only; other keyboard notes are exploratory audition.
 
 ### Real synth verification, human validation, and LOCK
 
@@ -79,7 +79,7 @@ Names may evolve as evidence arrives, but the backend should expose operations e
 - human calibration: `generate_probe`, `record_probe_answer`
 - learning/search: `generate_dataset`, `train_surrogate`, `optimize_target`
 - direct search: `create_search_run`, `compute_audio_objective`, `benchmark_random_search`
-- synth adapters and rich-preset matching: `ClapSynthAdapter`, `SurgeXTAdapter`, `create_surge_match_run`
+- synth adapters and rich-preset matching: `ClapSynthAdapter`, `SurgeXTAdapter`, `create_surge_match_run`, `create_external_target_controller`
 - playable audition: `render_playable_note` with an explicit patch vector, MIDI key, and velocity
 - authority/reproducibility: `verify_candidate`, `lock_patch`
 

@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+import hashlib
 from pathlib import Path
 
 from agentic_synth_twin.search_cockpit import render_cockpit_page
@@ -9,9 +10,11 @@ from agentic_synth_twin.surge_match import (
     SurgeMatchError,
     SurgeMatchRun,
     discover_active_parameters,
+    prepare_shared_preset_cache,
     vector_from_current,
     vector_to_real,
 )
+from agentic_synth_twin.synth_adapter import PresetRef
 
 
 def inventory():
@@ -104,6 +107,72 @@ class SurgeMatchTests(unittest.TestCase):
     def test_deterministic_overrides_cover_both_scenes(self):
         self.assertEqual(len(DETERMINISTIC_OVERRIDES), 6)
         self.assertEqual(set(DETERMINISTIC_OVERRIDES.values()), {1.0})
+
+    def test_shared_cache_excludes_incompatible_inventory_and_is_reused(self):
+        class FakeAdapter:
+            def __init__(self, root):
+                self.plugin_path = root / "Surge XT.clap"
+                binary = self.plugin_path / "Contents/MacOS/Surge XT"
+                binary.parent.mkdir(parents=True)
+                binary.write_bytes(b"plugin")
+                self.deterministic_overrides = DETERMINISTIC_OVERRIDES
+                self.extract_calls = 0
+                self.render_calls = 0
+                self.presets = []
+                for number in range(6):
+                    path = root / f"preset-{number}.fxp"
+                    path.write_bytes(f"preset-{number}".encode())
+                    self.presets.append(PresetRef(
+                        name=f"Preset {number}",
+                        category="Test",
+                        path=path,
+                        relative_path=(
+                            "Basses/Attacky.fxp" if number == 0 else f"Test/{number}.fxp"
+                        ),
+                    ))
+
+            def bounded_factory_presets(self, limit, required_relative_path):
+                self.assert_contract = (limit, required_relative_path)
+                return self.presets
+
+            def extract_preset_state(self, preset, state_path):
+                self.extract_calls += 1
+                Path(state_path).write_bytes(preset.path.read_bytes())
+                return {"state_sha256": hashlib.sha256(preset.path.read_bytes()).hexdigest()}
+
+            def inspect_state(self, state_path):
+                data = Path(state_path).read_text()
+                result = inventory()
+                if data == "preset-5":
+                    result["parameters"][0]["name"] = "A Osc 1 Morph"
+                result["plugin"] = {"id": "surge", "name": "Surge XT", "version": "test"}
+                return result
+
+            def render_verified(self, *, wav_path, **_kwargs):
+                self.render_calls += 1
+                Path(wav_path).write_bytes(b"RIFF" + str(wav_path).encode())
+                return {
+                    "wav_sha256": hashlib.sha256(Path(wav_path).read_bytes()).hexdigest(),
+                    "peak_float": 0.5,
+                    "byte_identical": True,
+                }
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            adapter = FakeAdapter(root)
+            first = prepare_shared_preset_cache(
+                adapter=adapter, cache_root=root / "cache", preset_limit=6
+            )
+            self.assertEqual(len(first.entries), 5)
+            self.assertEqual(len(first.failures), 1)
+            self.assertIn("identity changed", first.failures[0]["error"])
+            self.assertEqual(adapter.render_calls, 5)
+            second = prepare_shared_preset_cache(
+                adapter=adapter, cache_root=root / "cache", preset_limit=6
+            )
+            self.assertTrue(second.reused)
+            self.assertEqual(adapter.render_calls, 5)
+            self.assertEqual(second.identity_sha256, first.identity_sha256)
 
 
 if __name__ == "__main__":

@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import hashlib
 import json
 import math
 import random
+import shutil
 import threading
 import time
 import uuid
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -25,6 +28,7 @@ from .direct_search import (
     prepare_audio_reference,
     spectrogram_preview,
 )
+from .external_targets import ExternalTarget, ExternalTargetBank
 from .synth_adapter import PresetRef, SurgeXTAdapter, SynthAdapterError, sha256_file
 
 
@@ -149,6 +153,195 @@ def vector_from_current(parameters: Sequence[Mapping[str, Any]]) -> list[float]:
     return values
 
 
+@dataclass(frozen=True)
+class SurgePresetCache:
+    """Target-independent, hash-attributed real Surge preset renders."""
+
+    identity_sha256: str
+    directory: Path
+    synth_plugin: Mapping[str, Any]
+    selected_count: int
+    entries: tuple[Mapping[str, Any], ...]
+    failures: tuple[Mapping[str, str], ...]
+    reused: bool
+
+
+def _preset_cache_identity(
+    adapter: SurgeXTAdapter,
+    presets: Sequence[PresetRef],
+    preset_limit: int,
+) -> tuple[str, dict[str, Any]]:
+    plugin_binary = adapter.plugin_path / "Contents/MacOS/Surge XT"
+    payload = {
+        "schema": "agentic-synth-twin/surge-preset-cache/v1",
+        "plugin_bundle": adapter.plugin_path.name,
+        "plugin_binary_sha256": sha256_file(plugin_binary),
+        "preset_limit": preset_limit,
+        "presets": [
+            {
+                "relative_path": preset.relative_path,
+                "sha256": sha256_file(preset.path),
+            }
+            for preset in presets
+        ],
+        "audition": {
+            "midi_key": MIDI_KEY,
+            "velocity": VELOCITY,
+            "sample_rate": SAMPLE_RATE,
+            "note_frames": NOTE_FRAMES,
+            "tail_frames": TAIL_FRAMES,
+            "block_size": 64,
+        },
+        "deterministic_overrides": {
+            str(key): value for key, value in sorted(adapter.deterministic_overrides.items())
+        },
+        "selection": (
+            "deterministic category-round-robin before target scoring; "
+            "eligible presets must expose the exact authorized eight-parameter inventory"
+        ),
+    }
+    digest = hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return digest, payload
+
+
+def _load_valid_preset_cache(
+    cache_file: Path, expected_identity: str
+) -> SurgePresetCache | None:
+    if not cache_file.is_file():
+        return None
+    try:
+        payload = json.loads(cache_file.read_text(encoding="utf-8"))
+        if payload.get("identity_sha256") != expected_identity:
+            return None
+        entries = payload["entries"]
+        if not isinstance(entries, list) or len(entries) < 5:
+            return None
+        for entry in entries:
+            state_path = Path(entry["state_path"])
+            audio_path = Path(entry["audio_path"])
+            if (
+                not state_path.is_file()
+                or not audio_path.is_file()
+                or sha256_file(state_path) != entry["state_sha256"]
+                or sha256_file(audio_path) != entry["wav_sha256"]
+            ):
+                return None
+        return SurgePresetCache(
+            identity_sha256=expected_identity,
+            directory=cache_file.parent,
+            synth_plugin=payload["synth_plugin"],
+            selected_count=int(payload["selected_count"]),
+            entries=tuple(entries),
+            failures=tuple(payload.get("failures", [])),
+            reused=True,
+        )
+    except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
+        return None
+
+
+def prepare_shared_preset_cache(
+    *,
+    adapter: SurgeXTAdapter,
+    cache_root: str | Path,
+    preset_limit: int,
+) -> SurgePresetCache:
+    """Build or reuse real preset renders independently of any target audio."""
+
+    presets = adapter.bounded_factory_presets(
+        preset_limit, required_relative_path=TARGET_PRESET
+    )
+    identity, identity_payload = _preset_cache_identity(adapter, presets, preset_limit)
+    directory = Path(cache_root).resolve() / identity[:20]
+    cache_file = directory / "cache.json"
+    cached = _load_valid_preset_cache(cache_file, identity)
+    if cached is not None:
+        return cached
+    directory.mkdir(parents=True, exist_ok=True)
+    state_directory = directory / "states"
+    audio_directory = directory / "audio"
+    state_directory.mkdir(exist_ok=True)
+    audio_directory.mkdir(exist_ok=True)
+
+    def render_entry(item: tuple[int, PresetRef]) -> dict[str, Any]:
+        ordinal, preset = item
+        slug = f"preset-{ordinal:03d}"
+        state_path = state_directory / f"{slug}.bin"
+        wav_path = audio_directory / f"{slug}.wav"
+        provenance = adapter.extract_preset_state(preset, state_path)
+        inventory = adapter.inspect_state(state_path)
+        discover_active_parameters(inventory)
+        rendered = adapter.render_verified(
+            state_path=state_path,
+            wav_path=wav_path,
+            parameter_values={},
+            midi_key=MIDI_KEY,
+            velocity=VELOCITY,
+            note_frames=NOTE_FRAMES,
+        )
+        if float(rendered["peak_float"]) <= 0:
+            raise SurgeMatchError("preset render is silent")
+        return {
+            "preset_name": preset.name,
+            "preset_category": preset.category,
+            "preset_relative_path": preset.relative_path,
+            "state_path": str(state_path),
+            "audio_path": str(wav_path),
+            "active_parameter_ids": list(ACTIVE_PARAMETER_IDS),
+            **provenance,
+            "wav_sha256": rendered["wav_sha256"],
+            "peak_float": rendered["peak_float"],
+            "deterministic": rendered["byte_identical"],
+        }
+
+    entries: list[dict[str, Any]] = []
+    failures: list[dict[str, str]] = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        futures = {
+            executor.submit(render_entry, item): item[1]
+            for item in enumerate(presets, start=1)
+        }
+        for future in concurrent.futures.as_completed(futures):
+            preset = futures[future]
+            try:
+                entries.append(future.result())
+            except (SynthAdapterError, SurgeMatchError, OSError, ValueError) as error:
+                failures.append(
+                    {
+                        "preset": preset.relative_path,
+                        "error": f"{type(error).__name__}: {error}",
+                    }
+                )
+    entries.sort(key=lambda row: row["preset_relative_path"])
+    failures.sort(key=lambda row: row["preset"])
+    if len(entries) < 5:
+        raise SurgeMatchError("fewer than five deterministic factory presets were cached")
+    first_inventory = adapter.inspect_state(entries[0]["state_path"])
+    synth_plugin = dict(first_inventory["plugin"])
+    payload = {
+        "schema": "agentic-synth-twin/surge-preset-cache/v1",
+        "identity_sha256": identity,
+        "identity": identity_payload,
+        "synth_plugin": synth_plugin,
+        "selected_count": len(presets),
+        "indexed_count": len(entries),
+        "failed_count": len(failures),
+        "entries": entries,
+        "failures": failures,
+    }
+    _write_json_atomic(payload, cache_file)
+    return SurgePresetCache(
+        identity_sha256=identity,
+        directory=directory,
+        synth_plugin=synth_plugin,
+        selected_count=len(presets),
+        entries=tuple(entries),
+        failures=tuple(failures),
+        reused=False,
+    )
+
+
 class SurgeMatchRun:
     """Thread-safe preset retrieval plus ask/render/score/tell controller."""
 
@@ -161,6 +354,8 @@ class SurgeMatchRun:
         generations: int = DEFAULT_GENERATIONS,
         population_size: int = DEFAULT_POPULATION,
         seed: int = SEARCH_SEED,
+        shared_cache: SurgePresetCache | None = None,
+        random_control_enabled: bool = True,
     ) -> None:
         if generations < 1 or population_size < 2 or preset_limit < 5:
             raise SurgeMatchError("invalid preset or local-search budget")
@@ -175,6 +370,8 @@ class SurgeMatchRun:
         self.population_size = population_size
         self.budget = generations * population_size
         self.seed = seed
+        self.shared_cache = shared_cache
+        self.random_control_enabled = random_control_enabled
         self.run_id = f"m9-{uuid.uuid4().hex[:12]}"
         self.created_at = _now()
         self.status = "IDLE"
@@ -237,71 +434,50 @@ class SurgeMatchRun:
             "real": target_values,
             "base_preset": TARGET_PRESET,
         }
+        self.target_identity = {
+            "mode": "hidden-surge-regression",
+            "target_id": "hidden-surge-regression",
+            "title": "Hidden Surge Regression Target",
+            "file_name": self.target_path.name,
+            "sha256": self.target["wav_sha256"],
+        }
         self.reference = prepare_audio_reference(self.target_path)
-
-        def render_index_entry(item: tuple[int, PresetRef]) -> dict[str, Any]:
-            ordinal, preset = item
-            slug = f"preset-{ordinal:03d}"
-            state_path = self.state_directory / f"{slug}.bin"
-            wav_path = self.audio_directory / "presets" / f"{slug}.wav"
-            provenance = self.adapter.extract_preset_state(preset, state_path)
-            rendered = self.adapter.render_verified(
-                state_path=state_path,
-                wav_path=wav_path,
-                parameter_values={},
-                midi_key=MIDI_KEY,
-                velocity=VELOCITY,
-                note_frames=NOTE_FRAMES,
+        if self.shared_cache is None:
+            self.shared_cache = prepare_shared_preset_cache(
+                adapter=self.adapter,
+                cache_root=self.output_directory / "shared-preset-cache",
+                preset_limit=self.preset_limit,
             )
-            if float(rendered["peak_float"]) <= 0:
-                raise SurgeMatchError("preset render is silent")
-            objective = compute_audio_objective(self.reference, wav_path)
-            return {
-                "preset_name": preset.name,
-                "preset_category": preset.category,
-                "preset_relative_path": preset.relative_path,
-                "state_path": str(state_path),
-                "audio_path": str(wav_path),
-                "audio_url": f"/audio/presets/{wav_path.name}",
-                **provenance,
-                **objective,
-                "wav_sha256": rendered["wav_sha256"],
-                "peak_float": rendered["peak_float"],
-                "deterministic": rendered["byte_identical"],
-            }
+        self._rank_cache_and_initialize()
 
+    def _rank_cache_and_initialize(self) -> None:
+        assert self.shared_cache is not None
         ranking: list[dict[str, Any]] = []
-        failures: list[dict[str, str]] = []
-        indexed_presets = list(enumerate(presets, start=1))
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-            futures = {
-                executor.submit(render_index_entry, item): item[1]
-                for item in indexed_presets
-            }
-            for future in concurrent.futures.as_completed(futures):
-                preset = futures[future]
-                try:
-                    ranking.append(future.result())
-                except (SynthAdapterError, SurgeMatchError, OSError, ValueError) as error:
-                    failures.append(
-                        {
-                            "preset": preset.relative_path,
-                            "error": f"{type(error).__name__}: {error}",
-                        }
-                    )
+        for entry in self.shared_cache.entries:
+            objective = compute_audio_objective(self.reference, entry["audio_path"])
+            ranking.append({**entry, **objective})
         ranking.sort(key=lambda row: (row["total_loss"], row["preset_relative_path"]))
         if len(ranking) < 5:
             raise SurgeMatchError("fewer than five deterministic factory presets were indexed")
         for rank, row in enumerate(ranking, start=1):
             row["rank"] = rank
+            if rank <= 5:
+                destination = self.audio_directory / "presets" / f"rank-{rank:02d}.wav"
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(row["audio_path"], destination)
+                if sha256_file(destination) != row["wav_sha256"]:
+                    raise SurgeMatchError("copied preset WAV hash differs from shared cache")
+                row["audio_url"] = f"/audio/presets/{destination.name}"
         self.preset_ranking = ranking
-        self.preset_failures = failures
+        self.preset_failures = list(self.shared_cache.failures)
         self.base_preset = ranking[0]
         base_state = Path(self.base_preset["state_path"])
         self.base_state_path = self.state_directory / "selected-base.bin"
         self.base_state_path.write_bytes(base_state.read_bytes())
         base_inventory = self.adapter.inspect_state(self.base_state_path)
         self.synth_plugin = dict(base_inventory["plugin"])
+        if self.synth_plugin != dict(self.shared_cache.synth_plugin):
+            raise SurgeMatchError("shared preset cache plugin identity changed")
         self.parameters = discover_active_parameters(base_inventory)
         self.start_vector = vector_from_current(self.parameters)
         self.start = self.adapter.render_verified(
@@ -315,6 +491,10 @@ class SurgeMatchRun:
         self.start.update(compute_audio_objective(self.reference, self.start_path))
         self.best = {
             "run_id": self.run_id,
+            "target_id": self.target_identity["target_id"],
+            "target_title": self.target_identity["title"],
+            "target_file_name": self.target_identity["file_name"],
+            "target_wav_sha256": self.target_identity["sha256"],
             "generation": 0,
             "candidate_index": 0,
             "total_evaluations": 0,
@@ -349,16 +529,22 @@ class SurgeMatchRun:
             "schema": SCHEMA,
             "surge": self.synth_plugin,
             "target_wav_sha256": self.target["wav_sha256"],
+            "target": self.target_identity,
+            "preset_cache_identity_sha256": self.shared_cache.identity_sha256,
+            "preset_cache_reused": self.shared_cache.reused,
             "scope": "factory presets only",
-            "selected_count": len(presets),
+            "selected_count": self.shared_cache.selected_count,
             "indexed_count": len(ranking),
-            "failed_count": len(failures),
-            "selection": "deterministic category-round-robin, bounded before target scoring",
+            "failed_count": len(self.preset_failures),
+            "selection": (
+                "deterministic category-round-robin, bounded before target scoring; "
+                "exact authorized eight-parameter inventory required before ranking"
+            ),
             "index_workers": 4,
             "audition": self._audition_contract(),
             "objective": objective_definition(),
             "entries": ranking,
-            "failures": failures,
+            "failures": self.preset_failures,
         }
         _write_json_atomic(index, self.output_directory / "preset-index.json")
 
@@ -510,7 +696,9 @@ class SurgeMatchRun:
                 self.status = "STOPPED" if self._stop_requested else "COMPLETE"
                 self.stopping_reason = "user_stop" if self._stop_requested else "fixed_budget_exhausted"
                 self._verify_final_best()
-                self.random_control = self._run_random_control()
+                self.random_control = (
+                    self._run_random_control() if self.random_control_enabled else None
+                )
                 self._persist()
         except Exception as error:
             with self._lock:
@@ -540,6 +728,10 @@ class SurgeMatchRun:
             is_new_best = objective["total_loss"] < prior
             record = {
                 "run_id": self.run_id,
+                "target_id": self.target_identity["target_id"],
+                "target_title": self.target_identity["title"],
+                "target_file_name": self.target_identity["file_name"],
+                "target_wav_sha256": self.target_identity["sha256"],
                 "generation": generation,
                 "candidate_index": candidate_index,
                 "total_evaluations": evaluation,
@@ -663,6 +855,7 @@ class SurgeMatchRun:
                 "objective": objective_definition(),
                 "generation_summaries": list(self.generation_summaries),
                 "target_audio_url": "/audio/target.wav",
+                "target": dict(self.target_identity),
                 "starting_audio_url": "/audio/base-preset.wav",
                 "best_audio_url": self.best["audio_url"] if self.best else None,
                 "base_label": "BASE SURGE PRESET",
@@ -690,6 +883,12 @@ class SurgeMatchRun:
                 "stopping_reason": self.stopping_reason,
                 "final_verification": self.final_verification,
                 "random_control": self.random_control,
+                "random_control_enabled": self.random_control_enabled,
+                "preset_cache": {
+                    "identity_sha256": self.shared_cache.identity_sha256,
+                    "reused": self.shared_cache.reused,
+                    "indexed_count": len(self.shared_cache.entries),
+                },
                 "success_gate_percent": SUCCESS_GATE_PERCENT,
             }
             if self.revealed:
@@ -730,9 +929,12 @@ class SurgeMatchRun:
                 "release_artifacts": SURGE_ARTIFACTS,
                 "path": str(self.adapter.factory_data_path),
                 "scope": "factory presets only",
-                "selected": self.preset_limit,
-                "indexed": len(self.preset_ranking),
+                "selected": self.shared_cache.selected_count,
+                "indexed": len(self.shared_cache.entries),
                 "failures": self.preset_failures,
+                "cache_identity_sha256": self.shared_cache.identity_sha256,
+                "cache_directory": str(self.shared_cache.directory),
+                "cache_reused": self.shared_cache.reused,
             },
             "audition": self._audition_contract(),
             "hidden_target": self.target,
@@ -848,10 +1050,253 @@ class SurgeMatchRun:
             self._thread.join(timeout=timeout)
 
 
+class ExternalSurgeMatchRun(SurgeMatchRun):
+    """One target-specific real Surge run initialized from a shared preset cache."""
+
+    def __init__(
+        self,
+        *,
+        target: ExternalTarget,
+        shared_cache: SurgePresetCache,
+        **kwargs: Any,
+    ) -> None:
+        self.external_target = target
+        super().__init__(
+            shared_cache=shared_cache,
+            random_control_enabled=False,
+            **kwargs,
+        )
+
+    def _prepare_target_and_index(self) -> None:
+        shutil.copyfile(self.external_target.path, self.target_path)
+        if sha256_file(self.target_path) != self.external_target.sha256:
+            raise SurgeMatchError("external target copy differs from canonical fixture")
+        self.target = {
+            "mode": "external-procedural-reference",
+            "target_id": self.external_target.target_id,
+            "title": self.external_target.title,
+            "file_name": self.external_target.file_name,
+            "wav_path": str(self.target_path),
+            "wav_sha256": self.external_target.sha256,
+            "source_wav_sha256": self.external_target.sha256,
+            "surge_used": False,
+            "third_party_samples_used": False,
+            "preset_library_used": False,
+        }
+        self.target_identity = {
+            "mode": "external-procedural-reference",
+            **self.external_target.public_record(),
+        }
+        self.target_preset_provenance = {
+            "mode": "external-procedural-reference",
+            "state_path": None,
+            "wav_sha256": self.external_target.sha256,
+        }
+        self.reference = prepare_audio_reference(self.target_path)
+        self._rank_cache_and_initialize()
+
+    def reveal_target(self) -> dict[str, Any]:
+        raise SurgeMatchError("external targets have no hidden Surge parameters")
+
+    def public_status(self) -> dict[str, Any]:
+        payload = super().public_status()
+        payload.update(
+            {
+                "external_target_mode": True,
+                "target_audio_url": (
+                    f"/audio/target.wav?target={self.external_target.target_id}"
+                    f"&sha={self.external_target.sha256[:12]}"
+                ),
+                "target_provenance": (
+                    "External procedural reference · not generated by Surge XT"
+                ),
+                "can_reveal": False,
+                "target_revealed": False,
+                "success_gate_percent": None,
+            }
+        )
+        payload.pop("target_parameters", None)
+        return payload
+
+    def private_evidence(self) -> dict[str, Any]:
+        payload = super().private_evidence()
+        payload.pop("hidden_target", None)
+        payload.pop("hidden_target_preset_provenance", None)
+        payload["external_target"] = dict(self.target)
+        payload["predeclared_success"] = {
+            "implementation": "target-specific retrieval and verified real-Surge rerender",
+            "local_optimization": "best encountered loss must not exceed Base",
+            "human_listening": "PENDING_OWNER_AUDITION",
+        }
+        payload["limitations"] = [
+            "The objective is a transparent proxy, not human perceptual equivalence.",
+            "Only C3 at one velocity and duration is optimized and validated.",
+            "The target is an external procedural reference, not an instrument identity claim.",
+            "Playing other notes is exploratory listening, not multi-note validation.",
+        ]
+        return payload
+
+    def render_playable_note(self, **kwargs: Any) -> Path:
+        if kwargs.get("source") == "target":
+            raise SurgeMatchError("an external WAV is not a playable synth state")
+        return super().render_playable_note(**kwargs)
+
+
+class ExternalTargetController:
+    """Own target selection while reusing one immutable real-preset render cache."""
+
+    def __init__(
+        self,
+        *,
+        adapter: SurgeXTAdapter,
+        target_bank: ExternalTargetBank,
+        output_directory: str | Path,
+        preset_limit: int = DEFAULT_PRESET_LIMIT,
+        generations: int = DEFAULT_GENERATIONS,
+        population_size: int = DEFAULT_POPULATION,
+        seed: int = SEARCH_SEED,
+    ) -> None:
+        self.adapter = adapter
+        self.target_bank = target_bank
+        self.output_directory = Path(output_directory).resolve()
+        self.output_directory.mkdir(parents=True, exist_ok=True)
+        self.preset_limit = preset_limit
+        self.generations = generations
+        self.population_size = population_size
+        self.seed = seed
+        self._lock = threading.RLock()
+        self.shared_cache = prepare_shared_preset_cache(
+            adapter=adapter,
+            cache_root=self.output_directory / "shared-preset-cache",
+            preset_limit=preset_limit,
+        )
+        self._runs: list[ExternalSurgeMatchRun] = []
+        self._latest_by_target: dict[str, dict[str, Any]] = {}
+        self.active_run = self._new_run(self.target_bank.targets[0])
+
+    @property
+    def status(self) -> str:
+        return self.active_run.status
+
+    def _new_run(self, target: ExternalTarget) -> ExternalSurgeMatchRun:
+        run_directory = (
+            self.output_directory
+            / "targets"
+            / target.target_id
+            / f"run-{uuid.uuid4().hex[:12]}"
+        )
+        run = ExternalSurgeMatchRun(
+            adapter=self.adapter,
+            target=target,
+            shared_cache=self.shared_cache,
+            output_directory=run_directory,
+            preset_limit=self.preset_limit,
+            generations=self.generations,
+            population_size=self.population_size,
+            seed=self.seed,
+        )
+        self._runs.append(run)
+        return run
+
+    def targets_public(self) -> dict[str, Any]:
+        with self._lock:
+            records = []
+            for target in self.target_bank.targets:
+                record = target.public_record()
+                summary = self._latest_by_target.get(target.target_id)
+                if target.target_id == self.active_run.external_target.target_id:
+                    summary = self.active_run.public_status()
+                record["status"] = summary["status"] if summary else None
+                record["best_loss"] = summary["best_loss"] if summary else None
+                records.append(record)
+            return {
+                "schema": "agentic-synth-twin/external-target-bank/v1",
+                "bank_identity_sha256": self.target_bank.identity_sha256,
+                "selected_target_id": self.active_run.external_target.target_id,
+                "targets": records,
+            }
+
+    def select_target(self, target_id: str) -> dict[str, Any]:
+        with self._lock:
+            if self.active_run.status in {"SEARCHING", "PAUSING", "PAUSED"}:
+                raise SurgeMatchError("stop the active search before selecting another target")
+            self._latest_by_target[
+                self.active_run.external_target.target_id
+            ] = self.active_run.public_status()
+            target = self.target_bank.target(target_id)
+            self.active_run = self._new_run(target)
+            return self.public_status()
+
+    def public_status(self) -> dict[str, Any]:
+        with self._lock:
+            payload = self.active_run.public_status()
+            payload["targets"] = self.target_bank.public_records()
+            payload["selected_target_id"] = self.active_run.external_target.target_id
+            payload["target_bank_identity_sha256"] = self.target_bank.identity_sha256
+            payload["preset_cache"]["reused_for_target_switch"] = len(self._runs) > 1
+            return payload
+
+    def history_public(self) -> list[dict[str, Any]]:
+        with self._lock:
+            return self.active_run.history_public()
+
+    def spectra_public(self) -> dict[str, Any]:
+        with self._lock:
+            return self.active_run.spectra_public()
+
+    def audio_path_for_url(self, url_path: str) -> Path:
+        with self._lock:
+            return self.active_run.audio_path_for_url(url_path)
+
+    def render_playable_note(self, **kwargs: Any) -> Path:
+        with self._lock:
+            return self.active_run.render_playable_note(**kwargs)
+
+    def start_search(self) -> dict[str, Any]:
+        with self._lock:
+            return self.active_run.start_search()
+
+    def pause_search(self) -> dict[str, Any]:
+        with self._lock:
+            return self.active_run.pause_search()
+
+    def resume_search(self) -> dict[str, Any]:
+        with self._lock:
+            return self.active_run.resume_search()
+
+    def stop_search(self) -> dict[str, Any]:
+        with self._lock:
+            return self.active_run.stop_search()
+
+    def reveal_target(self) -> dict[str, Any]:
+        with self._lock:
+            return self.active_run.reveal_target()
+
+    def wait(self, timeout: float | None = None) -> None:
+        with self._lock:
+            run = self.active_run
+        run.wait(timeout=timeout)
+
+
 def create_surge_match_run(
     *, adapter: SurgeXTAdapter, output_directory: str | Path, **kwargs: Any
 ) -> SurgeMatchRun:
     return SurgeMatchRun(adapter=adapter, output_directory=output_directory, **kwargs)
+
+
+def create_external_target_controller(
+    *,
+    adapter: SurgeXTAdapter,
+    target_directory: str | Path,
+    output_directory: str | Path,
+    **kwargs: Any,
+) -> ExternalTargetController:
+    return ExternalTargetController(
+        adapter=adapter,
+        target_bank=ExternalTargetBank(target_directory),
+        output_directory=output_directory,
+        **kwargs,
+    )
 
 
 def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
@@ -867,6 +1312,12 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     parser.add_argument("--population", type=int, default=DEFAULT_POPULATION)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8879)
+    parser.add_argument(
+        "--targets",
+        default=str(
+            Path(__file__).resolve().parents[2] / "examples/targets/external-v1"
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -879,24 +1330,32 @@ def main(argv: Sequence[str] | None = None) -> int:
         probe_path=args.probe,
         deterministic_overrides=DETERMINISTIC_OVERRIDES,
     )
-    run = create_surge_match_run(
+    if args.command == "run":
+        run = create_surge_match_run(
+            adapter=adapter,
+            output_directory=args.output,
+            preset_limit=args.preset_limit,
+            generations=args.generations,
+            population_size=args.population,
+        )
+        run.start_search()
+        run.wait()
+        print(json.dumps(run.public_status(), indent=2, ensure_ascii=False))
+        return 0 if run.status == "COMPLETE" else 1
+    run = create_external_target_controller(
         adapter=adapter,
+        target_directory=args.targets,
         output_directory=args.output,
         preset_limit=args.preset_limit,
         generations=args.generations,
         population_size=args.population,
     )
-    if args.command == "run":
-        run.start_search()
-        run.wait()
-        print(json.dumps(run.public_status(), indent=2, ensure_ascii=False))
-        return 0 if run.status == "COMPLETE" else 1
     if args.host not in {"127.0.0.1", "localhost", "::1"}:
         raise SurgeMatchError("Surge cockpit must bind to loopback")
     from .search_cockpit import create_cockpit_server
 
     server = create_cockpit_server(run, host=args.host, port=args.port)
-    print(f"Surge XT one-note cockpit: http://{args.host}:{server.server_port}")
+    print(f"Surge XT external-target cockpit: http://{args.host}:{server.server_port}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

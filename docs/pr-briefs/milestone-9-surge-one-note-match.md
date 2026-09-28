@@ -1,86 +1,67 @@
-# Milestone 9: Surge XT one-note timbre match
+# Milestone 9: selectable external targets and Surge XT one-note match
 
-![Milestone 9 visual brief](../assets/milestone-9-surge-one-note-visual.png)
+![Milestone 9 external-target implementation map](../assets/milestone-9-external-target-bank.svg)
 
 ## Verified status and starting point
 
 - Repository: `jeremybboy/agentic-synth-twin`
-- Starting point: `main` at merge commit `44b531e`, after the playable-cockpit pull request was merged
+- Base: `main` at `44b531e23bf04f36c04966418110a9ff1d30f488`
 - Branch: `codex/milestone-9-surge-one-note`
 - Pull request: [#13](https://github.com/jeremybboy/agentic-synth-twin/pull/13)
-- Status: implemented and locally verified; owner review and perceptual acceptance pending
 - Real synth: Surge XT CLAP `1.3.4`, plugin ID `org.surge-synth-team.surge-xt`
+- Status: implementation and automated real-plugin checks complete; owner browser/audio acceptance pending
 
 ## Goal and user-visible workflow
 
-Keep the same playable Agentic Synth Twin cockpit while expanding the sound engine underneath it. The fixed Target is compared against a bounded real Surge XT factory index; the Top 5 are auditionable; the closest valid preset becomes Base; local CMA-ES refines eight real continuous parameters; Target, Base, and Best remain playable through the same piano, Ableton-style computer mapping, velocity/octave controls, optional Web MIDI, editable working copy, and rendered-note cache.
+Keep the existing playable cockpit and expand its single hidden regression target into ten named external procedural C3 references. A target click reuses one target-independent real-Surge preset cache, ranks an auditionable Top 5, selects Base, and creates a clean target-specific run; it never starts search automatically. The user then presses **Start Search**, watches the existing CMA-ES telemetry, auditions Target/Base/Best, loads Base or Best into the editable working patch, and plays it with the same piano, computer mapping, or optional Web MIDI controller.
 
 ## Transparency/change ledger
 
-| Area | Verified Milestone 9 boundary |
+| Area | Verified boundary |
 | --- | --- |
-| Current state | One `clap-saw-demo` starting patch could be searched and played through the local cockpit. |
-| User-visible change | The same cockpit now supports Surge XT Target/Base/Best audition, a Top 5 preset shortlist, eight live/editable real parameters, and preserved keyboard playability. |
-| Code/data layers touched | Process-isolated synth adapter, Surge native preset extraction, CLAP probe/renderer precision contract, bounded preset index, local refinement controller, existing cockpit, regression tests, local reproduction scripts, compact evidence, and documentation. |
-| Explicitly untouched | Existing `clap-saw-demo` workflow, objective formula, keyboard mappings, immutable search history, multi-note validation, phrase/chord/velocity objectives, semantic prompts, hardware synths, public hosting, native realtime hosting, and LOCK. |
-| Persistence and undo impact | Generated Surge artifacts, states, WAVs, and full run evidence remain under ignored `work/`. Cockpit edits remain a separate working copy and never rewrite preset retrieval or search evidence. No saved-patch LOCK/undo contract is added. |
-| Audio and realtime impact | All scientific and playable audio comes from the real Surge CLAP through exact process-isolated renders. First-strike latency and the six-second note cache remain; this is not a persistent realtime host. |
-| C2PA and provenance impact | No C2PA semantics changed. Audio provenance is strengthened locally through plugin/version, release checksums, native-state hashes, parameter IDs/values, render configuration, WAV hashes, and final rerender comparison. |
-| Automated evidence | 89 unit/integration tests pass; strict C++ compilation, Python byte-compilation, shell syntax, diff checks, 120-preset attempt, 65-entry deterministic index, 120 CMA evaluations, 120 fair random evaluations, and an exact final rerender pass. |
-| Human acceptance still required | Owner must hear Target/Base/Best and judge whether Best is audibly closer; browser piano/computer-key play and optional macOS USB MIDI remain manual/device-dependent checks. |
+| Current state | PR #13 already provided a hidden reachable Surge target, bounded factory retrieval, eight-control local refinement, and the preserved playable cockpit. |
+| User-visible change | Ten discrete named external targets, explicit non-Surge provenance, target-specific Top 5/Base, manual search start, and clean target switching. |
+| Code/data layers touched | Canonical target bank/validator, shared eligible-preset cache, target controller, cockpit selector/API, local scripts, tests, compact evidence, documentation, and synchronized SVG. |
+| Explicitly untouched | `clap-saw-demo`; objective formula; keyboard mappings; editable patch; hidden-target regression; multi-note/velocity/phrase matching; upload/pitch detection; semantic models; hardware synths; public hosting; native realtime hosting; LOCK. |
+| Persistence/undo impact | Canonical target WAVs are immutable committed fixtures. Shared cache and per-target run states/audio/history stay in ignored `work/`; switching never deletes or overwrites another run. Working-patch edits remain non-authoritative and do not mutate search evidence. |
+| Audio/realtime impact | Every preset, candidate, Base, Best, and playable note remains a process-isolated real CLAP render. External targets are exact procedural WAVs. First-strike latency and the six-second note cache remain; this is not a realtime host. |
+| C2PA/provenance impact | No C2PA behavior changes. Provenance is explicit: targets are original procedural, non-Surge, sample-free references; synth results bind plugin/state/parameter/render/WAV hashes. |
+| Automated evidence | 97 tests pass; target manifest/hash/format validation passes; one real cache ranked all ten targets; three 120-evaluation real-Surge searches completed; every final Best matched an independent rerender byte-for-byte. |
+| Human acceptance still required | Owner must hear each selected Target/Top 5/Base/Best, judge whether Best is useful, verify selector/history reset, play Base/Best through the piano and computer keys, and optionally test USB MIDI on macOS. |
 
-## Implemented phases
+## Implemented sequence
 
-1. Formalize `ClapSynthAdapter` and keep the legacy direct-search path intact.
-2. Download checksum-pinned official Surge XT 1.3.4 plugin/content artifacts locally; inspect 775 real parameters.
-3. Extract native state from factory FXP files and force six discovered oscillator Retrigger controls for repeatable audition.
-4. Attempt a deterministic category-balanced set of 120 factory presets; accept 65 and record 55 exclusions (44 nondeterministic, 6 silent, 5 clipping).
-5. Rank the accepted set using the unchanged spectral/envelope/loudness objective; select `Basses/Attacky.fxp` at loss `0.281768571357`.
-6. Run CMA-ES with seed `20260930`, eight continuous controls, normalized bounds 0..1, sigma 0.18, population 8, 15 generations, and 120 evaluations.
-7. Penalize and retain two clipped CMA proposals as invalid worst-loss evidence; never admit them as Best.
-8. Reach final loss `0.028968679924`, an `89.718981%` reduction from Base, above the predeclared 25% numeric gate.
-9. Run equal-budget bounded random search with seed `20260931`; its best loss is `0.184376533661`.
-10. Independently rerender Best twice and match the search-best SHA-256 `7e1f0848eadf30fa622da32f1a3be1883e6a4ab11ba2495b54501ab4a63f49b1` byte-for-byte.
+1. Validate the exact ten-file external target manifest, stable order, paths, format, hashes, and provenance flags.
+2. Build one target-independent cache from 120 category-balanced Surge factory attempts.
+3. Reject presets that fail deterministic/audible/unclipped rendering or do not expose the exact authorized eight-control inventory; 39 were eligible in this environment.
+4. For each selected target, reuse the cache, apply the unchanged objective, render an auditionable Top 5, select Base, and initialize an `IDLE` run.
+5. Reject target switching while search is active or paused and preserve separate target run directories.
+6. Keep the existing manual Start/Pause/Resume/Stop controls, plots, histories, editable Base/Best patch, piano, Ableton-style keys, velocity/octave controls, Web MIDI, and note cache.
+7. Preserve the original hidden reachable-target reproduction, numeric gate, and equal-budget random control as a separate regression path.
 
-## Top 5 retrieval result
+## Real-plugin result
 
-| Rank | Factory preset | Total loss |
-| ---: | --- | ---: |
-| 1 | `Basses/Attacky.fxp` | 0.281768571357 |
-| 2 | `Percussion/Kick Tech 2.fxp` | 0.436192161480 |
-| 3 | `Basses/Bass 3.fxp` | 0.467816707818 |
-| 4 | `Percussion/Kick Tech 1.fxp` | 0.487153277341 |
-| 5 | `Basses/Bass 4.fxp` | 0.505047669475 |
+All ten targets produced a Top 5 and Base using cache identity `ce6f61dbab39a3d12e265a8066c90a36097264eba7cc243b428e14dfd512be87`; the full preset cache was not rerendered on target changes.
 
-## Final changed parameters
+| Target | Selected Base | Base loss | Best loss | Improvement | Final verification |
+| --- | --- | ---: | ---: | ---: | --- |
+| Analog Sub Bass | `Leads/Bad Childhood.fxp` | 0.632506 | 0.551330 | 12.83% | byte-identical |
+| Plucked Electric Guitar | `MPE/The Elephant Told You.fxp` | 0.753503 | 0.746253 | 0.96% | byte-identical |
+| Rhodes-style Electric Piano | `Basses/Bass 2.fxp` | 0.519015 | 0.346361 | 33.27% | byte-identical |
 
-| Real CLAP parameter | Base | Best |
-| --- | ---: | ---: |
-| A Osc 1 Shape | 0.500000 | 0.519666 |
-| A Osc 1 Width 1 | 0.140178 | 0.287742 |
-| A Osc 1 Unison Detune | 0.200000 | 0.883667 |
-| A Filter 1 Cutoff | 0.351346 | 0.581074 |
-| A Filter 1 Resonance | 0.000000 | 0.204404 |
-| A Amp EG Attack | 0.000000 | 0.190559 |
-| A Amp EG Decay | 0.615385 | 0.188693 |
-| A Amp EG Release | 0.230769 | 0.012697 |
+This proves bounded retrieval, target isolation, search execution, and real-synth rerender identity. It does not prove the guitar result sounds like a guitar; its 0.96% proxy improvement is weak and must be judged honestly by ear.
 
-## Non-goals and stop conditions
-
-This pull request does not prove whole-instrument reconstruction, behavior away from C3, velocity generalization, semantic text-to-sound, universal CMA superiority, or human perceptual equivalence. It does not add a generic preset browser, another synth, hardware integration, a frontend rewrite, public deployment, or LOCK. Work stops at one reviewable pull request and must not proceed to multi-note matching before owner review.
-
-## Automated checks and manual acceptance
-
-Run:
+## Verification
 
 ```bash
-PYTHONPATH=src python3 -m unittest discover -s tests -v
-python3 -m compileall -q src tests
+PYTHONPATH=src .venv/bin/python3 -m unittest discover -s tests -v
+.venv/bin/python3 -m compileall -q src tests
 git diff --check main...HEAD
-scripts/reproduce_surge_match.sh
+scripts/validate_external_targets.sh
+sh -n scripts/*.sh
 scripts/run_surge_match.sh
 ```
 
-Then open `http://127.0.0.1:8879`, hear Target and all Top 5 presets, compare Target/Base/Best, load Base and Best into the working patch, play the on-screen and computer keyboards, move every approved parameter, and continue playing. If available, connect a macOS USB MIDI controller and verify note/velocity input. Record human judgment separately as `YES — Best is audibly closer`, `NO`, or `NO CLEAR DIFFERENCE`.
+Manual browser acceptance: open `http://127.0.0.1:8879`; select several targets; hear exact Target and every Top 5; confirm selection stops at `IDLE`; start one search; confirm selection locks until Stop/completion; compare Target/Base/Best; load and edit Base/Best; play all visible white/black keys and the Ableton mapping; optionally connect USB MIDI. Human judgment remains `PENDING_OWNER_AUDITION`.
 
-Do not merge automatically. The owner visually inspects the diff and cockpit, performs the listening/device checks, and manually merges only if accepted.
+Do not merge automatically. The owner reviews this same PR, performs the listening/browser checks, and manually merges only if accepted.
