@@ -13,13 +13,14 @@
 - [DSP features](docs/dsp-features.md): deterministic formulas, regenerated A/B measurements, local report, and limitations
 - [Synthetic dataset](docs/synthetic-dataset.md): three-parameter sampling, local WAV policy, committed evidence, explorer, and limitations
 - [Direct real-synth search](docs/direct-real-synth-search.md): four-parameter CMA-ES, audio objective, live cockpit, random control, and actual result
+- [Playable cockpit](docs/playable-cockpit.md): editable working patch, virtual/computer/USB MIDI inputs, real-synth rendered-note cache, and limitations
 - [Agent contract](AGENTS.md): repository rules, current milestone boundary, and checks
 - [Contributing](CONTRIBUTING.md): focused PR workflow
 - [Security](SECURITY.md): private vulnerability reporting guidance
 
 ## Current status
 
-Milestone 8A provides a local direct real-synth CMA-ES cockpit and reproducible random-search benchmark. Its fixed run passed engine integrity and improved 86.8% over start, but random search achieved the lower loss, so adaptive-search value failed; human audition and LOCK remain incomplete.
+Milestone 8B adds a playable, editable working copy to the local direct-search cockpit. Every new pitch/velocity/patch combination is rendered by the real CLAP synth and cached locally; browser playback is intentionally not claimed as a native realtime host. The Milestone 8A adaptive-search gate remains failed, and LOCK remains incomplete.
 
 ## Source
 

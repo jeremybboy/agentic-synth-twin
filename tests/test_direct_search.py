@@ -204,6 +204,51 @@ class DirectSearchTests(unittest.TestCase):
             self.assertEqual(first["run_id"], run.run_id)
             self.assertEqual(first["wav_sha256"], "candidate-hash")
 
+    def test_playable_note_is_bounded_and_content_cached(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            run = self._fake_run(Path(directory))
+
+            def fake_playable_render(**kwargs: object) -> dict[str, object]:
+                Path(kwargs["wav_path"]).write_bytes(b"RIFF-test")
+                return {}
+
+            with mock.patch(
+                "agentic_synth_twin.direct_search._run_playable_renderer",
+                side_effect=fake_playable_render,
+            ) as renderer:
+                first = run.render_playable_note(
+                    source="custom",
+                    midi_key=60,
+                    velocity=96,
+                    normalized=[0.1, 0.2, 0.3, 0.4],
+                )
+                second = run.render_playable_note(
+                    source="custom",
+                    midi_key=60,
+                    velocity=96,
+                    normalized=[0.1, 0.2, 0.3, 0.4],
+                )
+            self.assertEqual(first, second)
+            self.assertEqual(first.read_bytes(), b"RIFF-test")
+            renderer.assert_called_once()
+            self.assertEqual(renderer.call_args.kwargs["midi_key"], 60)
+            self.assertEqual(renderer.call_args.kwargs["velocity"], 96)
+            with self.assertRaisesRegex(DirectSearchError, "piano range"):
+                run.render_playable_note(source="starting", midi_key=20, velocity=96)
+            with self.assertRaisesRegex(DirectSearchError, "velocity"):
+                run.render_playable_note(source="starting", midi_key=60, velocity=0)
+            with self.assertRaisesRegex(DirectSearchError, "four normalized"):
+                run.render_playable_note(
+                    source="custom", midi_key=60, velocity=96, normalized=[0.1]
+                )
+            with self.assertRaisesRegex(DirectSearchError, "within 0..1"):
+                run.render_playable_note(
+                    source="custom",
+                    midi_key=60,
+                    velocity=96,
+                    normalized=[0.1, 0.2, 0.3, 1.1],
+                )
+
     def test_random_search_control_is_seeded_and_equal_budget(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             run = self._fake_run(Path(directory))

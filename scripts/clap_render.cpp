@@ -20,12 +20,16 @@ namespace {
 
 constexpr std::uint32_t sample_rate = 44100;
 constexpr std::uint32_t block_size = 64;
-constexpr std::uint32_t note_frames = sample_rate * 2;
+constexpr std::uint32_t default_note_frames = sample_rate * 2;
 constexpr std::uint32_t tail_frames = sample_rate / 2;
-constexpr std::uint32_t total_frames = note_frames + tail_frames;
-constexpr std::int16_t midi_key = 48;
-constexpr int midi_velocity = 100;
-constexpr double clap_velocity = midi_velocity / 127.0;
+constexpr std::int16_t default_midi_key = 48;
+constexpr int default_midi_velocity = 100;
+
+struct RenderOptions {
+    std::uint32_t note_frames{default_note_frames};
+    std::int16_t midi_key{default_midi_key};
+    int midi_velocity{default_midi_velocity};
+};
 
 class StdoutToStderr {
   public:
@@ -291,7 +295,8 @@ bool nearly_equal(double left, double right) {
 RenderResult render(const std::filesystem::path &plugin_path,
                     const std::filesystem::path &state_path,
                     const std::filesystem::path &wav_path,
-                    const std::vector<ParameterChange> &parameter_changes) {
+                    const std::vector<ParameterChange> &parameter_changes,
+                    const RenderOptions &options) {
     PluginLibrary library(plugin_path);
     auto host = make_host();
     PluginInstance instance(library.factory(), &host);
@@ -353,6 +358,8 @@ RenderResult render(const std::filesystem::path &plugin_path,
         }
     }
 
+    const auto total_frames = options.note_frames + tail_frames;
+    const auto clap_velocity = options.midi_velocity / 127.0;
     std::vector<float> left(total_frames, 0.0F);
     std::vector<float> right(total_frames, 0.0F);
     OutputEvents output_events;
@@ -394,19 +401,19 @@ RenderResult render(const std::filesystem::path &plugin_path,
             note_on.note_id = 1;
             note_on.port_index = 0;
             note_on.channel = 0;
-            note_on.key = midi_key;
+            note_on.key = options.midi_key;
             note_on.velocity = clap_velocity;
             input_events.events.push_back(&note_on.header);
         }
-        if (frame <= note_frames && note_frames < frame + frames) {
+        if (frame <= options.note_frames && options.note_frames < frame + frames) {
             note_off.header.size = sizeof(note_off);
-            note_off.header.time = note_frames - frame;
+            note_off.header.time = options.note_frames - frame;
             note_off.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
             note_off.header.type = CLAP_EVENT_NOTE_OFF;
             note_off.note_id = 1;
             note_off.port_index = 0;
             note_off.channel = 0;
-            note_off.key = midi_key;
+            note_off.key = options.midi_key;
             note_off.velocity = 0.0;
             input_events.events.push_back(&note_off.header);
         }
@@ -451,7 +458,7 @@ RenderResult render(const std::filesystem::path &plugin_path,
     constexpr std::uint16_t bits_per_sample = 16;
     constexpr std::uint16_t block_align = channels * bits_per_sample / 8;
     constexpr std::uint32_t byte_rate = sample_rate * block_align;
-    constexpr std::uint32_t data_bytes = total_frames * block_align;
+    const std::uint32_t data_bytes = total_frames * block_align;
     wav.write("RIFF", 4);
     write_u32(wav, 36 + data_bytes);
     wav.write("WAVEfmt ", 8);
@@ -506,17 +513,55 @@ double parse_parameter_value(const char *text) {
     return parsed;
 }
 
+int parse_integer(const char *text, const char *label, int minimum, int maximum) {
+    std::size_t consumed = 0;
+    const auto parsed = std::stol(text, &consumed, 10);
+    if (text[consumed] != '\0' || parsed < minimum || parsed > maximum) {
+        throw std::runtime_error(std::string(label) + " must be between " +
+                                 std::to_string(minimum) + " and " +
+                                 std::to_string(maximum));
+    }
+    return static_cast<int>(parsed);
+}
+
 } // namespace
 
 int main(int argc, char **argv) {
-    if (argc < 4 || (argc - 4) % 2 != 0) {
+    if (argc < 4) {
         std::cerr << "usage: clap-render PLUGIN.clap STATE.bin OUTPUT.wav "
+                     "[--midi-key 0..127] [--velocity 1..127] "
+                     "[--note-frames 2205..352800] "
                      "[PARAMETER_ID PARAMETER_VALUE ...]\n";
         return 64;
     }
     try {
+        RenderOptions options;
+        int index = 4;
+        while (index < argc && std::strncmp(argv[index], "--", 2) == 0) {
+            if (index + 1 >= argc) {
+                throw std::runtime_error("renderer option requires a value");
+            }
+            const std::string option = argv[index];
+            if (option == "--midi-key") {
+                options.midi_key = static_cast<std::int16_t>(
+                    parse_integer(argv[index + 1], "midi key", 0, 127));
+            } else if (option == "--velocity") {
+                options.midi_velocity =
+                    parse_integer(argv[index + 1], "velocity", 1, 127);
+            } else if (option == "--note-frames") {
+                options.note_frames = static_cast<std::uint32_t>(parse_integer(
+                    argv[index + 1], "note frames", sample_rate / 20,
+                    sample_rate * 8));
+            } else {
+                throw std::runtime_error("unknown renderer option: " + option);
+            }
+            index += 2;
+        }
+        if ((argc - index) % 2 != 0) {
+            throw std::runtime_error("parameter changes require id/value pairs");
+        }
         std::vector<ParameterChange> parameter_changes;
-        for (int index = 4; index < argc; index += 2) {
+        for (; index < argc; index += 2) {
             parameter_changes.push_back({
                 parse_parameter_id(argv[index]),
                 parse_parameter_value(argv[index + 1]),
@@ -524,14 +569,15 @@ int main(int argc, char **argv) {
         }
         const auto result = [&]() {
             StdoutToStderr redirect;
-            return render(argv[1], argv[2], argv[3], parameter_changes);
+            return render(argv[1], argv[2], argv[3], parameter_changes, options);
         }();
+        const auto total_frames = options.note_frames + tail_frames;
         std::cout << std::setprecision(17);
         std::cout << "{\"sample_rate\":" << sample_rate
                   << ",\"channels\":2,\"bits_per_sample\":16"
-                  << ",\"midi_key\":" << midi_key
-                  << ",\"velocity\":" << midi_velocity
-                  << ",\"note_frames\":" << note_frames
+                  << ",\"midi_key\":" << options.midi_key
+                  << ",\"velocity\":" << options.midi_velocity
+                  << ",\"note_frames\":" << options.note_frames
                   << ",\"tail_frames\":" << tail_frames
                   << ",\"total_frames\":" << total_frames
                   << ",\"block_size\":" << block_size

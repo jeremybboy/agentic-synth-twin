@@ -42,7 +42,7 @@ This is a planned responsibility chain. PR 1 proves only the narrow CLAP feasibi
 
 ### Human and local web GUI
 
-The human supplies sonic intent, evaluates controlled A/B movements, chooses active parameters, auditions candidates, and makes KEEP/REJECT/LOCK decisions. Milestone 3 adds only a thin one-button browser preview of committed audio evidence. Milestone 4 adds a local thin client that presents randomized Sound 1/Sound 2 pairs, records YES/NO directly through backend APIs, and advances automatically. Milestone 5 adds a read-only local report that places those answers beside verified measurements and exact A/B playback. SQLite persistence, probe generation, measurement, and authority rules remain backend responsibilities.
+The human supplies sonic intent, evaluates controlled A/B movements, chooses active parameters, auditions candidates, and makes KEEP/REJECT/LOCK decisions. Milestone 3 adds only a thin one-button browser preview of committed audio evidence. Milestone 4 adds a local thin client that presents randomized Sound 1/Sound 2 pairs, records YES/NO directly through backend APIs, and advances automatically. Milestone 5 adds a read-only local report that places those answers beside verified measurements and exact A/B playback. Milestone 8B adds a playable working copy: loading or editing it never rewrites search evidence. Mouse, computer-key, and optional Web MIDI events share one browser note path while exact bounded note renders remain a backend responsibility.
 
 ### Experiment controller
 
@@ -54,7 +54,7 @@ Milestone 1 proves that a small CLAP C API probe can load the pinned `clap-saw-d
 
 ### Audio renderer
 
-Milestone 3 applies scientific C3 (MIDI 48), velocity 100, a two-second hold, a fixed half-second release tail, 44.1 kHz sample rate, and 64-frame processing blocks. Rendering is callable without the browser, and two runs must produce byte-identical WAV evidence on the test system.
+Milestone 3 applies scientific C3 (MIDI 48), velocity 100, a two-second hold, a fixed half-second release tail, 44.1 kHz sample rate, and 64-frame processing blocks. Rendering is callable without the browser, and two runs must produce byte-identical WAV evidence on the test system. Milestone 8B preserves that default contract while allowing validated MIDI key, velocity, and note-frame overrides for playable renders. These six-second cached notes enable practical browser audition but are not described as a native realtime CLAP host.
 
 ### DSP analyzer and dataset
 
@@ -77,6 +77,7 @@ Names may evolve as evidence arrives, but the backend should expose operations e
 - human calibration: `generate_probe`, `record_probe_answer`
 - learning/search: `generate_dataset`, `train_surrogate`, `optimize_target`
 - direct search: `create_search_run`, `compute_audio_objective`, `benchmark_random_search`
+- playable audition: `render_playable_note` with an explicit patch vector, MIDI key, and velocity
 - authority/reproducibility: `verify_candidate`, `lock_patch`
 
 ## Data and reproducibility invariants
@@ -106,4 +107,4 @@ Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth 
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md). Milestone 7 retains the separately reviewed surrogate result; Milestone 8A owns the direct search described in [`direct-real-synth-search.md`](direct-real-synth-search.md) and does not depend on the surrogate.
+Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md). Milestone 7 retains the separately reviewed surrogate result; Milestone 8A owns the direct search described in [`direct-real-synth-search.md`](direct-real-synth-search.md) and does not depend on the surrogate. Milestone 8B owns the rendered-note instrument described in [`playable-cockpit.md`](playable-cockpit.md).
