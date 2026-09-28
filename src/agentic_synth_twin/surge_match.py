@@ -7,6 +7,7 @@ import concurrent.futures
 import hashlib
 import json
 import math
+import os
 import random
 import shutil
 import threading
@@ -29,6 +30,17 @@ from .direct_search import (
     spectrogram_preview,
 )
 from .external_targets import ExternalTarget, ExternalTargetBank
+from .perceptual_retrieval import (
+    DESCRIPTOR_VERSION,
+    PerceptualRetrievalError,
+    describe_audio,
+    descriptor_preview,
+    descriptor_definition,
+    load_descriptor,
+    normalize_and_rank,
+    raw_family_distances,
+    save_descriptor,
+)
 from .synth_adapter import PresetRef, SurgeXTAdapter, SynthAdapterError, sha256_file
 
 
@@ -38,6 +50,8 @@ RANDOM_SEED = 20_260_931
 DEFAULT_PRESET_LIMIT = 120
 DEFAULT_GENERATIONS = 15
 DEFAULT_POPULATION = 8
+CACHE_WORKERS = min(16, max(8, 2 * (os.cpu_count() or 4)))
+CACHE_RETRY_WORKERS = 4
 INITIAL_SIGMA = 0.18
 SUCCESS_GATE_PERCENT = 25.0
 TARGET_PRESET = "Basses/Attacky.fxp"
@@ -169,14 +183,27 @@ class SurgePresetCache:
 def _preset_cache_identity(
     adapter: SurgeXTAdapter,
     presets: Sequence[PresetRef],
-    preset_limit: int,
+    preset_limit: int | None,
+    *,
+    full_library: bool,
 ) -> tuple[str, dict[str, Any]]:
     plugin_binary = adapter.plugin_path / "Contents/MacOS/Surge XT"
+    factory_content = [
+        {
+            "relative_path": path.relative_to(adapter.factory_data_path).as_posix(),
+            "sha256": sha256_file(path),
+        }
+        for path in sorted(adapter.factory_data_path.rglob("*"))
+        if path.is_file()
+    ]
     payload = {
-        "schema": "agentic-synth-twin/surge-preset-cache/v1",
+        "schema": "agentic-synth-twin/surge-preset-cache/v2",
         "plugin_bundle": adapter.plugin_path.name,
         "plugin_binary_sha256": sha256_file(plugin_binary),
         "preset_limit": preset_limit,
+        "full_library": full_library,
+        "descriptor_version": DESCRIPTOR_VERSION,
+        "factory_content": factory_content,
         "presets": [
             {
                 "relative_path": preset.relative_path,
@@ -196,14 +223,54 @@ def _preset_cache_identity(
             str(key): value for key, value in sorted(adapter.deterministic_overrides.items())
         },
         "selection": (
-            "deterministic category-round-robin before target scoring; "
-            "eligible presets must expose the exact authorized eight-parameter inventory"
+            "entire sorted factory library; retrieval eligibility is independent of search eligibility"
+            if full_library
+            else "deterministic category-round-robin regression fixture"
         ),
     }
     digest = hashlib.sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
     return digest, payload
+
+
+def _migrate_compatible_cache(
+    *, cache_root: Path, directory: Path, identity: str, identity_payload: Mapping[str, Any]
+) -> SurgePresetCache | None:
+    """Bind a completed cache to an expanded identity without rerendering audio."""
+
+    comparable_keys = (
+        "plugin_bundle",
+        "plugin_binary_sha256",
+        "preset_limit",
+        "full_library",
+        "descriptor_version",
+        "presets",
+        "audition",
+        "deterministic_overrides",
+    )
+    for candidate in sorted(cache_root.glob("*/cache.json")):
+        try:
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+            previous = payload["identity"]
+            if any(previous.get(key) != identity_payload.get(key) for key in comparable_keys):
+                continue
+            migrated = {
+                **payload,
+                "schema": "agentic-synth-twin/surge-preset-cache/v2",
+                "identity_sha256": identity,
+                "identity": dict(identity_payload),
+                "migrated_without_rerender_from": payload["identity_sha256"],
+            }
+            directory.mkdir(parents=True, exist_ok=True)
+            migrated_file = directory / "cache.json"
+            _write_json_atomic(migrated, migrated_file)
+            validated = _load_valid_preset_cache(migrated_file, identity)
+            if validated is not None:
+                return validated
+        except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
+            continue
+    return None
 
 
 def _load_valid_preset_cache(
@@ -221,11 +288,14 @@ def _load_valid_preset_cache(
         for entry in entries:
             state_path = Path(entry["state_path"])
             audio_path = Path(entry["audio_path"])
+            descriptor_path = Path(entry["descriptor_path"])
             if (
                 not state_path.is_file()
                 or not audio_path.is_file()
+                or not descriptor_path.is_file()
                 or sha256_file(state_path) != entry["state_sha256"]
                 or sha256_file(audio_path) != entry["wav_sha256"]
+                or sha256_file(descriptor_path) != entry["descriptor_sha256"]
             ):
                 return None
         return SurgePresetCache(
@@ -246,32 +316,63 @@ def prepare_shared_preset_cache(
     adapter: SurgeXTAdapter,
     cache_root: str | Path,
     preset_limit: int,
+    full_library: bool = False,
 ) -> SurgePresetCache:
     """Build or reuse real preset renders independently of any target audio."""
 
-    presets = adapter.bounded_factory_presets(
-        preset_limit, required_relative_path=TARGET_PRESET
+    presets = (
+        adapter.factory_presets()
+        if full_library
+        else adapter.bounded_factory_presets(
+            preset_limit, required_relative_path=TARGET_PRESET
+        )
     )
-    identity, identity_payload = _preset_cache_identity(adapter, presets, preset_limit)
+    identity, identity_payload = _preset_cache_identity(
+        adapter, presets, None if full_library else preset_limit, full_library=full_library
+    )
     directory = Path(cache_root).resolve() / identity[:20]
     cache_file = directory / "cache.json"
     cached = _load_valid_preset_cache(cache_file, identity)
     if cached is not None:
         return cached
+    migrated = _migrate_compatible_cache(
+        cache_root=Path(cache_root).resolve(),
+        directory=directory,
+        identity=identity,
+        identity_payload=identity_payload,
+    )
+    if migrated is not None:
+        return migrated
     directory.mkdir(parents=True, exist_ok=True)
     state_directory = directory / "states"
     audio_directory = directory / "audio"
+    descriptor_directory = directory / "descriptors"
+    record_directory = directory / "records"
     state_directory.mkdir(exist_ok=True)
     audio_directory.mkdir(exist_ok=True)
+    descriptor_directory.mkdir(exist_ok=True)
+    record_directory.mkdir(exist_ok=True)
 
     def render_entry(item: tuple[int, PresetRef]) -> dict[str, Any]:
         ordinal, preset = item
         slug = f"preset-{ordinal:03d}"
         state_path = state_directory / f"{slug}.bin"
         wav_path = audio_directory / f"{slug}.wav"
+        descriptor_path = descriptor_directory / f"{slug}.npz"
+        record_path = record_directory / f"{slug}.json"
+        if record_path.is_file():
+            try:
+                record = json.loads(record_path.read_text(encoding="utf-8"))
+                if (
+                    record["preset_relative_path"] == preset.relative_path
+                    and sha256_file(state_path) == record["state_sha256"]
+                    and sha256_file(wav_path) == record["wav_sha256"]
+                    and sha256_file(descriptor_path) == record["descriptor_sha256"]
+                ):
+                    return record
+            except (KeyError, OSError, ValueError, json.JSONDecodeError):
+                pass
         provenance = adapter.extract_preset_state(preset, state_path)
-        inventory = adapter.inspect_state(state_path)
-        discover_active_parameters(inventory)
         rendered = adapter.render_verified(
             state_path=state_path,
             wav_path=wav_path,
@@ -282,37 +383,105 @@ def prepare_shared_preset_cache(
         )
         if float(rendered["peak_float"]) <= 0:
             raise SurgeMatchError("preset render is silent")
-        return {
+        descriptor = describe_audio(wav_path)
+        save_descriptor(descriptor, descriptor_path)
+        inventory = adapter.inspect_state(state_path)
+        try:
+            search_parameters = discover_active_parameters(inventory)
+            search_eligible = True
+            search_ineligible_reason = None
+        except SurgeMatchError as error:
+            search_parameters = []
+            search_eligible = False
+            search_ineligible_reason = str(error)
+        record = {
             "preset_name": preset.name,
             "preset_category": preset.category,
             "preset_relative_path": preset.relative_path,
             "state_path": str(state_path),
             "audio_path": str(wav_path),
-            "active_parameter_ids": list(ACTIVE_PARAMETER_IDS),
+            "retrieval_eligible": True,
+            "search_eligible": search_eligible,
+            "search_ineligible_reason": search_ineligible_reason,
+            "active_parameter_ids": [item["id"] for item in search_parameters],
+            "descriptor_version": DESCRIPTOR_VERSION,
+            "descriptor_path": str(descriptor_path),
+            "descriptor_sha256": sha256_file(descriptor_path),
             **provenance,
             "wav_sha256": rendered["wav_sha256"],
             "peak_float": rendered["peak_float"],
             "deterministic": rendered["byte_identical"],
         }
+        _write_json_atomic(record, record_path)
+        return record
 
     entries: list[dict[str, Any]] = []
     failures: list[dict[str, str]] = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+    failed_items: list[tuple[int, PresetRef]] = []
+    numbered_presets = list(enumerate(presets, start=1))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=CACHE_WORKERS) as executor:
         futures = {
             executor.submit(render_entry, item): item[1]
-            for item in enumerate(presets, start=1)
+            for item in numbered_presets
         }
-        for future in concurrent.futures.as_completed(futures):
+        for completed_count, future in enumerate(
+            concurrent.futures.as_completed(futures), start=1
+        ):
             preset = futures[future]
             try:
                 entries.append(future.result())
-            except (SynthAdapterError, SurgeMatchError, OSError, ValueError) as error:
+            except (
+                SynthAdapterError,
+                SurgeMatchError,
+                PerceptualRetrievalError,
+                OSError,
+                ValueError,
+            ) as error:
                 failures.append(
                     {
                         "preset": preset.relative_path,
                         "error": f"{type(error).__name__}: {error}",
                     }
                 )
+                failed_items.append(
+                    next(item for item in numbered_presets if item[1] == preset)
+                )
+            if completed_count % 100 == 0 or completed_count == len(presets):
+                print(
+                    f"Surge preset cache: {completed_count}/{len(presets)} attempted · "
+                    f"{len(entries)} retrieval eligible · {len(failures)} failed",
+                    flush=True,
+                )
+    if failed_items:
+        print(
+            f"Surge preset cache: retrying {len(failed_items)} failures with "
+            f"{CACHE_RETRY_WORKERS} workers",
+            flush=True,
+        )
+        failures = []
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=CACHE_RETRY_WORKERS
+        ) as executor:
+            retry_futures = {
+                executor.submit(render_entry, item): item[1] for item in failed_items
+            }
+            for future in concurrent.futures.as_completed(retry_futures):
+                preset = retry_futures[future]
+                try:
+                    entries.append(future.result())
+                except (
+                    SynthAdapterError,
+                    SurgeMatchError,
+                    PerceptualRetrievalError,
+                    OSError,
+                    ValueError,
+                ) as error:
+                    failures.append(
+                        {
+                            "preset": preset.relative_path,
+                            "error": f"{type(error).__name__}: {error}",
+                        }
+                    )
     entries.sort(key=lambda row: row["preset_relative_path"])
     failures.sort(key=lambda row: row["preset"])
     if len(entries) < 5:
@@ -320,15 +489,18 @@ def prepare_shared_preset_cache(
     first_inventory = adapter.inspect_state(entries[0]["state_path"])
     synth_plugin = dict(first_inventory["plugin"])
     payload = {
-        "schema": "agentic-synth-twin/surge-preset-cache/v1",
+        "schema": "agentic-synth-twin/surge-preset-cache/v2",
         "identity_sha256": identity,
         "identity": identity_payload,
         "synth_plugin": synth_plugin,
         "selected_count": len(presets),
         "indexed_count": len(entries),
+        "retrieval_eligible_count": len(entries),
+        "search_eligible_count": sum(bool(row["search_eligible"]) for row in entries),
         "failed_count": len(failures),
         "entries": entries,
         "failures": failures,
+        "descriptor": descriptor_definition(),
     }
     _write_json_atomic(payload, cache_file)
     return SurgePresetCache(
@@ -454,14 +626,16 @@ class SurgeMatchRun:
         assert self.shared_cache is not None
         ranking: list[dict[str, Any]] = []
         for entry in self.shared_cache.entries:
+            if not entry.get("search_eligible", False):
+                continue
             objective = compute_audio_objective(self.reference, entry["audio_path"])
             ranking.append({**entry, **objective})
         ranking.sort(key=lambda row: (row["total_loss"], row["preset_relative_path"]))
         if len(ranking) < 5:
-            raise SurgeMatchError("fewer than five deterministic factory presets were indexed")
+            raise SurgeMatchError("fewer than five search-eligible factory presets were indexed")
         for rank, row in enumerate(ranking, start=1):
             row["rank"] = rank
-            if rank <= 5:
+            if rank <= 10:
                 destination = self.audio_directory / "presets" / f"rank-{rank:02d}.wav"
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(row["audio_path"], destination)
@@ -469,8 +643,23 @@ class SurgeMatchRun:
                     raise SurgeMatchError("copied preset WAV hash differs from shared cache")
                 row["audio_url"] = f"/audio/presets/{destination.name}"
         self.preset_ranking = ranking
+        self.legacy_preset_ranking = ranking
+        self.perceptual_preset_ranking: list[dict[str, Any]] = []
+        self.retrieval_family_medians: dict[str, float] = {}
+        self.retrieval_sanity: dict[str, Any] = {}
         self.preset_failures = list(self.shared_cache.failures)
-        self.base_preset = ranking[0]
+        self._initialize_selected_base(ranking[0])
+        self._write_preset_index(
+            entries=ranking,
+            selection=(
+                "deterministic category-round-robin regression fixture; "
+                "exact authorized eight-parameter inventory required before ranking"
+            ),
+        )
+
+    def _initialize_selected_base(self, base_preset: Mapping[str, Any]) -> None:
+        assert self.shared_cache is not None
+        self.base_preset = dict(base_preset)
         base_state = Path(self.base_preset["state_path"])
         self.base_state_path = self.state_directory / "selected-base.bin"
         self.base_state_path.write_bytes(base_state.read_bytes())
@@ -525,6 +714,15 @@ class SurgeMatchRun:
             "spread": [INITIAL_SIGMA] * len(self.start_vector),
             "sigma": INITIAL_SIGMA,
         }
+
+    def _write_preset_index(
+        self,
+        *,
+        entries: Sequence[Mapping[str, Any]],
+        selection: str,
+        extra: Mapping[str, Any] | None = None,
+    ) -> None:
+        assert self.shared_cache is not None
         index = {
             "schema": SCHEMA,
             "surge": self.synth_plugin,
@@ -534,17 +732,19 @@ class SurgeMatchRun:
             "preset_cache_reused": self.shared_cache.reused,
             "scope": "factory presets only",
             "selected_count": self.shared_cache.selected_count,
-            "indexed_count": len(ranking),
+            "indexed_count": len(entries),
             "failed_count": len(self.preset_failures),
-            "selection": (
-                "deterministic category-round-robin, bounded before target scoring; "
-                "exact authorized eight-parameter inventory required before ranking"
+            "retrieval_eligible_count": len(self.shared_cache.entries),
+            "search_eligible_count": sum(
+                bool(row.get("search_eligible")) for row in self.shared_cache.entries
             ),
-            "index_workers": 4,
+            "selection": selection,
+            "index_workers": CACHE_WORKERS,
             "audition": self._audition_contract(),
             "objective": objective_definition(),
-            "entries": ranking,
+            "entries": list(entries),
             "failures": self.preset_failures,
+            **dict(extra or {}),
         }
         _write_json_atomic(index, self.output_directory / "preset-index.json")
 
@@ -825,6 +1025,17 @@ class SurgeMatchRun:
             start_loss = float(self.start["total_loss"])
             best_loss = float(self.best["total_loss"]) if self.best else start_loss
             improvement = 100.0 * (start_loss - best_loss) / start_loss if start_loss else 0.0
+            def public_retrieval_row(row: Mapping[str, Any]) -> dict[str, Any]:
+                keys = (
+                    "rank", "perceptual_rank", "legacy_rank", "preset_name",
+                    "preset_category", "preset_relative_path", "retrieval_score",
+                    "total_loss", "spectral_loss", "envelope_loss", "loudness_loss",
+                    "retrieval_eligible", "search_eligible", "search_ineligible_reason",
+                    "raw_distances", "normalized_distances", "weighted_contributions",
+                    "audio_url",
+                )
+                return {key: row[key] for key in keys if key in row}
+
             payload = {
                 "schema": SCHEMA,
                 "run_id": self.run_id,
@@ -861,7 +1072,11 @@ class SurgeMatchRun:
                 "base_label": "BASE SURGE PRESET",
                 "base_preset": {
                     key: self.base_preset[key]
-                    for key in ("preset_name", "preset_category", "preset_relative_path", "total_loss")
+                    for key in (
+                        "preset_name", "preset_category", "preset_relative_path", "total_loss",
+                        "perceptual_rank", "legacy_rank", "retrieval_score",
+                    )
+                    if key in self.base_preset
                 },
                 "preset_ranking": [
                     {
@@ -873,6 +1088,15 @@ class SurgeMatchRun:
                     }
                     for row in self.preset_ranking[:5]
                 ],
+                "legacy_preset_ranking": [
+                    public_retrieval_row(row) for row in self.legacy_preset_ranking[:10]
+                ],
+                "perceptual_preset_ranking": [
+                    public_retrieval_row(row) for row in self.perceptual_preset_ranking[:10]
+                ],
+                "retrieval_family_medians": dict(self.retrieval_family_medians),
+                "retrieval_coverage": getattr(self, "retrieval_coverage", None),
+                "retrieval_sanity": dict(self.retrieval_sanity),
                 "synth": {
                     "name": self.synth_plugin["name"],
                     "version": self.synth_plugin["version"],
@@ -1095,6 +1319,146 @@ class ExternalSurgeMatchRun(SurgeMatchRun):
         self.reference = prepare_audio_reference(self.target_path)
         self._rank_cache_and_initialize()
 
+    def _rank_cache_and_initialize(self) -> None:
+        """Audit legacy and perceptual retrieval before selecting a CMA base."""
+
+        assert self.shared_cache is not None
+        target_descriptor = describe_audio(self.target_path)
+        self.target_retrieval_descriptor = target_descriptor
+        perceptual_inputs: list[dict[str, Any]] = []
+        legacy: list[dict[str, Any]] = []
+        for entry in self.shared_cache.entries:
+            descriptor = load_descriptor(entry["descriptor_path"])
+            perceptual_inputs.append(
+                {**entry, "raw_distances": raw_family_distances(target_descriptor, descriptor)}
+            )
+            legacy.append(
+                {**entry, **compute_audio_objective(self.reference, entry["audio_path"])}
+            )
+        perceptual, medians = normalize_and_rank(perceptual_inputs)
+        legacy.sort(key=lambda row: (row["total_loss"], row["preset_relative_path"]))
+        legacy_rank = {}
+        legacy_by_path = {}
+        for rank, row in enumerate(legacy, start=1):
+            row["legacy_rank"] = rank
+            row["rank"] = rank
+            legacy_rank[row["preset_relative_path"]] = rank
+            legacy_by_path[row["preset_relative_path"]] = row
+        for row in perceptual:
+            row["legacy_rank"] = legacy_rank[row["preset_relative_path"]]
+            row["rank"] = row["perceptual_rank"]
+            old = legacy_by_path[row["preset_relative_path"]]
+            row.update(
+                {
+                    key: old[key]
+                    for key in (
+                        "total_loss",
+                        "spectral_loss",
+                        "envelope_loss",
+                        "loudness_loss",
+                        "candidate_rms_dbfs",
+                        "target_rms_dbfs",
+                    )
+                }
+            )
+        if len(perceptual) < 10:
+            raise SurgeMatchError("fewer than ten retrieval-eligible presets were indexed")
+
+        def expose_audio(rows: Sequence[dict[str, Any]], prefix: str) -> None:
+            for row in rows[:10]:
+                rank = int(row["rank"])
+                destination = self.audio_directory / "presets" / f"{prefix}-{rank:02d}.wav"
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(row["audio_path"], destination)
+                if sha256_file(destination) != row["wav_sha256"]:
+                    raise SurgeMatchError("copied retrieval WAV hash differs from shared cache")
+                row["audio_url"] = f"/audio/presets/{destination.name}"
+
+        expose_audio(perceptual, "perceptual")
+        expose_audio(legacy, "legacy")
+        self.perceptual_preset_ranking = perceptual
+        self.legacy_preset_ranking = legacy
+        self.preset_ranking = perceptual
+        self.retrieval_family_medians = medians
+        self.preset_failures = list(self.shared_cache.failures)
+        eligible_base = next(
+            (row for row in perceptual if row.get("search_eligible")), None
+        )
+        if eligible_base is None:
+            raise SurgeMatchError("full library has no search-eligible CMA base")
+        self.retrieval_sanity = {
+            "self_distance_contract": "unit-tested exact zero before float16 cache quantization",
+            "full_library_self_rank_audit": "PENDING_EXPLICIT_AUDIT",
+            "near_state_top_10_audit": "PENDING_EXPLICIT_AUDIT",
+            "synthetic_directionality": "AUTOMATED_TEST",
+        }
+        scores = [float(row["retrieval_score"]) for row in perceptual]
+        median_score = float(np.median(scores))
+        self.retrieval_coverage = {
+            "factory_total": self.shared_cache.selected_count,
+            "retrieval_eligible": len(self.shared_cache.entries),
+            "search_eligible": sum(
+                bool(row.get("search_eligible")) for row in self.shared_cache.entries
+            ),
+            "failed": len(self.shared_cache.failures),
+            "best_to_median_ratio": (
+                float(scores[0] / median_score) if median_score > 0 else None
+            ),
+            "top_10_spread": float(scores[9] - scores[0]),
+        }
+        self._initialize_selected_base(eligible_base)
+        self._write_preset_index(
+            entries=perceptual,
+            selection=(
+                "entire sorted retrieval-eligible Surge XT 1.3.4 factory library; "
+                "CMA base is the highest-ranked search-eligible perceptual result"
+            ),
+            extra={
+                "descriptor": descriptor_definition(),
+                "family_medians": medians,
+                "retrieval_coverage": self.retrieval_coverage,
+                "retrieval_sanity": self.retrieval_sanity,
+                "legacy_top_10": legacy[:10],
+                "perceptual_top_10": perceptual[:10],
+                "cma_base_perceptual_rank": eligible_base["perceptual_rank"],
+            },
+        )
+
+    def retrieval_compare_public(self, *, family: str, rank: int) -> dict[str, Any]:
+        if family not in {"legacy", "perceptual"}:
+            raise SurgeMatchError("retrieval family must be legacy or perceptual")
+        rows = (
+            self.legacy_preset_ranking
+            if family == "legacy"
+            else self.perceptual_preset_ranking
+        )
+        if not 1 <= rank <= min(10, len(rows)):
+            raise SurgeMatchError("retrieval comparison rank must be in the visible Top 10")
+        row = rows[rank - 1]
+        candidate_descriptor = load_descriptor(row["descriptor_path"])
+        return {
+            "family": family,
+            "rank": rank,
+            "candidate": {
+                "preset_name": row["preset_name"],
+                "preset_category": row["preset_category"],
+                "preset_relative_path": row["preset_relative_path"],
+                "audio_url": row["audio_url"],
+                "raw_distances": row.get("raw_distances"),
+                "normalized_distances": row.get("normalized_distances"),
+                "weighted_contributions": row.get("weighted_contributions"),
+                "retrieval_score": row.get("retrieval_score"),
+                "legacy_loss": row["total_loss"],
+                "retrieval_eligible": row["retrieval_eligible"],
+                "search_eligible": row["search_eligible"],
+            },
+            "target": descriptor_preview(
+                self.target_path, self.target_retrieval_descriptor
+            ),
+            "selected": descriptor_preview(row["audio_path"], candidate_descriptor),
+            "descriptor": descriptor_definition(),
+        }
+
     def reveal_target(self) -> dict[str, Any]:
         raise SurgeMatchError("external targets have no hidden Surge parameters")
 
@@ -1165,14 +1529,51 @@ class ExternalTargetController:
         self.population_size = population_size
         self.seed = seed
         self._lock = threading.RLock()
+        self.human_audit_path = self.output_directory / "human-retrieval-audit.json"
+        self._human_audit = self._load_human_audit()
         self.shared_cache = prepare_shared_preset_cache(
             adapter=adapter,
             cache_root=self.output_directory / "shared-preset-cache",
             preset_limit=preset_limit,
+            full_library=True,
         )
         self._runs: list[ExternalSurgeMatchRun] = []
         self._latest_by_target: dict[str, dict[str, Any]] = {}
         self.active_run = self._new_run(self.target_bank.targets[0])
+
+    def _load_human_audit(self) -> dict[str, dict[str, str]]:
+        if not self.human_audit_path.is_file():
+            return {}
+        try:
+            payload = json.loads(self.human_audit_path.read_text(encoding="utf-8"))
+            return dict(payload.get("targets", {}))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            raise SurgeMatchError("human retrieval audit file is invalid")
+
+    def set_human_audit(
+        self, *, comparison: str, plausible_neighborhood: str
+    ) -> dict[str, Any]:
+        comparisons = {
+            "NEW BETTER", "ROUGHLY SAME", "LEGACY BETTER", "NEITHER CLOSE", "PENDING"
+        }
+        plausible = {"YES", "NO", "UNCLEAR"}
+        if comparison not in comparisons or plausible_neighborhood not in plausible:
+            raise SurgeMatchError("human retrieval audit uses an unsupported status")
+        with self._lock:
+            target_id = self.active_run.external_target.target_id
+            self._human_audit[target_id] = {
+                "comparison": comparison,
+                "plausible_neighborhood": plausible_neighborhood,
+                "recorded_at": _now(),
+            }
+            _write_json_atomic(
+                {
+                    "schema": "agentic-synth-twin/human-retrieval-audit/v1",
+                    "targets": self._human_audit,
+                },
+                self.human_audit_path,
+            )
+            return self.public_status()
 
     @property
     def status(self) -> str:
@@ -1234,6 +1635,10 @@ class ExternalTargetController:
             payload["selected_target_id"] = self.active_run.external_target.target_id
             payload["target_bank_identity_sha256"] = self.target_bank.identity_sha256
             payload["preset_cache"]["reused_for_target_switch"] = len(self._runs) > 1
+            payload["human_retrieval_audit"] = getattr(self, "_human_audit", {}).get(
+                self.active_run.external_target.target_id,
+                {"comparison": "PENDING", "plausible_neighborhood": "UNCLEAR"},
+            )
             return payload
 
     def history_public(self) -> list[dict[str, Any]]:
@@ -1243,6 +1648,10 @@ class ExternalTargetController:
     def spectra_public(self) -> dict[str, Any]:
         with self._lock:
             return self.active_run.spectra_public()
+
+    def retrieval_compare_public(self, *, family: str, rank: int) -> dict[str, Any]:
+        with self._lock:
+            return self.active_run.retrieval_compare_public(family=family, rank=rank)
 
     def audio_path_for_url(self, url_path: str) -> Path:
         with self._lock:

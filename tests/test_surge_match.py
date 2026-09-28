@@ -1,6 +1,7 @@
 import tempfile
 import unittest
 import hashlib
+import wave
 from pathlib import Path
 
 from agentic_synth_twin.search_cockpit import render_cockpit_page
@@ -67,7 +68,10 @@ class SurgeMatchTests(unittest.TestCase):
         self.assertIn("LOAD CURRENT BEST", page)
         self.assertIn("LOAD BASE", page)
         self.assertIn("/api/playable/note", page)
-        self.assertIn("Closest factory presets", page)
+        self.assertIn("Full-library retrieval audit", page)
+        self.assertIn("Legacy Top 10", page)
+        self.assertIn("New perceptual Top 10", page)
+        self.assertIn("SAVE HUMAN AUDIT", page)
 
     def test_playable_note_keeps_piano_and_velocity_bounds_and_caches(self):
         class FakeAdapter:
@@ -108,10 +112,12 @@ class SurgeMatchTests(unittest.TestCase):
         self.assertEqual(len(DETERMINISTIC_OVERRIDES), 6)
         self.assertEqual(set(DETERMINISTIC_OVERRIDES.values()), {1.0})
 
-    def test_shared_cache_excludes_incompatible_inventory_and_is_reused(self):
+    def test_shared_cache_separates_retrieval_and_search_eligibility_and_is_reused(self):
         class FakeAdapter:
             def __init__(self, root):
                 self.plugin_path = root / "Surge XT.clap"
+                self.factory_data_path = root / "factory-data"
+                self.factory_data_path.mkdir()
                 binary = self.plugin_path / "Contents/MacOS/Surge XT"
                 binary.parent.mkdir(parents=True)
                 binary.write_bytes(b"plugin")
@@ -120,7 +126,7 @@ class SurgeMatchTests(unittest.TestCase):
                 self.render_calls = 0
                 self.presets = []
                 for number in range(6):
-                    path = root / f"preset-{number}.fxp"
+                    path = self.factory_data_path / f"preset-{number}.fxp"
                     path.write_bytes(f"preset-{number}".encode())
                     self.presets.append(PresetRef(
                         name=f"Preset {number}",
@@ -150,7 +156,17 @@ class SurgeMatchTests(unittest.TestCase):
 
             def render_verified(self, *, wav_path, **_kwargs):
                 self.render_calls += 1
-                Path(wav_path).write_bytes(b"RIFF" + str(wav_path).encode())
+                import numpy as np
+
+                frames = 110_250
+                signal = (0.15 * np.sin(2 * np.pi * 130.8128 * np.arange(frames) / 44_100))
+                pcm = np.rint(signal * 32767).astype("<i2")
+                stereo = np.column_stack((pcm, pcm)).reshape(-1)
+                with wave.open(str(wav_path), "wb") as target:
+                    target.setnchannels(2)
+                    target.setsampwidth(2)
+                    target.setframerate(44_100)
+                    target.writeframes(stereo.tobytes())
                 return {
                     "wav_sha256": hashlib.sha256(Path(wav_path).read_bytes()).hexdigest(),
                     "peak_float": 0.5,
@@ -163,15 +179,17 @@ class SurgeMatchTests(unittest.TestCase):
             first = prepare_shared_preset_cache(
                 adapter=adapter, cache_root=root / "cache", preset_limit=6
             )
-            self.assertEqual(len(first.entries), 5)
-            self.assertEqual(len(first.failures), 1)
-            self.assertIn("identity changed", first.failures[0]["error"])
-            self.assertEqual(adapter.render_calls, 5)
+            self.assertEqual(len(first.entries), 6)
+            self.assertEqual(len(first.failures), 0)
+            self.assertEqual(sum(row["search_eligible"] for row in first.entries), 5)
+            incompatible = next(row for row in first.entries if not row["search_eligible"])
+            self.assertIn("identity changed", incompatible["search_ineligible_reason"])
+            self.assertEqual(adapter.render_calls, 6)
             second = prepare_shared_preset_cache(
                 adapter=adapter, cache_root=root / "cache", preset_limit=6
             )
             self.assertTrue(second.reused)
-            self.assertEqual(adapter.render_calls, 5)
+            self.assertEqual(adapter.render_calls, 6)
             self.assertEqual(second.identity_sha256, first.identity_sha256)
 
 

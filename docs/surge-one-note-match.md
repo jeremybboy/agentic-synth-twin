@@ -2,6 +2,8 @@
 
 ![Implementation map showing ten external procedural targets, one shared eligible Surge preset cache, target-specific Top 5 retrieval, manual CMA-ES start, preserved telemetry, and the playable keyboard.](assets/milestone-9-external-target-bank.svg)
 
+> The original bounded result below is preserved as historical evidence. The current follow-up audits the complete library with two eligibility classes and a new uncapped descriptor; see [Full-library perceptual timbre retrieval audit](perceptual-retrieval-audit.md).
+
 ## Question and boundary
 
 Milestone 9 asks one narrow question: for a fixed external C3 reference, can Agentic Synth Twin retrieve and locally refine a real Surge XT factory preset whose rendered note becomes closer under the project's fixed transparent objective? It does not claim instrument recognition, exact reconstruction, perceptual equivalence, or behavior across pitches, velocities, chords, and phrases. Playing other notes in the preserved cockpit is exploratory audition only.
