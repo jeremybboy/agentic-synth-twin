@@ -18,7 +18,7 @@ Do not create a separate frontend unless an independent frontend architecture be
 
 ## Current boundary
 
-Milestone 8B is a playable extension of the Milestone 8A patch cockpit. The editable working copy, real-CLAP rendered-note cache, on-screen and computer keyboards, optional browser Web MIDI input, piano range, velocity bounds, and explicit non-realtime limitation are authoritative. Search evidence remains immutable when the working copy is edited. The browser remains a thin client of backend functions. Do not add a native realtime host, public hosting, loudness normalization, new optimizers, Filter Type search, semantic models, or LOCK until the corresponding milestone is explicitly authorized.
+Milestone 9 additively extends the Milestone 8B playable cockpit through a synth-adapter boundary, bounded Surge XT factory-preset retrieval, and local eight-parameter one-note refinement. The editable working copy, real-CLAP rendered-note cache, on-screen and computer keyboards, optional browser Web MIDI input, piano range, velocity bounds, immutable search evidence, and explicit non-realtime limitation remain authoritative. The browser remains a thin client of backend functions, and `clap-saw-demo` remains supported. Do not add multi-note or velocity-sweep validation, a native realtime host, public hosting, loudness normalization, semantic models, hardware integration, new optimizers, or LOCK until the corresponding milestone is explicitly authorized.
 
 ## Invariants
 

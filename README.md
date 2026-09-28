@@ -2,7 +2,9 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 8B turns the direct-search cockpit into a playable patch workbench. The current best can be loaded into four editable, plugin-discovered controls and played across the piano range with the on-screen keyboard, computer keys, or browser-supported USB MIDI. Notes are exact cached CLAP renders, not a low-latency native host; LOCK remains unimplemented.
+> **Status:** Milestone 9 additively extends the playable cockpit with a synth-adapter boundary, Surge XT 1.3.4 factory-preset retrieval, and bounded one-note local refinement. Target, Base, and Best remain playable through the same on-screen keyboard, computer keys, and browser-supported USB MIDI path. Notes are exact cached CLAP renders, not a low-latency native host; multi-note validation and LOCK remain unimplemented.
+
+![Milestone 9 flow from target note through bounded Surge XT preset retrieval and local refinement, with the existing playable cockpit and keyboard preserved.](docs/assets/milestone-9-surge-one-note-visual.png)
 
 ![Local playable patch cockpit showing reference playback, editable real-synth parameters, a two-octave keyboard, and search telemetry.](docs/assets/playable-cockpit.png)
 
@@ -14,9 +16,9 @@ A synthesizer can generate supervised training data because every rendered sound
 
 Human listening first constrains the experiment. Controlled renders then connect exact synth parameters to measurable acoustic behavior. A local surrogate may cheaply search that sampled region, but every promising result must return to the real synth for measurement, audition, and exact-state locking.
 
-## Why `clap-saw-demo`
+## Synth backends
 
-[`clap-saw-demo`](https://github.com/abique/clap-saw-demo) is intentionally small, CLAP-native, and pedagogical. That makes it a suitable first instrument for exposing parameter/state behavior without hiding the experiment behind a production synthesizer's complexity. Milestone 1 pins upstream commit `f33b31fff459d66ac18207ec152b323aaa9306f9`; see [CLAP feasibility](docs/clap-feasibility.md) for verified evidence and limitations.
+[`clap-saw-demo`](https://github.com/abique/clap-saw-demo) remains the intentionally small research instrument pinned at upstream commit `f33b31fff459d66ac18207ec152b323aaa9306f9`. Milestone 9 adds Surge XT 1.3.4 as the first rich synth adapter: a bounded factory library supplies musical starting states before local real-synth refinement. Search, objective, cockpit, keyboard, cache, and evidence logic remain synth-independent.
 
 ## Research hypothesis
 
@@ -58,7 +60,8 @@ The backend remains callable independently of the future Streamlit interface. Sy
 | 7 | Surrogate experiment | Reproducible training and honest held-out metrics; retained even if the model fails its gate |
 | 8A | Direct inverse search | Live real-synth CMA-ES, transparent audio objective, equal-budget random control, and audition |
 | 8B | Playable patch cockpit | Editable best patch, real-synth note renders, virtual/computer keyboard, and optional USB MIDI |
-| 9 | LOCK workflow | Save, reload, rerender, and compare exact patch state |
+| 9 | Surge one-note match | Bounded factory retrieval, eight-control local refinement, equal-budget random control, and preserved playable cockpit |
+| 10 | LOCK workflow | Save, reload, rerender, and compare exact patch state |
 
 Each milestone is delivered through a separate human-reviewed GitHub pull request. Milestone numbers and GitHub pull-request numbers are independent. Agents never merge pull requests.
 
@@ -86,6 +89,8 @@ scripts/generate_synthetic_dataset.sh
 scripts/serve_dataset_report.sh
 scripts/run_direct_search.sh
 scripts/reproduce_direct_search.sh
+scripts/run_surge_match.sh
+scripts/reproduce_surge_match.sh
 ```
 
 To regenerate and inspect the Milestone 6 dataset:
@@ -104,6 +109,16 @@ scripts/run_direct_search.sh
 ```
 
 Open `http://127.0.0.1:8765`, press **Start search**, and audition Target, Starting Patch, and Current Best. The **Playable patch** panel can load Current Best or Starting, edit the four searched parameters, and play two visible octaves; octave buttons cover the wider piano range, and **Connect USB MIDI** uses Web MIDI when the browser supports it. The computer keyboard follows Ableton's layout: `A S D F G H J K L` are white notes, `W E T Y U O` are black notes, `Z/X` changes octave, and `C/V` changes velocity. The first strike of a pitch/velocity/patch combination renders the real CLAP synth and may lag; later strikes use the local cache. Run `scripts/reproduce_direct_search.sh` separately to reproduce the fixed CMA-ES demonstration and equal-budget random-search control.
+
+To run Milestone 9 through the same cockpit with Surge XT:
+
+```bash
+scripts/run_surge_match.sh
+```
+
+Open `http://127.0.0.1:8879`. Initial startup downloads checksum-pinned Surge XT 1.3.4 plugin/content artifacts into ignored `work/`, compiles the local CLAP helpers, and builds the bounded preset index before the server appears. Target, the Top 5 retrieved presets, Base, and Best are directly auditionable; Base and Best use the unchanged piano/computer/Web MIDI working-patch path. Run `scripts/reproduce_surge_match.sh` for the frozen full experiment and equal-budget control.
+
+The frozen run accepted 65 of 120 attempted factory presets after deterministic/non-silent/non-clipping screening. CMA-ES reduced the selected Base loss from `0.28177` to `0.02897` (89.7%); equal-budget random reached `0.18438`, and the final Best rerender was byte-identical. These are automated one-note results only—owner Target/Base/Best listening remains pending.
 
 To regenerate the ten DSP comparisons and open the read-only report:
 
@@ -136,7 +151,7 @@ Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 - MIDI 2.0
 - ML-CLAP or semantic audio embeddings
 - diffusion or generated-audio models
-- multiple synthesizers, including Surge XT
+- multi-note, phrase, chord, or velocity-sweep matching
 - autonomous agent loops
 - cloud services or a cloud backend
 - production-quality UI
@@ -154,6 +169,7 @@ Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 - `docs/synthetic-dataset.md` — Milestone 6 sampling contract, storage policy, evidence, explorer, and limitations
 - `docs/direct-real-synth-search.md` — Milestone 8A objective, live cockpit, benchmark, evidence, and honest failed gate
 - `docs/playable-cockpit.md` — Milestone 8B editable patch, keyboard inputs, rendered-note contract, and limitations
+- `docs/surge-one-note-match.md` — Milestone 9 adapter, preset index, local search, evidence, and listening boundary
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents
