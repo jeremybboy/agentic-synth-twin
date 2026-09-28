@@ -60,9 +60,9 @@ Milestone 3 applies scientific C3 (MIDI 48), velocity 100, a two-second hold, a 
 
 Milestone 5 implements deterministic whole-file RMS and peak, power-spectrum centroid and 85% rolloff, plus simple moving-RMS attack and release estimates. Stereo energy and spectra are aggregated across channels without changing or normalizing the render. Milestone 6 adds one exact baseline plus 255 seeded states across Filter Type, Cutoff, and Attack, with balanced stepped categories and stratified continuous dimensions. Each row remains traceable to exact prior evidence, synth state, input configuration, WAV hash, render verification, and features; the WAV files stay local while the manifest is committed.
 
-### Surrogate model and optimizer
+### Surrogate model and optimizers
 
-The surrogate will model only the sampled local region of approximately 2–5 human-selected active parameters. An initial simple model will predict acoustic descriptors from parameter values and report held-out error. The optimizer will search predictions cheaply, nominate only a few candidates, and never substitute its predictions for real-synth evidence.
+The Milestone 7 surrogate experiment is separate evidence about predicting descriptors in a bounded sampled region. Milestone 8A intentionally bypasses it: bounded CMA-ES proposes four normalized continuous parameters, every proposal is rendered on the real synth, and a transparent multi-resolution spectral, envelope, and loudness objective scores the resulting WAV. An equal-budget random search is the scientific control; the fixed demonstration did not establish CMA-ES superiority.
 
 ### Real synth verification, human validation, and LOCK
 
@@ -76,6 +76,7 @@ Names may evolve as evidence arrives, but the backend should expose operations e
 - controlled evidence: `render_audition`, `extract_features`
 - human calibration: `generate_probe`, `record_probe_answer`
 - learning/search: `generate_dataset`, `train_surrogate`, `optimize_target`
+- direct search: `create_search_run`, `compute_audio_objective`, `benchmark_random_search`
 - authority/reproducibility: `verify_candidate`, `lock_patch`
 
 ## Data and reproducibility invariants
@@ -105,4 +106,4 @@ Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth 
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md); Milestone 7 remains separately authorized work.
+Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md). Milestone 7 retains the separately reviewed surrogate result; Milestone 8A owns the direct search described in [`direct-real-synth-search.md`](direct-real-synth-search.md) and does not depend on the surrogate.

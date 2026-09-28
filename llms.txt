@@ -12,13 +12,14 @@
 - [Human A/B probe](docs/human-ab-probe.md): local blinded calibration, SQLite persistence, first pilot judgment, and limitations
 - [DSP features](docs/dsp-features.md): deterministic formulas, regenerated A/B measurements, local report, and limitations
 - [Synthetic dataset](docs/synthetic-dataset.md): three-parameter sampling, local WAV policy, committed evidence, explorer, and limitations
+- [Direct real-synth search](docs/direct-real-synth-search.md): four-parameter CMA-ES, audio objective, live cockpit, random control, and actual result
 - [Agent contract](AGENTS.md): repository rules, current milestone boundary, and checks
 - [Contributing](CONTRIBUTING.md): focused PR workflow
 - [Security](SECURITY.md): private vulnerability reporting guidance
 
 ## Current status
 
-Milestone 6 provides 256 deterministic, hash-traced real-synth examples across Filter Type, Cutoff, and Attack plus a read-only local explorer. No model, optimization, or LOCK functionality exists yet.
+Milestone 8A provides a local direct real-synth CMA-ES cockpit and reproducible random-search benchmark. Its fixed run passed engine integrity and improved 86.8% over start, but random search achieved the lower loss, so adaptive-search value failed; human audition and LOCK remain incomplete.
 
 ## Source
 

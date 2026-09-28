@@ -1,0 +1,102 @@
+{
+  "schema": "agentic-synth-twin/direct-real-synth-search/v1",
+  "result": {
+    "engine_integrity": true,
+    "optimization_pass": true,
+    "adaptive_search_pass": false,
+    "audible_human_check": "PENDING_OWNER_AUDITION",
+    "overall_numeric_pass": false
+  },
+  "run": {
+    "seed": 20260928,
+    "status": "COMPLETE",
+    "stopping_reason": "fixed_budget_exhausted",
+    "evaluations": 160,
+    "generations": 20,
+    "population_size": 8,
+    "runtime_seconds": 5.019024082983,
+    "starting_loss": 0.472832750041,
+    "final_best_loss": 0.062361549029,
+    "improvement_percent": 86.811076638919
+  },
+  "active_parameters": [
+    {"id": 8675309, "name": "Oscillator Detuning (in cents)", "min": -200, "max": 200, "default": 0},
+    {"id": 2391, "name": "Unison Spread in Cents", "min": 0, "max": 100, "default": 10},
+    {"id": 17, "name": "Cutoff in Keys", "min": 1, "max": 127, "default": 69},
+    {"id": 2874, "name": "Amplitude Attack (s)", "min": 0, "max": 1, "default": 0.01}
+  ],
+  "fixed_filter": {"id": 14255, "name": "Filter Type", "fixed": true, "value": 0},
+  "target": {
+    "generation_procedure": "fixed interior normalized vector rendered twice from canonical state",
+    "parameter_values_normalized": [0.72, 0.68, 0.28, 0.62],
+    "parameter_values_real": {"8675309": 88.0, "2391": 68.0, "17": 36.28, "2874": 0.62},
+    "wav_sha256": "63be446592f6e4b4ade57bde8a122e842d377c839a504ba80b4fe238a53cc431",
+    "deterministic": true
+  },
+  "starting_patch": {
+    "parameter_values_normalized": [0.5, 0.1, 0.539682539683, 0.01],
+    "parameter_values_real": {"8675309": 0.0, "2391": 10.0, "17": 69.000000000058, "2874": 0.01},
+    "wav_sha256": "e55d49128ae37298d5b036adea9cbb98844800a1345b852cfa7d652d07d6e475",
+    "loss": 0.472832750041
+  },
+  "final_best": {
+    "generation": 18,
+    "candidate_index": 4,
+    "total_evaluations": 140,
+    "parameter_values_normalized": [0.651588401791, 0.000713200838, 0.337432210042, 0.59717536604],
+    "parameter_values_real": {"8675309": 60.635360716445, "2391": 0.071320083766, "17": 43.516458465287, "2874": 0.59717536604},
+    "spectral_loss": 0.045207252527,
+    "envelope_loss": 0.107311387891,
+    "loudness_loss": 0.061489879132,
+    "total_loss": 0.062361549029,
+    "candidate_rms_dbfs": -38.397477212388,
+    "target_rms_dbfs": -36.921720113226,
+    "wav_sha256": "67c9c4743554caeaf1d8286660e83a16d1c3a6c22911f9c9708d528bc3c554a4",
+    "clipped_samples": 0
+  },
+  "final_rerender": {
+    "wav_sha256": "67c9c4743554caeaf1d8286660e83a16d1c3a6c22911f9c9708d528bc3c554a4",
+    "verification_renders": 2,
+    "byte_identical": true,
+    "matches_search_best": true
+  },
+  "objective": {
+    "formula": "0.65*spectral + 0.25*envelope + 0.10*loudness",
+    "weights": {"spectral": 0.65, "envelope": 0.25, "loudness": 0.1},
+    "spectral": {"representation": "multi-resolution Hann log-magnitude STFT", "resolutions": [{"fft_size": 256, "hop_size": 64}, {"fft_size": 1024, "hop_size": 256}, {"fft_size": 4096, "hop_size": 1024}], "normalization_scale": 0.05},
+    "envelope": {"representation": "full frame-level log RMS envelope", "window": 512, "hop": 128, "normalization_scale": 1.5},
+    "loudness": {"representation": "absolute whole-file RMS dBFS difference", "normalization_db": 24.0}
+  },
+  "optimizer": {
+    "name": "CMA-ES",
+    "implementation": "pycma",
+    "version": "4.5.0",
+    "seed": 20260928,
+    "population_size": 8,
+    "initial_sigma": 0.22,
+    "bounds": [0.0, 1.0]
+  },
+  "random_search": {
+    "seed": 20260929,
+    "budget": 160,
+    "best_loss": 0.058876014435,
+    "improvement_percent": 87.548236785651,
+    "runtime_seconds": 4.717324666999
+  },
+  "reproducibility": {
+    "second_cma_run_evaluations": 160,
+    "same_candidate_sequence_real_states_component_losses_and_wav_hashes": true
+  },
+  "canonical_state": {
+    "sha256": "85878c7666449d67e9a01c10e36f0f0dafd65ab743769b039e1837885ac0adbc",
+    "opaque_state_sha256": "8e9ad156e9e8ab9a0cf001acdfd9aa84a4c4e7c20138e6bf8c53c05021a7c022"
+  },
+  "audition": {"sample_rate": 44100, "block_size": 64, "midi_key": 48, "velocity": 100, "note_frames": 88200, "tail_frames": 22050},
+  "limitations": [
+    "CMA-ES did not beat the predeclared equal-budget random-search control.",
+    "Audio-domain score is not human perceptual equivalence.",
+    "One deterministic hidden target does not establish broad generalization.",
+    "The 2-D cockpit map shows selected axes, not the full four-dimensional space.",
+    "Milestone 7 remains separate failed-surrogate evidence and is not used here."
+  ]
+}

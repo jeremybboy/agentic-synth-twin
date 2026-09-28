@@ -18,7 +18,7 @@ Do not create a separate frontend unless an independent frontend architecture be
 
 ## Current boundary
 
-Milestone 6 is a bounded 256-example synthetic dataset over the authorized Filter Type, Cutoff, and Attack parameters: seeded sampling, exact applied states, deterministic real-synth renders, traceable hashes, DSP features, local-only WAV storage, and a read-only explorer. The browser remains a thin client of backend functions. Do not add public hosting, loudness normalization, ML, optimization, or LOCK until the corresponding milestone is explicitly authorized.
+Milestone 8A is a bounded direct real-synth search over Oscillator Detuning, Unison Spread, Cutoff, and Attack with Filter Type fixed. The transparent audio objective, fixed-budget CMA-ES, equal-budget random control, target secrecy/reveal, exact rerenders, complete history, and local read-only/live-control cockpit are authoritative. The browser remains a thin client of backend functions. Do not add public hosting, loudness normalization, Bayesian optimization, Filter Type search, semantic models, or LOCK until the corresponding milestone is explicitly authorized.
 
 ## Invariants
 

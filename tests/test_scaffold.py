@@ -26,6 +26,7 @@ class ScaffoldTests(unittest.TestCase):
             "docs/human-ab-probe.md",
             "docs/dsp-features.md",
             "docs/synthetic-dataset.md",
+            "docs/direct-real-synth-search.md",
             "docs/schemas/canonical-synth-state-v1.schema.json",
             "docs/assets/repository-overview.svg",
         )
