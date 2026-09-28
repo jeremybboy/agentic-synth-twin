@@ -2,7 +2,7 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 8A adds a live, direct real-synth CMA-ES search over four discovered continuous parameters. The fixed 160-evaluation run improved the audio objective by 86.8%, but equal-budget random search scored slightly better, so adaptive-search value is explicitly a failed gate; human audition remains pending and LOCK remains unimplemented.
+> **Status:** Milestone 8B validates direct real-synth search on eight fixed targets. CMA-ES improved at least 30% on 7/8 and beat random on 6/8, but its median loss was slightly worse, so the complete adaptive-value gate still fails; blinded owner audition and LOCK remain incomplete.
 
 ## Core idea
 
@@ -55,6 +55,7 @@ The backend remains callable independently of the future Streamlit interface. Sy
 | 6 | Synthetic dataset | Traceable parameter/audio/feature examples |
 | 7 | Surrogate experiment | Reproducible training and honest held-out metrics; retained even if the model fails its gate |
 | 8A | Direct inverse search | Live real-synth CMA-ES, transparent audio objective, equal-budget random control, and audition |
+| 8B | Multi-target validation | Eight paired CMA/random searches plus blinded owner audition |
 | 9 | LOCK workflow | Save, reload, rerender, and compare exact patch state |
 
 Each milestone is delivered through a separate human-reviewed GitHub pull request. Milestone numbers and GitHub pull-request numbers are independent. Agents never merge pull requests.
@@ -83,6 +84,8 @@ scripts/generate_synthetic_dataset.sh
 scripts/serve_dataset_report.sh
 scripts/run_direct_search.sh
 scripts/reproduce_direct_search.sh
+scripts/reproduce_multitarget_validation.sh
+scripts/serve_multitarget_report.sh
 ```
 
 To regenerate and inspect the Milestone 6 dataset:
@@ -101,6 +104,15 @@ scripts/run_direct_search.sh
 ```
 
 Open `http://127.0.0.1:8765`, press **Start search**, and audition Target, Starting Patch, and Current Best. Run `scripts/reproduce_direct_search.sh` separately to reproduce the fixed CMA-ES demonstration and equal-budget random-search control.
+
+To reproduce the eight-target Milestone 8B validation and perform the blinded audition:
+
+```bash
+scripts/reproduce_multitarget_validation.sh
+scripts/serve_multitarget_report.sh
+```
+
+Open `http://127.0.0.1:8766`; method identities and numeric results remain hidden until all eight comparisons are recorded locally.
 
 To regenerate the ten DSP comparisons and open the read-only report:
 
@@ -150,6 +162,7 @@ Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 - `docs/dsp-features.md` — Milestone 5 descriptor formulas, real-synth evidence, report workflow, and limitations
 - `docs/synthetic-dataset.md` — Milestone 6 sampling contract, storage policy, evidence, explorer, and limitations
 - `docs/direct-real-synth-search.md` — Milestone 8A objective, live cockpit, benchmark, evidence, and honest failed gate
+- `docs/multitarget-validation.md` — Milestone 8B paired validation, blinded audition, results, and limitations
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents

@@ -433,6 +433,7 @@ def create_search_run(
     seed: int = SEARCH_SEED,
     generations: int = DEFAULT_GENERATIONS,
     population_size: int = DEFAULT_POPULATION_SIZE,
+    target_normalized: Sequence[float] = TARGET_NORMALIZED,
 ) -> "SearchRun":
     return SearchRun(
         canonical_state_path=Path(canonical_state_path),
@@ -442,6 +443,7 @@ def create_search_run(
         seed=seed,
         generations=generations,
         population_size=population_size,
+        target_normalized=target_normalized,
     )
 
 
@@ -458,6 +460,7 @@ class SearchRun:
         seed: int,
         generations: int,
         population_size: int,
+        target_normalized: Sequence[float] = TARGET_NORMALIZED,
     ):
         if generations < 1 or population_size < 2:
             raise DirectSearchError("search requires positive generations and population")
@@ -477,7 +480,11 @@ class SearchRun:
         self.parameters = discovered[: len(ACTIVE_PARAMETER_IDS)]
         self.fixed_filter = discovered[-1]
         self.start_vector = vector_from_current(self.parameters)
-        self.target_vector = list(TARGET_NORMALIZED)
+        if len(target_normalized) != len(ACTIVE_PARAMETER_IDS):
+            raise DirectSearchError("target vector must have four parameter values")
+        if any(float(value) < 0.0 or float(value) > 1.0 for value in target_normalized):
+            raise DirectSearchError("target vector must remain inside [0, 1]^4")
+        self.target_vector = [_rounded(value) for value in target_normalized]
         self.seed = seed
         self.generations = generations
         self.population_size = population_size
@@ -956,6 +963,7 @@ def benchmark_random_search(
             "parameter_values_real": rendered["parameter_values_real"],
             **objective,
             "wav_sha256": rendered["wav_sha256"],
+            "audio_path": rendered["wav_path"],
         }
         if best is None or row["total_loss"] < best["total_loss"]:
             best = dict(row)

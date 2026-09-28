@@ -1,0 +1,48 @@
+{
+  "schema": "agentic-synth-twin/multitarget-validation/v1",
+  "procedure": {
+    "target_source": "eight predetermined parameter states rendered twice by the real synth",
+    "target_count": 8,
+    "cma_seed": 20260928,
+    "random_seed": 20260929,
+    "evaluations_per_method_per_target": 160,
+    "total_candidate_evaluations": 2560,
+    "objective_unchanged_from_milestone_8a": true,
+    "success_gates": {
+      "engine_integrity": "all eight targets",
+      "optimization": "at least 6/8 CMA runs improve at least 30 percent",
+      "adaptive_value": "CMA wins at least 5/8 and median CMA loss is no greater than median random loss",
+      "human_audition": "owner blind comparison reported separately"
+    }
+  },
+  "aggregate": {
+    "target_count": 8,
+    "engine_integrity_pass": true,
+    "optimization_pass_count": 7,
+    "optimization_required_count": 6,
+    "optimization_gate_pass": true,
+    "cma_win_count": 6,
+    "adaptive_required_wins": 5,
+    "median_cma_best_loss": 0.140060575488,
+    "median_random_best_loss": 0.13925688528,
+    "adaptive_gate_pass": false,
+    "human_audition": "PENDING_OWNER_BLIND_COMPARISON",
+    "total_search_runtime_seconds": 93.601116498992
+  },
+  "targets": [
+    {"id":"dark-short","label":"Dark short onset","target_normalized":[0.52,0.15,0.18,0.02],"starting_loss":0.596372025291,"cma_best_loss":0.028181589782,"random_best_loss":0.030952458027,"cma_improvement_percent":95.274495015381,"cma_wins":true,"target_wav_sha256":"df792919d73d482b2b5792b666e4074562e0026295a00dc16cb3943b45d6bd8f","cma_wav_sha256":"e2130ec58968d60491ed191a6cfdbf005ca39082338e3ff951b8409d72d7a857","random_wav_sha256":"1cbff7ee8e5e8495c66e65612fae79d3b5afb213c03c042d29f97c3dcd06b29d"},
+    {"id":"bright-wide-short","label":"Bright wide short onset","target_normalized":[0.65,0.85,0.8,0.03],"starting_loss":0.49235381371,"cma_best_loss":0.290983563815,"random_best_loss":0.341663858355,"cma_improvement_percent":40.899500377102,"cma_wins":true,"target_wav_sha256":"f9f04e0c1172ff770d0c42e3504c750ff48befcd1a5c0f34d6de088364989461","cma_wav_sha256":"6e55cc834ea3fb1074082650b24c9fc1ee4cb00795c6d21d86f050acacdd643f","random_wav_sha256":"570c0d6efc538411322866d81937c19d711f0cc9fbaa7044eb4615f1bf73b94f"},
+    {"id":"dark-slow","label":"Dark slow onset","target_normalized":[0.4,0.55,0.22,0.8],"starting_loss":0.593507999091,"cma_best_loss":0.034409398293,"random_best_loss":0.033326186772,"cma_improvement_percent":94.202369918232,"cma_wins":false,"target_wav_sha256":"9c7e21077a0d4578e66dbafb51f3f48d8b9e2b52468d3bf3dbad849b2eb54b5e","cma_wav_sha256":"74a4c029f8a84205a75c736353a5ace5b323cfb14574c89428d960bafc8c9ccf","random_wav_sha256":"d94a53ad6b9a275517790f4baf4d5c9ff2fe0999b6ac9b23a30d6d45c5e887f4"},
+    {"id":"bright-slow","label":"Bright slow onset","target_normalized":[0.58,0.35,0.82,0.75],"starting_loss":0.472965384714,"cma_best_loss":0.196480490982,"random_best_loss":0.278020721824,"cma_improvement_percent":58.457743984624,"cma_wins":true,"target_wav_sha256":"c0a52b73185eedd8ee05727c365bf2dface76046657a0a8f80e7959064ce71fe","cma_wav_sha256":"d3f41b4378219a73011d66e9308dddccb5708fa328dd3ebfb440c0e5466348fe","random_wav_sha256":"38d0fa12762ac98b59382e2b3cba9d0ca98e328553128669ec5821f33a6a9ca1"},
+    {"id":"tight-low","label":"Tight low-cutoff","target_normalized":[0.48,0.05,0.12,0.1],"starting_loss":0.601690206395,"cma_best_loss":0.012437041339,"random_best_loss":0.018427241117,"cma_improvement_percent":97.932982586917,"cma_wins":true,"target_wav_sha256":"ce70d9b51fedbe33993865ce6f44716ec433462eeb7f86102170a5396bfc0805","cma_wav_sha256":"5a8c80790a3eb86a2222a5638478c2a5ea933f7e4b17c995b781612cf6aa148e","random_wav_sha256":"826175a0f7b90bf74dc144b2d78fd1565468ea4d2346df3a32155c410b14ab59"},
+    {"id":"wide-detuned","label":"Wide detuned medium onset","target_normalized":[0.8,0.9,0.62,0.18],"starting_loss":0.276454076133,"cma_best_loss":0.158615943205,"random_best_loss":0.231015640312,"cma_improvement_percent":42.624849152634,"cma_wins":true,"target_wav_sha256":"a8e89ff56a976ffab2818bcb192316e7a3966cef7d209e711bc733a5b7eb9803","cma_wav_sha256":"898315a38ddf5d67409d71f5f17d3a74d9316a6d61bf0b3ea0f8c02920939b07","random_wav_sha256":"4e7fcaefa667d346f00306aa40867ce1027937cab66d2c5b95f1360288e06afe"},
+    {"id":"muted-keylike","label":"Muted key-like onset","target_normalized":[0.38,0.25,0.3,0.07],"starting_loss":0.383282932038,"cma_best_loss":0.124283061586,"random_best_loss":0.13068430359,"cma_improvement_percent":67.574068345501,"cma_wins":true,"target_wav_sha256":"7892f64066783e556df9e774701d78933c40ab371a42907eeba5d3c33369cc88","cma_wav_sha256":"b0b23da28722ce7cbbb35e5eeb887a72d62effafcdf8505a32c8f665512e229b","random_wav_sha256":"169173a69e795eb8705f48dd3c0a84500cd04a24caf9d52ea9c724a09ac4cddf"},
+    {"id":"center-crosscheck","label":"Interior cross-check","target_normalized":[0.62,0.48,0.55,0.42],"starting_loss":0.206152699447,"cma_best_loss":0.15583808939,"random_best_loss":0.14782946697,"cma_improvement_percent":24.406476457484,"cma_wins":false,"target_wav_sha256":"2e54620f3a6149fc66724e6242e70a366eb6979e92bb58f7164e6505355cb86e","cma_wav_sha256":"6a8aea5e8ffc2c9aad43cc6321becca913c4fe18237b88899b2b494e47f443cb","random_wav_sha256":"58210ff48e09af431461fe1faaacfc6d6d23e02d496727135825ac7c8396869f"}
+  ],
+  "limitations": [
+    "The adaptive-value gate failed because median CMA loss was slightly worse than median random loss.",
+    "All targets are reachable states of one simple saw synthesizer and do not test arbitrary reference audio.",
+    "Human blinded comparison is pending and remains separate from numeric performance.",
+    "No guitar, Rhodes, or third-party sample is represented by this suite."
+  ]
+}

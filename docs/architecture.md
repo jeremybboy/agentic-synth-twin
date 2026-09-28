@@ -64,6 +64,8 @@ Milestone 5 implements deterministic whole-file RMS and peak, power-spectrum cen
 
 The Milestone 7 surrogate experiment is separate evidence about predicting descriptors in a bounded sampled region. Milestone 8A intentionally bypasses it: bounded CMA-ES proposes four normalized continuous parameters, every proposal is rendered on the real synth, and a transparent multi-resolution spectral, envelope, and loudness objective scores the resulting WAV. An equal-budget random search is the scientific control; the fixed demonstration did not establish CMA-ES superiority.
 
+Milestone 8B holds that search contract fixed across eight predetermined in-synth targets. A separate loopback report blinds CMA versus random identities, records the owner's A/B/no-difference judgment locally, and reveals method mappings only after all comparisons. This validates repeatability within the synth's reachable space; it is not evidence for guitar, Rhodes, or arbitrary reference matching.
+
 ### Real synth verification, human validation, and LOCK
 
 Promising states return to the real synth for rendering and measurement. The UI will compare predictions with measurements and baseline with candidates. LOCK must persist exact plugin state, canonical parameter JSON, render, measurements, and experiment metadata, then prove restoration after reload by rerendering and comparing.
@@ -77,6 +79,7 @@ Names may evolve as evidence arrives, but the backend should expose operations e
 - human calibration: `generate_probe`, `record_probe_answer`
 - learning/search: `generate_dataset`, `train_surrogate`, `optimize_target`
 - direct search: `create_search_run`, `compute_audio_objective`, `benchmark_random_search`
+- validation: `run_validation_suite`, `record_judgment`, `reveal`
 - authority/reproducibility: `verify_candidate`, `lock_patch`
 
 ## Data and reproducibility invariants
@@ -106,4 +109,4 @@ Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth 
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md). Milestone 7 retains the separately reviewed surrogate result; Milestone 8A owns the direct search described in [`direct-real-synth-search.md`](direct-real-synth-search.md) and does not depend on the surrogate.
+Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md). Milestone 7 retains the separately reviewed surrogate result; Milestone 8A owns the direct search described in [`direct-real-synth-search.md`](direct-real-synth-search.md), and Milestone 8B owns the paired validation described in [`multitarget-validation.md`](multitarget-validation.md).

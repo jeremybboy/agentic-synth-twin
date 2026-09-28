@@ -64,6 +64,37 @@ class DirectSearchTests(unittest.TestCase):
         with self.assertRaisesRegex(DirectSearchError, "outside"):
             denormalize_value(-0.01, parameter)
 
+    def test_search_run_rejects_invalid_target_vectors(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            plugin = root / "fake.clap"
+            plugin.mkdir()
+            renderer = root / "renderer"
+            renderer.write_text("#!/bin/sh\n", encoding="utf-8")
+            renderer.chmod(0o755)
+            with self.assertRaisesRegex(DirectSearchError, "four"):
+                SearchRun(
+                    canonical_state_path=STATE,
+                    plugin_path=plugin,
+                    renderer_path=renderer,
+                    output_directory=root / "short",
+                    seed=4,
+                    generations=2,
+                    population_size=2,
+                    target_normalized=[0.2, 0.3],
+                )
+            with self.assertRaisesRegex(DirectSearchError, "inside"):
+                SearchRun(
+                    canonical_state_path=STATE,
+                    plugin_path=plugin,
+                    renderer_path=renderer,
+                    output_directory=root / "outside",
+                    seed=4,
+                    generations=2,
+                    population_size=2,
+                    target_normalized=[0.2, 0.3, 0.4, 1.1],
+                )
+
     def test_objective_is_deterministic_and_zero_for_identical_audio(self) -> None:
         first = compute_audio_objective(BASELINE, BASELINE)
         second = compute_audio_objective(BASELINE, BASELINE)
@@ -216,6 +247,7 @@ class DirectSearchTests(unittest.TestCase):
                         str(value): normalized[index]
                         for index, value in enumerate(ACTIVE_PARAMETER_IDS)
                     },
+                    "wav_path": str(kwargs["wav_path"]),
                     "wav_sha256": "hash",
                     "peak_float": 0.1,
                     "clipped_samples": 0,
