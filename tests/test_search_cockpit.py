@@ -76,6 +76,9 @@ class SearchCockpitTests(unittest.TestCase):
             "CONNECT USB MIDI",
             "LOAD CURRENT BEST",
             "Edited patch ready",
+            "Computer keyboard (Ableton layout)",
+            "white notes A S D F G H J K L",
+            "Z/X changes octave",
             "REVEAL TARGET PARAMETERS",
         ):
             self.assertIn(text, page)

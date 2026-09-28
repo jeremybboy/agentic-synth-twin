@@ -4,7 +4,7 @@ Milestone 8B makes the existing direct-search result useful as an instrument aud
 
 ## Inputs and patch state
 
-The on-screen two-octave piano, mapped computer keys, and optional browser Web MIDI input all call the same note-on/note-off functions. Octave controls move the visible keyboard through the standard piano range, MIDI 21–108. Velocity is bounded to 1–127. Web MIDI is optional because browser support and the required user permission vary; the virtual and computer keyboards work without it.
+The on-screen two-octave piano, mapped computer keys, and optional browser Web MIDI input all call the same note-on/note-off functions. The computer mapping follows Ableton's visible layout: `A S D F G H J K L` play white notes, `W E T Y U O` play black notes, `Z/X` shifts the octave, and `C/V` changes velocity. These shortcuts remain active after clicking buttons or parameter sliders. Octave controls move the visible keyboard through the standard piano range, MIDI 21–108. Velocity is bounded to 1–127. Web MIDI is optional because browser support and the required user permission vary; the virtual and computer keyboards work without it.
 
 The editable controls are exactly the four Milestone 8A search coordinates discovered from `clap-saw-demo`:
 
