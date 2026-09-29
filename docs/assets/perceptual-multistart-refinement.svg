@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
   <title id="title">Perceptual multi-start real-Surge refinement</title>
-  <desc id="desc">Seven-stage implementation map from target and full-library retrieval through transparent hierarchical parameter screening, five CMA pilots, two deeper searches, stable rerender verification, and the preserved playable cockpit.</desc>
+  <desc id="desc">Seven-stage implementation map from target and full-library retrieval through transparent hierarchical parameter screening, five CMA pilots, automatic per-start spatial telemetry, two deeper searches, stable rerender verification, and the preserved playable cockpit.</desc>
   <rect width="1600" height="900" fill="#0b1320"/>
   <text x="54" y="66" fill="#f6f8fb" font-family="Arial, sans-serif" font-size="38" font-weight="700">Agentic Synth Twin</text>
   <text x="54" y="102" fill="#9db0c5" font-family="Arial, sans-serif" font-size="22">Perceptual multi-start refinement · real Surge XT renders · inspectable evidence</text>
@@ -105,7 +105,7 @@
     <rect x="76" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="92" y="542" fill="#7fd4ff">5 start trajectories</text><text x="92" y="562" fill="#c8d4e2">base → pilot → deep best</text>
     <rect x="310" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="326" y="542" fill="#ffd15b">Hierarchical ledger</text><text x="326" y="562" fill="#c8d4e2">rules · groups · controls</text>
     <rect x="544" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="560" y="542" fill="#47dc8b">Objective components</text><text x="560" y="562" fill="#c8d4e2">raw · normalized · weighted</text>
-    <rect x="778" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="794" y="542" fill="#c985eb">CMA state</text><text x="794" y="562" fill="#c8d4e2">mean · covariance · sigma</text>
+    <rect x="778" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="794" y="542" fill="#c985eb">Spatial convergence</text><text x="794" y="562" fill="#c8d4e2">auto axes · loss · gen path</text>
     <rect x="1012" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="1028" y="542" fill="#ff9853">Audio comparison</text><text x="1028" y="562" fill="#c8d4e2">Target · Base · Stable Best</text>
     <rect x="1246" y="520" width="278" height="54" rx="6" fill="#172a40"/><text x="1262" y="542" fill="#7de284">Playable working patch</text><text x="1262" y="562" fill="#c8d4e2">edit · piano · keys · USB MIDI</text>
   </g>

@@ -17,7 +17,7 @@ Use the unchanged full-factory perceptual retrieval to supply several plausible 
 ## Transparency / change ledger
 
 - **Current state:** Milestone 9 retrieves a factory preset with a frozen perceptual score and manually refines one fixed eight-control space.
-- **User-visible change:** the cockpit shows five independently screened preset trajectories, responsive modules and parameters, pilot and deeper CMA stages, the four frozen objective contributions, and separate numeric and stable best results.
+- **User-visible change:** the cockpit shows five independently screened preset trajectories, responsive modules and parameters, pilot and deeper CMA stages, the four frozen objective contributions, separate numeric and stable best results, a global loss-convergence trace, and an automatic per-start 2-D spatial projection.
 - **Code and data layers touched:** CLAP probe/render evidence, Surge adapter readback, frozen perceptual scoring, hierarchical screen and CMA scheduler, target run controller, thin browser telemetry, reproduction/export scripts, tests, and evidence documentation.
 - **Explicitly untouched:** the ten external targets, full-factory cache, descriptor family weights, family medians, C3/velocity/duration audition, hidden reachable-target regression, `clap-saw-demo`, keyboards, Web MIDI, and all Milestone 9 limitations.
 - **Persistence and undo impact:** no project editor or undo model changes. Target-specific run evidence is immutable; the working patch adopts only an independently stable result.
@@ -53,6 +53,8 @@ Use the unchanged full-factory perceptual retrieval to supply several plausible 
 ### Phase D — cockpit, reproduction, and evidence
 
 - Extend the existing thin cockpit; do not replace it or remove any keyboard path.
+- Preserve the spatial search visualization without combining incompatible start spaces: automatically follow the active or verified trajectory, freeze its axes to the two strongest measured pre-CMA parameter effects, color real evaluations by perceptual loss, connect generation centers, and mark Base, Current, and Best.
+- Compute the global best-so-far and per-generation median loss directly from the multi-start history so convergence remains visible across all five trajectories without asking the owner to configure axes.
 - Run Rhodes first, then electric guitar and sub-bass with the identical descriptor, screen, and optimizer configuration.
 - Export one path-sanitized evidence snapshot containing all exclusions, module probes, parameter probes, histories, objective components, and verification attempts.
 
@@ -76,9 +78,10 @@ Milestone-specific evidence must additionally show completed Rhodes, electric-gu
 
 1. Open the completed Rhodes cockpit and audition Target, Base, Numeric Best, and Stable Best.
 2. Confirm that the five starts, responsive subgroup table, selected 4–12 parameters, four contribution values, convergence history, and verification state agree with the evidence.
-3. Edit the adopted stable patch and play white/black notes with the mouse and computer keyboard.
-4. On macOS, optionally connect a USB MIDI keyboard, grant browser MIDI permission, and verify note-on/note-off behavior.
-5. Repeat the Target/Base/Best listening judgment for electric guitar and sub bass; record failures honestly.
+3. Confirm the spatial graph automatically follows one valid start, names two pre-CMA-selected controls, adds points during evaluation, and distinguishes Base, Current, Best, worse, and better without manual axis selection.
+4. Edit the adopted stable patch and play white/black notes with the mouse and computer keyboard.
+5. On macOS, optionally connect a USB MIDI keyboard, grant browser MIDI permission, and verify note-on/note-off behavior.
+6. Repeat the Target/Base/Best listening judgment for electric guitar and sub bass; record failures honestly.
 
 Open the PR ready for owner review only after the automated evidence passes. Do not merge or enable auto-merge.
 
