@@ -2,9 +2,11 @@
 
 A local macOS research prototype for learning a validated, reproducible digital twin of a traditional synthesizer.
 
-> **Status:** Milestone 9 now exposes ten named external C3 references in the existing playable cockpit. Selecting one reuses a hash-bound real-Surge preset cache, ranks the closest five eligible factory states, and prepares a fresh target-specific eight-control CMA-ES run; search starts only when the user presses **Start Search**. Base and Best remain playable and editable through the same on-screen keyboard, Ableton-style computer keys, and browser-supported USB MIDI path. This is fixed one-note objective matching, not proof of instrument identity or perceptual equivalence; human listening, multi-note validation, and LOCK remain incomplete.
+> **Status:** The Milestone 9 follow-up keeps the ten external C3 targets and playable cockpit, but replaces one fixed eight-control start with a transparent perceptual multi-start experiment. Full-library retrieval supplies up to five real Surge presets; real metadata/state exclusions, subgroup and individual neutral/± probes freeze a separate 4–12-control space for each; five 32-evaluation CMA pilots feed two 64-evaluation continuations and independent stability rerenders. Base and verified Best remain playable and editable through the same on-screen keyboard, Ableton-style computer keys, and browser-supported USB MIDI path. This is fixed one-note objective matching, not proof of instrument identity or perceptual equivalence; human listening, multi-note validation, and LOCK remain incomplete.
 
 ![Milestone 9 implementation map: ten external procedural targets reuse one real Surge preset cache, produce a Top 5 and Base, then enter the preserved playable refinement cockpit.](docs/assets/milestone-9-external-target-bank.svg)
+
+![Perceptual multi-start implementation map: full-library retrieval, transparent hierarchical parameter screening, five CMA pilots, two continuations, stable rerender verification, and the preserved playable cockpit.](docs/assets/perceptual-multistart-refinement.svg)
 
 ![Local playable patch cockpit showing reference playback, editable real-synth parameters, a two-octave keyboard, and search telemetry.](docs/assets/playable-cockpit.png)
 
@@ -18,7 +20,7 @@ Human listening first constrains the experiment. Controlled renders then connect
 
 ## Synth backends
 
-[`clap-saw-demo`](https://github.com/abique/clap-saw-demo) remains the intentionally small research instrument pinned at upstream commit `f33b31fff459d66ac18207ec152b323aaa9306f9`. Milestone 9 adds Surge XT 1.3.4 as the first rich synth adapter: a bounded factory library supplies musical starting states before local real-synth refinement. Search, objective, cockpit, keyboard, cache, and evidence logic remain synth-independent.
+[`clap-saw-demo`](https://github.com/abique/clap-saw-demo) remains the intentionally small research instrument pinned at upstream commit `f33b31fff459d66ac18207ec152b323aaa9306f9`. Milestone 9 adds Surge XT 1.3.4 as the first rich synth adapter: a complete factory render/descriptor cache supplies musical starting states before local real-synth refinement. Search, objective, cockpit, keyboard, cache, and evidence logic remain synth-independent.
 
 ## Research hypothesis
 
@@ -121,6 +123,18 @@ Open `http://127.0.0.1:8879`. Initial startup downloads checksum-pinned Surge XT
 
 Real-plugin validation attempted 120 bounded presets and retained 39 that were deterministic, audible, unclipped, and exposed the exact authorized eight-control inventory. The same cache ranked all ten targets. Three 120-evaluation searches reduced objective loss by `12.83%` (Analog Sub Bass), `0.96%` (Plucked Electric Guitar), and `33.27%` (Rhodes-style Electric Piano); every final Best matched its independent real-Surge rerender byte-for-byte. These are automated proxy results only—owner Target/Base/Best listening remains pending. Run `scripts/reproduce_surge_match.sh` for the original reachable hidden-target regression and equal-budget random control.
 
+To reproduce the perceptual multi-start follow-up against the unchanged complete-library cache:
+
+```bash
+scripts/reproduce_perceptual_multistart.sh rhodes-style-electric-piano
+scripts/reproduce_perceptual_multistart.sh plucked-electric-guitar
+scripts/reproduce_perceptual_multistart.sh analog-sub-bass
+```
+
+Run Rhodes first as the diagnostic target; run guitar and bass unchanged only after Rhodes completes. The [experiment contract](docs/perceptual-multistart-refinement.md) distinguishes preset retrieval, measured parameter screening, CMA optimization, stable rerender verification, and owner listening.
+
+The completed frozen three-target run retained five valid 12-control starts and exactly 288 CMA evaluations per target. Rhodes reached a numeric best of `0.16745`, but that candidate was not stable; the fourth verification candidate was stable at `0.18114`. Electric guitar reached and stably rerendered `0.33365`; sub bass did not beat its `0.40706` screened Base. These are automated descriptor results, not listening acceptance; the complete path-sanitized [evidence](docs/evidence/perceptual-multistart-refinement.json) keeps every exclusion, probe, candidate, and verification attempt with human judgment `PENDING_OWNER`.
+
 To regenerate the ten DSP comparisons and open the read-only report:
 
 ```bash
@@ -171,6 +185,9 @@ Then open `http://127.0.0.1:8765` and click **PLAY C3**.
 - `docs/direct-real-synth-search.md` — Milestone 8A objective, live cockpit, benchmark, evidence, and honest failed gate
 - `docs/playable-cockpit.md` — Milestone 8B editable patch, keyboard inputs, rendered-note contract, and limitations
 - `docs/surge-one-note-match.md` — Milestone 9 adapter, preset index, local search, evidence, and listening boundary
+- `docs/perceptual-multistart-refinement.md` — full-library multi-start, hierarchical real-control screen, two-stage CMA schedule, and stability boundary
+- `docs/evidence/perceptual-multistart-refinement.json` — complete three-target numerical evidence; generated audio and state remain local
+- `docs/pr-briefs/perceptual-multistart-refinement.md` — review boundary, change ledger, evidence requirements, and manual acceptance for this implementation
 - `docs/assets/` — editable documentation visuals
 - `.github/` — review templates and proportionate CI
 - `AGENTS.md` — operational contract for coding agents

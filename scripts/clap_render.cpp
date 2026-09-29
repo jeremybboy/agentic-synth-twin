@@ -30,6 +30,7 @@ struct RenderOptions {
     std::uint32_t note_frames{default_note_frames};
     std::int16_t midi_key{default_midi_key};
     int midi_velocity{default_midi_velocity};
+    bool require_exact_parameter_values{true};
 };
 
 class StdoutToStderr {
@@ -444,7 +445,8 @@ RenderResult render(const std::filesystem::path &plugin_path,
         if (!params->get_value(plugin, change.id, &applied)) {
             throw std::runtime_error("clap.params.get_value failed after render");
         }
-        if (!nearly_equal(applied, change.value)) {
+        if (options.require_exact_parameter_values &&
+            !nearly_equal(applied, change.value)) {
             std::ostringstream detail;
             detail << std::setprecision(17)
                    << "the plugin did not retain requested parameter " << change.id
@@ -536,6 +538,7 @@ int main(int argc, char **argv) {
         std::cerr << "usage: clap-render PLUGIN.clap STATE.bin OUTPUT.wav "
                      "[--midi-key 0..127] [--velocity 1..127] "
                      "[--note-frames 2205..352800] "
+                     "[--parameter-retention exact|record] "
                      "[PARAMETER_ID PARAMETER_VALUE ...]\n";
         return 64;
     }
@@ -557,6 +560,16 @@ int main(int argc, char **argv) {
                 options.note_frames = static_cast<std::uint32_t>(parse_integer(
                     argv[index + 1], "note frames", sample_rate / 20,
                     sample_rate * 8));
+            } else if (option == "--parameter-retention") {
+                const std::string mode = argv[index + 1];
+                if (mode == "exact") {
+                    options.require_exact_parameter_values = true;
+                } else if (mode == "record") {
+                    options.require_exact_parameter_values = false;
+                } else {
+                    throw std::runtime_error(
+                        "parameter retention must be exact or record");
+                }
             } else {
                 throw std::runtime_error("unknown renderer option: " + option);
             }

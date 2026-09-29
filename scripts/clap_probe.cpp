@@ -455,12 +455,22 @@ ProbeResult run(const std::filesystem::path &plugin_path,
         if (!params->get_value(plugin, info.id, &current)) {
             throw std::runtime_error("clap.params.get_value failed while writing inventory");
         }
+        char current_text[CLAP_NAME_SIZE]{};
+        const bool has_current_text = params->value_to_text &&
+            params->value_to_text(plugin, info.id, current, current_text,
+                                  sizeof(current_text));
         output << "    {\"index\": " << index << ", \"id\": " << info.id
                << ", \"name\": \"" << json_escape(info.name)
                << "\", \"module\": \"" << json_escape(info.module)
                << "\", \"min\": " << info.min_value << ", \"max\": "
                << info.max_value << ", \"default\": " << info.default_value
-               << ", \"current\": " << current << ", \"flags\": " << info.flags
+               << ", \"current\": " << current << ", \"current_text\": ";
+        if (has_current_text) {
+            output << "\"" << json_escape(current_text) << "\"";
+        } else {
+            output << "null";
+        }
+        output << ", \"flags\": " << info.flags
                << ", \"automatable\": "
                << ((info.flags & CLAP_PARAM_IS_AUTOMATABLE) ? "true" : "false")
                << ", \"modulatable\": "

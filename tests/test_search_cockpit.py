@@ -66,6 +66,11 @@ class SearchCockpitTests(unittest.TestCase):
             "REAL SYNTH SEARCH",
             "Live synth parameters",
             "Search-space exploration",
+            "Automatic per-start projection",
+            "two strongest pre-CMA finite-difference effects",
+            "generation centers",
+            "multistartConvergence",
+            "influence_magnitude",
             "CMA-ES search distribution",
             "Convergence",
             "Objective breakdown",
@@ -87,6 +92,10 @@ class SearchCockpitTests(unittest.TestCase):
             self.assertIn(text, page)
         self.assertNotIn("0.72, 0.68, 0.28, 0.62", page)
         self.assertNotIn('id="targetSlider"', page)
+        self.assertNotIn(
+            "use the trajectory cards above",
+            page,
+        )
 
     def test_loopback_server_exposes_status_controls_and_audio(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

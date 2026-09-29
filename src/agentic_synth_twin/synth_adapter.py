@@ -113,6 +113,7 @@ class ClapSynthAdapter:
         velocity: int,
         note_frames: int,
         allow_clipping: bool = False,
+        allow_parameter_coercion: bool = False,
     ) -> dict[str, Any]:
         if not 0 <= midi_key <= 127:
             raise SynthAdapterError("MIDI key must be in 0..127")
@@ -139,6 +140,8 @@ class ClapSynthAdapter:
             "--note-frames",
             str(note_frames),
         ]
+        if allow_parameter_coercion:
+            command.extend(["--parameter-retention", "record"])
         for parameter_id, value in values.items():
             command.extend([str(parameter_id), str(value)])
         try:
@@ -183,13 +186,25 @@ class ClapSynthAdapter:
         changes = metadata.get("parameter_changes")
         if not isinstance(changes, list) or len(changes) != len(values):
             raise SynthAdapterError("renderer did not report every requested parameter")
+        applied_values: dict[str, float] = {}
+        coerced_parameters: list[dict[str, float | int]] = []
         for change, (parameter_id, requested) in zip(changes, values.items(), strict=True):
             if change.get("id") != parameter_id:
                 raise SynthAdapterError("renderer reported parameters out of order")
             if not math.isclose(float(change.get("requested")), requested, abs_tol=1e-6):
                 raise SynthAdapterError("renderer reported a different requested value")
-            if not math.isclose(float(change.get("applied")), requested, abs_tol=1e-6):
+            applied = float(change.get("applied"))
+            if not math.isfinite(applied):
+                raise SynthAdapterError("renderer reported a non-finite applied value")
+            if not allow_parameter_coercion and not math.isclose(
+                applied, requested, abs_tol=1e-6
+            ):
                 raise SynthAdapterError("real synth did not retain a requested parameter")
+            applied_values[str(parameter_id)] = applied
+            if not math.isclose(applied, requested, abs_tol=1e-6):
+                coerced_parameters.append(
+                    {"id": parameter_id, "requested": requested, "applied": applied}
+                )
         if not output.is_file() or output.stat().st_size == 0:
             raise SynthAdapterError("real synth did not produce a WAV")
         return {
@@ -197,7 +212,12 @@ class ClapSynthAdapter:
             "wav_path": str(output),
             "wav_sha256": sha256_file(output),
             "state_sha256": sha256_file(state_path),
-            "applied_values": {str(key): value for key, value in values.items()},
+            "requested_values": {str(key): value for key, value in values.items()},
+            "applied_values": applied_values,
+            "coerced_parameters": coerced_parameters,
+            "parameter_retention_mode": (
+                "record" if allow_parameter_coercion else "exact"
+            ),
         }
 
     def render_verified(self, **kwargs: Any) -> dict[str, Any]:
