@@ -12,6 +12,7 @@ from agentic_synth_twin.perceptual_retrieval import (
     normalize_and_rank,
     raw_family_distances,
     save_descriptor,
+    score_with_frozen_medians,
 )
 
 
@@ -85,6 +86,35 @@ class PerceptualRetrievalTests(unittest.TestCase):
         self.assertTrue(all(value == 2.0 for value in medians.values()))
         self.assertEqual([row["preset_relative_path"] for row in ranked], ["a", "b", "c"])
         self.assertGreater(ranked[-1]["retrieval_score"], 1.0)
+
+    def test_frozen_median_score_preserves_family_arithmetic(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target_path = Path(directory) / "target.wav"
+            candidate_path = Path(directory) / "candidate.wav"
+            write_tone(target_path, harmonics=(1.0,), decay=0.2)
+            write_tone(candidate_path, harmonics=(1.0, 0.6, 0.4), decay=1.7)
+            target = describe_audio(target_path)
+            candidate = describe_audio(candidate_path)
+            medians = {
+                "log_mel": 2.0,
+                "envelope": 4.0,
+                "harmonic": 5.0,
+                "flatness": 10.0,
+            }
+            score = score_with_frozen_medians(target, candidate, medians)
+        for family, weight in FAMILY_WEIGHTS.items():
+            self.assertAlmostEqual(
+                score["normalized_distances"][family],
+                score["raw_distances"][family] / medians[family],
+            )
+            self.assertAlmostEqual(
+                score["weighted_contributions"][family],
+                weight * score["normalized_distances"][family],
+            )
+        self.assertAlmostEqual(
+            score["retrieval_score"],
+            sum(score["weighted_contributions"].values()),
+        )
 
 
 if __name__ == "__main__":

@@ -338,6 +338,43 @@ def normalize_and_rank(rows: Sequence[Mapping[str, Any]]) -> tuple[list[dict[str
     return ranked, medians
 
 
+def score_with_frozen_medians(
+    target: PerceptualDescriptor,
+    candidate: PerceptualDescriptor,
+    medians: Mapping[str, float],
+) -> dict[str, Any]:
+    """Score one candidate with the exact frozen full-library normalization."""
+
+    missing = set(FAMILY_WEIGHTS) - set(medians)
+    if missing:
+        raise PerceptualRetrievalError(
+            f"frozen family medians are incomplete: {sorted(missing)}"
+        )
+    denominators = {family: float(medians[family]) for family in FAMILY_WEIGHTS}
+    if any(
+        not math.isfinite(value) or value <= 0.0
+        for value in denominators.values()
+    ):
+        raise PerceptualRetrievalError(
+            "frozen family medians must be positive and finite"
+        )
+    raw = raw_family_distances(target, candidate)
+    normalized = {
+        family: float(raw[family] / denominators[family])
+        for family in FAMILY_WEIGHTS
+    }
+    contributions = {
+        family: float(FAMILY_WEIGHTS[family] * normalized[family])
+        for family in FAMILY_WEIGHTS
+    }
+    return {
+        "raw_distances": raw,
+        "normalized_distances": normalized,
+        "weighted_contributions": contributions,
+        "retrieval_score": float(sum(contributions.values())),
+    }
+
+
 def descriptor_definition() -> dict[str, Any]:
     return {
         "version": DESCRIPTOR_VERSION,

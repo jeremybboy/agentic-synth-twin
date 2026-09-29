@@ -96,6 +96,48 @@ class SynthAdapterTests(unittest.TestCase):
                 note_frames=NOTE_FRAMES,
             )
 
+    def test_record_mode_preserves_requested_and_real_applied_values(self):
+        output = self.root / "coerced.wav"
+
+        def fake_run(command, **_kwargs):
+            self.assertIn("--parameter-retention", command)
+            output.write_bytes(b"coerced real synth wav")
+            metadata = {
+                "sample_rate": SAMPLE_RATE,
+                "channels": CHANNELS,
+                "bits_per_sample": BITS_PER_SAMPLE,
+                "midi_key": 48,
+                "velocity": 100,
+                "note_frames": NOTE_FRAMES,
+                "tail_frames": TAIL_FRAMES,
+                "total_frames": NOTE_FRAMES + TAIL_FRAMES,
+                "block_size": BLOCK_SIZE,
+                "clipped_samples": 0,
+                "peak_float": 0.5,
+                "parameter_changes": [
+                    {"id": 7, "requested": 0.26, "applied": 0.25},
+                    {"id": 99, "requested": 1.0, "applied": 1.0},
+                ],
+            }
+            return type("Completed", (), {"stdout": json.dumps(metadata), "stderr": ""})()
+
+        with patch("agentic_synth_twin.synth_adapter.subprocess.run", side_effect=fake_run):
+            result = self._adapter().render_note(
+                state_path=self.state,
+                wav_path=output,
+                parameter_values={7: 0.26},
+                midi_key=48,
+                velocity=100,
+                note_frames=NOTE_FRAMES,
+                allow_parameter_coercion=True,
+            )
+        self.assertEqual(result["requested_values"], {"7": 0.26, "99": 1.0})
+        self.assertEqual(result["applied_values"], {"7": 0.25, "99": 1.0})
+        self.assertEqual(
+            result["coerced_parameters"],
+            [{"id": 7, "requested": 0.26, "applied": 0.25}],
+        )
+
 
 class SurgePresetTests(unittest.TestCase):
     def setUp(self):

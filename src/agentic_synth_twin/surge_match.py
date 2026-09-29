@@ -41,6 +41,13 @@ from .perceptual_retrieval import (
     raw_family_distances,
     save_descriptor,
 )
+from .perceptual_multistart import (
+    DEEPEN_EVALUATIONS,
+    MASTER_SEED,
+    MAX_STARTS,
+    PILOT_EVALUATIONS,
+    PerceptualMultiStartEngine,
+)
 from .synth_adapter import PresetRef, SurgeXTAdapter, SynthAdapterError, sha256_file
 
 
@@ -1285,11 +1292,215 @@ class ExternalSurgeMatchRun(SurgeMatchRun):
         **kwargs: Any,
     ) -> None:
         self.external_target = target
+        self.multistart_engine: PerceptualMultiStartEngine | None = None
+        self.multistart_progress: dict[str, Any] | None = None
         super().__init__(
             shared_cache=shared_cache,
             random_control_enabled=False,
             **kwargs,
         )
+
+    @staticmethod
+    def _public_multistart_record(record: Mapping[str, Any] | None) -> dict[str, Any] | None:
+        if record is None:
+            return None
+        contributions = record.get("weighted_contributions", {})
+        return {
+            **dict(record),
+            "total_loss": record.get("retrieval_score"),
+            "spectral_loss": contributions.get("log_mel"),
+            "envelope_loss": contributions.get("envelope"),
+            "harmonic_loss": contributions.get("harmonic"),
+            "flatness_loss": contributions.get("flatness"),
+            "loudness_loss": (
+                float(contributions.get("harmonic", 0.0))
+                + float(contributions.get("flatness", 0.0))
+            ),
+        }
+
+    def _multistart_progress(self, event: Mapping[str, Any]) -> None:
+        with self._lock:
+            self.multistart_progress = dict(event)
+
+    def _initialize_cached_audition_base(
+        self, base_preset: Mapping[str, Any]
+    ) -> None:
+        """Initialize the playable cockpit from the already verified cache artifact.
+
+        The multi-start experiment performs fresh renders during screening, search,
+        and final stability verification.  Requiring another two-render identity
+        check here only duplicates cache construction and can prevent the actual
+        experiment from starting when the hosted plug-in is intermittently noisy.
+        """
+
+        assert self.shared_cache is not None
+        self.base_preset = dict(base_preset)
+        cached_state = Path(self.base_preset["state_path"])
+        cached_audio = Path(self.base_preset["audio_path"])
+        self.base_state_path = self.state_directory / "selected-base.bin"
+        shutil.copyfile(cached_state, self.base_state_path)
+        shutil.copyfile(cached_audio, self.start_path)
+        if sha256_file(self.base_state_path) != self.base_preset["state_sha256"]:
+            raise SurgeMatchError("copied base state differs from shared cache")
+        if sha256_file(self.start_path) != self.base_preset["wav_sha256"]:
+            raise SurgeMatchError("copied base WAV differs from shared cache")
+
+        base_inventory = self.adapter.inspect_state(self.base_state_path)
+        self.synth_plugin = dict(base_inventory["plugin"])
+        if self.synth_plugin != dict(self.shared_cache.synth_plugin):
+            raise SurgeMatchError("shared preset cache plugin identity changed")
+        self.parameters = discover_active_parameters(base_inventory)
+        self.start_vector = vector_from_current(self.parameters)
+        objective = compute_audio_objective(self.reference, self.start_path)
+        self.start = {
+            "source": "verified_shared_preset_cache",
+            "cache_identity_sha256": self.shared_cache.identity_sha256,
+            "state_sha256": self.base_preset["state_sha256"],
+            "wav_sha256": self.base_preset["wav_sha256"],
+            "peak_float": float(self.base_preset["peak_float"]),
+            "clipped_samples": 0,
+            "byte_identical": bool(self.base_preset["deterministic"]),
+            "applied_values": vector_to_real(self.start_vector, self.parameters),
+            **objective,
+        }
+        self.best = {
+            "run_id": self.run_id,
+            "target_id": self.target_identity["target_id"],
+            "target_title": self.target_identity["title"],
+            "target_file_name": self.target_identity["file_name"],
+            "target_wav_sha256": self.target_identity["sha256"],
+            "generation": 0,
+            "candidate_index": 0,
+            "total_evaluations": 0,
+            "parameter_values_normalized": list(self.start_vector),
+            "parameter_values_real": vector_to_real(self.start_vector, self.parameters),
+            **{
+                key: self.start[key]
+                for key in (
+                    "spectral_loss",
+                    "envelope_loss",
+                    "loudness_loss",
+                    "total_loss",
+                    "candidate_rms_dbfs",
+                    "target_rms_dbfs",
+                    "wav_sha256",
+                    "peak_float",
+                    "clipped_samples",
+                )
+            },
+            "audio_path": str(self.start_path),
+            "audio_url": "/audio/base-preset.wav",
+            "is_new_best": False,
+            "best_loss": self.start["total_loss"],
+            "timestamp": self.created_at,
+        }
+        self._optimizer_state = {
+            "mean": list(self.start_vector),
+            "spread": [INITIAL_SIGMA] * len(self.start_vector),
+            "sigma": INITIAL_SIGMA,
+        }
+
+    def _adopt_verified_stable_best(self) -> None:
+        assert self.multistart_engine is not None
+        candidate = self.multistart_engine.verified_stable_best
+        if candidate is None:
+            return
+        start = next(
+            row
+            for row in self.multistart_engine.starts
+            if row["optimization_start_index"]
+            == candidate["optimization_start_index"]
+        )
+        stable_state = self.state_directory / "verified-stable-base.bin"
+        shutil.copyfile(start["state_path"], stable_state)
+        self.base_state_path = stable_state
+        self.base_preset = {
+            "preset_name": start["preset_name"],
+            "preset_category": start["preset_category"],
+            "preset_relative_path": start["preset_relative_path"],
+            "perceptual_rank": start["perceptual_rank"],
+            "retrieval_score": start["base_score"],
+        }
+        self.parameters = [dict(item) for item in start["selected_parameters"]]
+        self.start_vector = [float(item["normalized_base"]) for item in self.parameters]
+        shutil.copyfile(start["base_audio_path"], self.start_path)
+        stable_audio = self.audio_directory / "verified-stable-best.wav"
+        if Path(candidate["audio_path"]).resolve() != stable_audio.resolve():
+            shutil.copyfile(candidate["audio_path"], stable_audio)
+        start_score = {
+            "raw_distances": dict(start["base_raw_distances"]),
+            "normalized_distances": dict(start["base_normalized_distances"]),
+            "weighted_contributions": dict(start["base_weighted_contributions"]),
+            "retrieval_score": float(start["base_score"]),
+        }
+        self.start = {
+            **self.start,
+            **start_score,
+            "total_loss": start_score["retrieval_score"],
+            "spectral_loss": start_score["weighted_contributions"]["log_mel"],
+            "envelope_loss": start_score["weighted_contributions"]["envelope"],
+            "loudness_loss": (
+                start_score["weighted_contributions"]["harmonic"]
+                + start_score["weighted_contributions"]["flatness"]
+            ),
+            "wav_sha256": start["base_wav_sha256"],
+            "audio_path": str(self.start_path),
+        }
+        self.best = {
+            **self._public_multistart_record(candidate),
+            "run_id": self.run_id,
+            "target_id": self.external_target.target_id,
+            "target_title": self.external_target.title,
+            "target_file_name": self.external_target.file_name,
+            "target_wav_sha256": self.external_target.sha256,
+            "audio_path": str(stable_audio),
+            "audio_url": "/audio/verified-stable-best.wav",
+            "best_loss": candidate["retrieval_score"],
+            "is_new_best": True,
+        }
+        self.final_verification = {
+            "numeric_best": self.multistart_engine.numeric_best,
+            "verified_stable_best": candidate,
+            "same_candidate": (
+                self.multistart_engine.numeric_best is not None
+                and self.multistart_engine.numeric_best.get("wav_sha256")
+                == candidate.get("wav_sha256")
+            ),
+            "attempt_count": len(self.multistart_engine.verification_attempts),
+        }
+        self._optimizer_state = {
+            "mean": list(candidate["parameter_values_normalized"]),
+            "spread": [0.0] * len(self.parameters),
+            "sigma": 0.0,
+        }
+
+    def _search_worker(self) -> None:
+        try:
+            self.multistart_engine = PerceptualMultiStartEngine(
+                adapter=self.adapter,
+                target_path=self.target_path,
+                target_descriptor=self.target_retrieval_descriptor,
+                family_medians=self.retrieval_family_medians,
+                perceptual_ranking=self.perceptual_preset_ranking,
+                output_directory=self.output_directory,
+                master_seed=MASTER_SEED,
+                progress=self._multistart_progress,
+                should_stop=self._wait_if_needed,
+            )
+            self.multistart_engine.run()
+            with self._lock:
+                self._adopt_verified_stable_best()
+                self.status = "STOPPED" if self._stop_requested else "COMPLETE"
+                self.stopping_reason = (
+                    "user_stop" if self._stop_requested else "fixed_multistart_budget_exhausted"
+                )
+                self._persist()
+        except Exception as error:
+            with self._lock:
+                self.status = "STOPPED" if self._stop_requested else "ERROR"
+                self.error = None if self._stop_requested else f"{type(error).__name__}: {error}"
+                self.stopping_reason = "user_stop" if self._stop_requested else "error"
+                self._persist()
 
     def _prepare_target_and_index(self) -> None:
         shutil.copyfile(self.external_target.path, self.target_path)
@@ -1406,7 +1617,7 @@ class ExternalSurgeMatchRun(SurgeMatchRun):
             ),
             "top_10_spread": float(scores[9] - scores[0]),
         }
-        self._initialize_selected_base(eligible_base)
+        self._initialize_cached_audition_base(eligible_base)
         self._write_preset_index(
             entries=perceptual,
             selection=(
@@ -1464,6 +1675,92 @@ class ExternalSurgeMatchRun(SurgeMatchRun):
 
     def public_status(self) -> dict[str, Any]:
         payload = super().public_status()
+        multistart = (
+            self.multistart_engine.public_snapshot()
+            if self.multistart_engine is not None
+            else {
+                "stage": "IDLE",
+                "starts": [],
+                "evaluations": 0,
+                "budget": MAX_STARTS * PILOT_EVALUATIONS + 2 * DEEPEN_EVALUATIONS,
+                "stage_a_ranking": [],
+                "stage_b_survivors": [],
+                "numeric_best": None,
+                "verified_stable_best": None,
+                "verification_attempt_count": 0,
+                "cma_explanation": (
+                    "CMA-ES does not choose the preset. Retrieval chooses starting states; "
+                    "CMA-ES searches combinations of frozen real Surge controls."
+                ),
+            }
+        )
+        if self.multistart_engine is not None:
+            history = self.multistart_engine.history
+            last_evaluation = self._public_multistart_record(
+                history[-1] if history else None
+            )
+            numeric = self._public_multistart_record(
+                self.multistart_engine.numeric_best
+                or min(
+                    (row["best"] for row in self.multistart_engine.starts),
+                    key=lambda row: row["retrieval_score"],
+                    default=None,
+                )
+            )
+            payload.update(
+                {
+                    "evaluations": len(history),
+                    "budget": multistart["budget"],
+                    "evaluations_remaining": max(0, multistart["budget"] - len(history)),
+                    "current": self.best if self.status == "COMPLETE" else None,
+                    "current_loss": (
+                        last_evaluation["total_loss"] if last_evaluation else None
+                    ),
+                    "best_loss": numeric["total_loss"] if numeric else payload["best_loss"],
+                    "best_audio_url": (
+                        self.best.get("audio_url") if self.best else None
+                    ),
+                    "generation": (
+                        last_evaluation.get("generation", 0) if last_evaluation else 0
+                    ),
+                    "generations": PILOT_EVALUATIONS // self.population_size
+                    + DEEPEN_EVALUATIONS // self.population_size,
+                    "history_mode": "perceptual_multistart",
+                }
+            )
+            if numeric is not None:
+                start = next(
+                    (
+                        row
+                        for row in self.multistart_engine.starts
+                        if row["optimization_start_index"]
+                        == numeric["optimization_start_index"]
+                    ),
+                    None,
+                )
+                if start is not None:
+                    base_score = float(start["base_score"])
+                    payload["starting_loss"] = base_score
+                    payload["improvement_percent"] = (
+                        100.0 * (base_score - float(numeric["total_loss"])) / base_score
+                        if base_score
+                        else 0.0
+                    )
+        payload["multistart"] = multistart
+        payload["multistart_progress"] = self.multistart_progress
+        payload["objective"] = {
+            **descriptor_definition(),
+            "mode": "frozen full-library perceptual score",
+            "family_medians": dict(self.retrieval_family_medians),
+        }
+        payload["optimizer"].update(
+            {
+                "name": "Perceptual multi-start CMA-ES",
+                "master_seed": MASTER_SEED,
+                "pilot_evaluations_per_start": PILOT_EVALUATIONS,
+                "deepen_evaluations_per_survivor": DEEPEN_EVALUATIONS,
+            }
+        )
         payload.update(
             {
                 "external_target_mode": True,
@@ -1498,7 +1795,24 @@ class ExternalSurgeMatchRun(SurgeMatchRun):
             "The target is an external procedural reference, not an instrument identity claim.",
             "Playing other notes is exploratory listening, not multi-note validation.",
         ]
+        payload["perceptual_multistart"] = (
+            self.multistart_engine.evidence()
+            if self.multistart_engine is not None
+            else {
+                "schema": "agentic-synth-twin/perceptual-multistart-refinement/v1",
+                "stage": "IDLE",
+                "human_judgment": "PENDING_OWNER",
+            }
+        )
         return payload
+
+    def history_public(self) -> list[dict[str, Any]]:
+        if self.multistart_engine is None:
+            return []
+        return [
+            self._public_multistart_record(row) or {}
+            for row in self.multistart_engine.history
+        ]
 
     def render_playable_note(self, **kwargs: Any) -> Path:
         if kwargs.get("source") == "target":
@@ -1519,6 +1833,8 @@ class ExternalTargetController:
         generations: int = DEFAULT_GENERATIONS,
         population_size: int = DEFAULT_POPULATION,
         seed: int = SEARCH_SEED,
+        cache_root: str | Path | None = None,
+        initial_target_id: str | None = None,
     ) -> None:
         self.adapter = adapter
         self.target_bank = target_bank
@@ -1533,13 +1849,22 @@ class ExternalTargetController:
         self._human_audit = self._load_human_audit()
         self.shared_cache = prepare_shared_preset_cache(
             adapter=adapter,
-            cache_root=self.output_directory / "shared-preset-cache",
+            cache_root=(
+                Path(cache_root).resolve()
+                if cache_root is not None
+                else self.output_directory / "shared-preset-cache"
+            ),
             preset_limit=preset_limit,
             full_library=True,
         )
         self._runs: list[ExternalSurgeMatchRun] = []
         self._latest_by_target: dict[str, dict[str, Any]] = {}
-        self.active_run = self._new_run(self.target_bank.targets[0])
+        initial_target = (
+            self.target_bank.target(initial_target_id)
+            if initial_target_id is not None
+            else self.target_bank.targets[0]
+        )
+        self.active_run = self._new_run(initial_target)
 
     def _load_human_audit(self) -> dict[str, dict[str, str]]:
         if not self.human_audit_path.is_file():
@@ -1710,7 +2035,7 @@ def create_external_target_controller(
 
 def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Surge XT one-note preset retrieval and local match")
-    parser.add_argument("command", choices=("serve", "run"))
+    parser.add_argument("command", choices=("serve", "run", "refine"))
     parser.add_argument("--plugin", required=True)
     parser.add_argument("--data", required=True)
     parser.add_argument("--renderer", required=True)
@@ -1721,6 +2046,8 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     parser.add_argument("--population", type=int, default=DEFAULT_POPULATION)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8879)
+    parser.add_argument("--target-id", default="rhodes-style-electric-piano")
+    parser.add_argument("--cache-root")
     parser.add_argument(
         "--targets",
         default=str(
@@ -1758,7 +2085,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         preset_limit=args.preset_limit,
         generations=args.generations,
         population_size=args.population,
+        cache_root=args.cache_root,
+        initial_target_id=args.target_id if args.command == "refine" else None,
     )
+    if args.command == "refine":
+        run.start_search()
+        run.wait()
+        print(json.dumps(run.public_status(), indent=2, ensure_ascii=False))
+        return 0 if run.status == "COMPLETE" else 1
     if args.host not in {"127.0.0.1", "localhost", "::1"}:
         raise SurgeMatchError("Surge cockpit must bind to loopback")
     from .search_cockpit import create_cockpit_server
