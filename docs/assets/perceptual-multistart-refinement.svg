@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Perceptual multi-start real-Surge refinement</title>
+  <desc id="desc">Seven-stage implementation map from target and full-library retrieval through transparent hierarchical parameter screening, five CMA pilots, two deeper searches, stable rerender verification, and the preserved playable cockpit.</desc>
+  <rect width="1600" height="900" fill="#0b1320"/>
+  <text x="54" y="66" fill="#f6f8fb" font-family="Arial, sans-serif" font-size="38" font-weight="700">Agentic Synth Twin</text>
+  <text x="54" y="102" fill="#9db0c5" font-family="Arial, sans-serif" font-size="22">Perceptual multi-start refinement · real Surge XT renders · inspectable evidence</text>
+  <rect x="1115" y="35" width="430" height="74" rx="8" fill="#132238" stroke="#2b4260"/>
+  <text x="1138" y="65" fill="#f6f8fb" font-family="Arial, sans-serif" font-size="16" font-weight="700">BOUNDARY</text>
+  <text x="1138" y="90" fill="#9db0c5" font-family="Arial, sans-serif" font-size="14">One fixed C3 note · local only · listening still required</text>
+
+  <g font-family="Arial, sans-serif">
+    <rect x="54" y="145" width="205" height="285" rx="10" fill="#10253c" stroke="#3d8bd8" stroke-width="2"/>
+    <text x="72" y="180" fill="#4da3ff" font-size="28" font-weight="700">1</text>
+    <text x="108" y="180" fill="#f6f8fb" font-size="17" font-weight="700">Target + retrieval</text>
+    <text x="72" y="214" fill="#c8d4e2" font-size="15">Frozen 55 / 25 / 15 / 5</text>
+    <text x="72" y="237" fill="#c8d4e2" font-size="15">perceptual objective</text>
+    <rect x="72" y="266" width="169" height="34" rx="5" fill="#183654"/>
+    <text x="84" y="288" fill="#f6f8fb" font-size="14">Full factory Top 10</text>
+    <rect x="72" y="310" width="169" height="34" rx="5" fill="#183654"/>
+    <text x="84" y="332" fill="#f6f8fb" font-size="14">Find 5 valid starts</text>
+    <text x="72" y="376" fill="#7fd4ff" font-size="13">Retrieval chooses presets</text>
+    <text x="72" y="398" fill="#9db0c5" font-size="13">CMA-ES does not</text>
+
+    <rect x="274" y="145" width="205" height="285" rx="10" fill="#262310" stroke="#e2b93b" stroke-width="2"/>
+    <text x="292" y="180" fill="#ffd15b" font-size="28" font-weight="700">2</text>
+    <text x="328" y="180" fill="#f6f8fb" font-size="19" font-weight="700">Structural ledger</text>
+    <text x="292" y="214" fill="#c8d4e2" font-size="15">Real CLAP flags, ranges,</text>
+    <text x="292" y="237" fill="#c8d4e2" font-size="15">names, state and text</text>
+    <text x="292" y="278" fill="#f6f8fb" font-size="14">Exclude explicitly:</text>
+    <text x="304" y="304" fill="#c8d4e2" font-size="13">• invalid / fixed / bypass</text>
+    <text x="304" y="327" fill="#c8d4e2" font-size="13">• unassigned macros</text>
+    <text x="304" y="350" fill="#c8d4e2" font-size="13">• FX slots labeled Off</text>
+    <text x="292" y="395" fill="#ffd15b" font-size="13">Every rule is persisted</text>
+
+    <rect x="494" y="145" width="205" height="285" rx="10" fill="#132b24" stroke="#35bf79" stroke-width="2"/>
+    <text x="512" y="180" fill="#47dc8b" font-size="28" font-weight="700">3</text>
+    <text x="548" y="180" fill="#f6f8fb" font-size="19" font-weight="700">Subgroup screen</text>
+    <text x="512" y="214" fill="#c8d4e2" font-size="15">Explicit Surge prefixes:</text>
+    <text x="512" y="242" fill="#c8d4e2" font-size="13">Osc · Filter · EG · LFO · FX</text>
+    <rect x="512" y="268" width="169" height="42" rx="5" fill="#194535"/>
+    <text x="526" y="286" fill="#f6f8fb" font-size="13">neutral / −5% / +5%</text>
+    <text x="526" y="302" fill="#9ee9bd" font-size="12">real rendered controls</text>
+    <text x="512" y="342" fill="#c8d4e2" font-size="13">Must exceed measured</text>
+    <text x="512" y="363" fill="#c8d4e2" font-size="13">no-change noise floor</text>
+    <text x="512" y="398" fill="#47dc8b" font-size="13">Snapped values excluded</text>
+
+    <rect x="714" y="145" width="205" height="285" rx="10" fill="#281a2f" stroke="#b368d7" stroke-width="2"/>
+    <text x="732" y="180" fill="#c985eb" font-size="28" font-weight="700">4</text>
+    <text x="768" y="180" fill="#f6f8fb" font-size="19" font-weight="700">Adaptive space</text>
+    <text x="732" y="214" fill="#c8d4e2" font-size="15">Individual neutral / ±5%</text>
+    <text x="732" y="237" fill="#c8d4e2" font-size="15">only in responsive groups</text>
+    <text x="732" y="278" fill="#f6f8fb" font-size="14">Freeze 4–12 controls</text>
+    <text x="744" y="304" fill="#c8d4e2" font-size="13">• family representatives</text>
+    <text x="744" y="327" fill="#c8d4e2" font-size="13">• target-aligned gain</text>
+    <text x="744" y="350" fill="#c8d4e2" font-size="13">• high influence</text>
+    <text x="732" y="398" fill="#c985eb" font-size="13">±0.20 local bounds</text>
+
+    <rect x="934" y="145" width="205" height="285" rx="10" fill="#2a1a13" stroke="#e67e3a" stroke-width="2"/>
+    <text x="952" y="180" fill="#ff9853" font-size="28" font-weight="700">5</text>
+    <text x="988" y="180" fill="#f6f8fb" font-size="19" font-weight="700">Five CMA pilots</text>
+    <text x="952" y="214" fill="#c8d4e2" font-size="15">32 real evaluations each</text>
+    <text x="952" y="237" fill="#c8d4e2" font-size="15">4 generations × pop 8</text>
+    <rect x="952" y="270" width="169" height="74" rx="5" fill="#4a2919"/>
+    <text x="968" y="295" fill="#f6f8fb" font-size="13">Independent seeds</text>
+    <text x="968" y="317" fill="#f6f8fb" font-size="13">Absolute-score ranking</text>
+    <text x="968" y="339" fill="#f6f8fb" font-size="13">Invalids keep budget</text>
+    <text x="952" y="398" fill="#ff9853" font-size="13">Top 2 continue</text>
+
+    <rect x="1154" y="145" width="205" height="285" rx="10" fill="#12272d" stroke="#39b8c9" stroke-width="2"/>
+    <text x="1172" y="180" fill="#51d1df" font-size="28" font-weight="700">6</text>
+    <text x="1208" y="180" fill="#f6f8fb" font-size="19" font-weight="700">Deep refinement</text>
+    <text x="1172" y="214" fill="#c8d4e2" font-size="15">Top 2 keep CMA state</text>
+    <text x="1172" y="237" fill="#c8d4e2" font-size="15">64 more evaluations each</text>
+    <text x="1172" y="278" fill="#f6f8fb" font-size="14">Track every candidate:</text>
+    <text x="1184" y="304" fill="#c8d4e2" font-size="13">log-mel · envelope</text>
+    <text x="1184" y="327" fill="#c8d4e2" font-size="13">harmonic · flatness</text>
+    <text x="1184" y="350" fill="#c8d4e2" font-size="13">requested · applied</text>
+    <text x="1172" y="398" fill="#51d1df" font-size="13">Fixed total: 288 CMA</text>
+
+    <rect x="1374" y="145" width="172" height="285" rx="10" fill="#162a1b" stroke="#67c76d" stroke-width="2"/>
+    <text x="1392" y="180" fill="#7de284" font-size="28" font-weight="700">7</text>
+    <text x="1428" y="180" fill="#f6f8fb" font-size="18" font-weight="700">Verify + play</text>
+    <text x="1392" y="214" fill="#c8d4e2" font-size="14">Two independent</text>
+    <text x="1392" y="235" fill="#c8d4e2" font-size="14">rerenders per candidate</text>
+    <text x="1392" y="274" fill="#f6f8fb" font-size="13">Separate:</text>
+    <text x="1404" y="298" fill="#c8d4e2" font-size="13">numeric best</text>
+    <text x="1404" y="321" fill="#c8d4e2" font-size="13">stable best</text>
+    <text x="1392" y="359" fill="#c8d4e2" font-size="13">Preserve cockpit,</text>
+    <text x="1392" y="380" fill="#c8d4e2" font-size="13">keyboard + MIDI</text>
+    <text x="1392" y="404" fill="#7de284" font-size="13">Listening pending</text>
+  </g>
+
+  <g fill="#7590aa">
+    <path d="M259 286h15v-9l17 15-17 15v-9h-15z"/>
+    <path d="M479 286h15v-9l17 15-17 15v-9h-15z"/>
+    <path d="M699 286h15v-9l17 15-17 15v-9h-15z"/>
+    <path d="M919 286h15v-9l17 15-17 15v-9h-15z"/>
+    <path d="M1139 286h15v-9l17 15-17 15v-9h-15z"/>
+    <path d="M1359 286h15v-9l17 15-17 15v-9h-15z"/>
+  </g>
+
+  <rect x="54" y="465" width="1492" height="137" rx="10" fill="#101c2b" stroke="#2b4260"/>
+  <text x="76" y="500" fill="#f6f8fb" font-family="Arial, sans-serif" font-size="18" font-weight="700">COCKPIT TELEMETRY</text>
+  <g font-family="Arial, sans-serif" font-size="14">
+    <rect x="76" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="92" y="542" fill="#7fd4ff">5 start trajectories</text><text x="92" y="562" fill="#c8d4e2">base → pilot → deep best</text>
+    <rect x="310" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="326" y="542" fill="#ffd15b">Hierarchical ledger</text><text x="326" y="562" fill="#c8d4e2">rules · groups · controls</text>
+    <rect x="544" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="560" y="542" fill="#47dc8b">Objective components</text><text x="560" y="562" fill="#c8d4e2">raw · normalized · weighted</text>
+    <rect x="778" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="794" y="542" fill="#c985eb">CMA state</text><text x="794" y="562" fill="#c8d4e2">mean · covariance · sigma</text>
+    <rect x="1012" y="520" width="218" height="54" rx="6" fill="#172a40"/><text x="1028" y="542" fill="#ff9853">Audio comparison</text><text x="1028" y="562" fill="#c8d4e2">Target · Base · Stable Best</text>
+    <rect x="1246" y="520" width="278" height="54" rx="6" fill="#172a40"/><text x="1262" y="542" fill="#7de284">Playable working patch</text><text x="1262" y="562" fill="#c8d4e2">edit · piano · keys · USB MIDI</text>
+  </g>
+
+  <rect x="54" y="625" width="1492" height="78" rx="10" fill="#0e1825" stroke="#2b4260"/>
+  <text x="76" y="654" fill="#9db0c5" font-family="Arial, sans-serif" font-size="13" font-weight="700">LAYER IMPACT</text>
+  <text x="76" y="681" fill="#f6f8fb" font-family="Arial, sans-serif" font-size="14">Renderer: requested/applied evidence</text>
+  <text x="386" y="681" fill="#f6f8fb" font-family="Arial, sans-serif" font-size="14">Backend: hierarchy + scheduler</text>
+  <text x="681" y="681" fill="#f6f8fb" font-family="Arial, sans-serif" font-size="14">Browser: telemetry only</text>
+  <text x="932" y="681" fill="#f6f8fb" font-family="Arial, sans-serif" font-size="14">State: target-specific immutable run</text>
+  <text x="1270" y="681" fill="#f6f8fb" font-family="Arial, sans-serif" font-size="14">C2PA: unchanged</text>
+
+  <g font-family="Arial, sans-serif">
+    <rect x="54" y="730" width="330" height="118" rx="9" fill="#14243a" stroke="#3d8bd8"/>
+    <text x="72" y="760" fill="#7fd4ff" font-size="14" font-weight="700">CURRENT STATE</text>
+    <text x="72" y="789" fill="#f6f8fb" font-size="15">One perceptual preset base</text>
+    <text x="72" y="813" fill="#c8d4e2" font-size="13">fixed eight-control refinement</text>
+    <rect x="401" y="730" width="380" height="118" rx="9" fill="#2b2412" stroke="#e2b93b"/>
+    <text x="419" y="760" fill="#ffd15b" font-size="14" font-weight="700">CHANGES IN THIS PR</text>
+    <text x="419" y="789" fill="#f6f8fb" font-size="15">Five adaptive real-preset starts</text>
+    <text x="419" y="813" fill="#c8d4e2" font-size="13">hierarchy → pilots → Top 2 → verification</text>
+    <rect x="798" y="730" width="380" height="118" rx="9" fill="#24192a" stroke="#b368d7"/>
+    <text x="816" y="760" fill="#c985eb" font-size="14" font-weight="700">UNCHANGED / OUT OF SCOPE</text>
+    <text x="816" y="789" fill="#f6f8fb" font-size="15">Objective · cache · target bank · keyboard</text>
+    <text x="816" y="813" fill="#c8d4e2" font-size="13">no upload · semantics · realtime host · LOCK</text>
+    <rect x="1195" y="730" width="351" height="118" rx="9" fill="#15271a" stroke="#67c76d"/>
+    <text x="1213" y="760" fill="#7de284" font-size="14" font-weight="700">END RESULT</text>
+    <text x="1213" y="789" fill="#f6f8fb" font-size="15">Stable optimized Surge patch</text>
+    <text x="1213" y="813" fill="#c8d4e2" font-size="13">traceable · playable · owner listening pending</text>
+  </g>
+</svg>

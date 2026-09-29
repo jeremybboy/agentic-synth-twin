@@ -15,13 +15,16 @@
 - [Direct real-synth search](docs/direct-real-synth-search.md): four-parameter CMA-ES, audio objective, live cockpit, random control, and actual result
 - [Playable cockpit](docs/playable-cockpit.md): editable working patch, virtual/computer/USB MIDI inputs, real-synth rendered-note cache, and limitations
 - [Surge one-note match](docs/surge-one-note-match.md): ten external targets, shared eligible-preset retrieval, target-specific local refinement, hidden regression fixture, preserved playable instrument, and evidence
+- [Perceptual multi-start refinement](docs/perceptual-multistart-refinement.md): complete-library perceptual starts, transparent hierarchical real-control screening, fixed two-stage CMA schedule, independent stable rerender, and preserved playable cockpit
+- [Perceptual multi-start PR brief](docs/pr-briefs/perceptual-multistart-refinement.md): implementation boundary, change ledger, verification evidence, and owner acceptance still required
+- [Perceptual multi-start evidence](docs/evidence/perceptual-multistart-refinement.json): full path-sanitized Rhodes, electric-guitar, and sub-bass screen, CMA, and verification records
 - [Agent contract](AGENTS.md): repository rules, current milestone boundary, and checks
 - [Contributing](CONTRIBUTING.md): focused PR workflow
 - [Security](SECURITY.md): private vulnerability reporting guidance
 
 ## Current status
 
-Milestone 9 additively routes ten named external procedural C3 targets through one hash-bound eligible Surge XT 1.3.4 factory-preset cache and target-specific bounded local refinement. Target selection produces an auditionable Top 5 and Base but never starts CMA-ES; the same virtual/computer/USB MIDI keyboard and editable working-copy contract remain authoritative. The hidden reachable-target experiment remains a separate regression fixture; other notes are exploratory, objective similarity is not human perception, and LOCK remains incomplete.
+The current follow-up preserves Milestone 9 while testing whether five complete-library perceptual starts and a metadata-plus-measurement hierarchical screen can produce better stable real-Surge one-note matches. Target selection still never starts optimization; the same virtual/computer/USB MIDI keyboard and editable working-copy contract remain authoritative. The hidden reachable-target experiment remains a separate regression fixture; other notes are exploratory, objective similarity is not human perception, owner listening remains required, and LOCK remains incomplete.
 
 ## Source
 
