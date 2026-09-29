@@ -1,0 +1,125 @@
+{
+  "pack_name": "Agentic Synth Twin External Targets v1",
+  "purpose": "External non-Surge target audio for evaluating preset retrieval and bounded Surge XT parameter refinement.",
+  "generation": {
+    "method": "Original deterministic procedural DSP generated in Python/NumPy.",
+    "surge_used": false,
+    "third_party_samples_used": false,
+    "preset_library_used": false,
+    "random_seed": 20260928
+  },
+  "audition_contract": {
+    "nominal_pitch": "C3",
+    "nominal_frequency_hz": 130.8127826502993,
+    "sample_rate_hz": 44100,
+    "channels": 2,
+    "channel_content": "dual-mono",
+    "bit_depth": 16,
+    "duration_seconds": 2.5,
+    "reference_hold_seconds": 2.0,
+    "reference_tail_seconds": 0.5,
+    "note": "Percussive targets naturally decay before the 2.0 s hold boundary; all files still use the same 2.5 s container duration."
+  },
+  "targets": [
+    {
+      "index": 1,
+      "title": "Analog Sub Bass",
+      "file": "01_analog_sub_bass_C3.wav",
+      "recipe": "Additive saw + octave-down sine + odd-harmonic square, one-pole low-pass at 520 Hz, fast attack, 2.0 s hold, 0.5 s release.",
+      "peak_amplitude": 0.78,
+      "rms": 0.3428321,
+      "sha256": "0af5a9034cddc4dd53f4f7054a3d9bbab08ee3fa42479f2e539cda442598ea8c",
+      "bytes": 441044
+    },
+    {
+      "index": 2,
+      "title": "FM Bell",
+      "file": "02_fm_bell_C3.wav",
+      "recipe": "Two-operator FM with 2.73 modulator/carrier ratio, exponentially decaying modulation index, plus an inharmonic partial and bell-like amplitude decay.",
+      "peak_amplitude": 0.78,
+      "rms": 0.19515604,
+      "sha256": "98f94f2774fb6c82b435cbedd293ce0da2004980b147aaa40f9ee590dbd2f494",
+      "bytes": 441044
+    },
+    {
+      "index": 3,
+      "title": "Plucked Electric Guitar",
+      "file": "03_plucked_electric_guitar_C3.wav",
+      "recipe": "Deterministic Karplus-Strong digital string with pick-position comb shaping, body/pickup-style delay coloration, low-pass damping, and mild saturation.",
+      "peak_amplitude": 0.78,
+      "rms": 0.11059499,
+      "sha256": "df50fb833eb93d9827dc4c18ee46036b5b72c0071383b75a4d6eb6e2e20f4c1b",
+      "bytes": 441044
+    },
+    {
+      "index": 4,
+      "title": "Rhodes-style Electric Piano",
+      "file": "04_rhodes_style_electric_piano_C3.wav",
+      "recipe": "Original tine/pickup-inspired model: fundamental plus slightly inharmonic upper partials with independent decays, a short filtered hammer-noise transient, and mild pickup-style saturation. No sampled or modeled commercial preset.",
+      "peak_amplitude": 0.78,
+      "rms": 0.34568775,
+      "sha256": "59b854a5df929ad5d13f4c84796ca055bc7913dc890bc81fae1a930a334c2154",
+      "bytes": 441044
+    },
+    {
+      "index": 5,
+      "title": "Muted Synth Pluck",
+      "file": "05_muted_synth_pluck_C3.wav",
+      "recipe": "Saw/pulse excitation through a rapidly closing sample-varying low-pass filter and short exponential amplitude decay.",
+      "peak_amplitude": 0.78,
+      "rms": 0.11741432,
+      "sha256": "9c2f07c2c2164e17fe41dcfee498b235e3b5339da853ac730b5289a891456207",
+      "bytes": 441044
+    },
+    {
+      "index": 6,
+      "title": "Analog Brass Stab",
+      "file": "06_analog_brass_stab_C3.wav",
+      "recipe": "Three detuned saw oscillators with a fast-opening/decaying low-pass filter envelope, brass-like amplitude contour, and subtle saturation.",
+      "peak_amplitude": 0.78,
+      "rms": 0.19334219,
+      "sha256": "367b332b1520a85f252240faca7e2ab7469ec99f1ad5f1b9927c3e710c126e78",
+      "bytes": 441044
+    },
+    {
+      "index": 7,
+      "title": "Warm Poly Pad",
+      "file": "07_warm_poly_pad_C3.wav",
+      "recipe": "Detuned saw pair plus triangle oscillator, slow low-pass modulation, deterministic short-delay chorus coloration, slow attack, and long release.",
+      "peak_amplitude": 0.78,
+      "rms": 0.25372606,
+      "sha256": "c9d7e27e041e8823138376cf08acdbaecccb987e0657f222faf33d2f303eca50",
+      "bytes": 441044
+    },
+    {
+      "index": 8,
+      "title": "Sync / Hard Lead",
+      "file": "08_sync_hard_lead_C3.wav",
+      "recipe": "Hard-sync-style phase-reset approximation with a decaying slave/master ratio sweep, bright transient, low-pass contour, sustain, and mild saturation.",
+      "peak_amplitude": 0.78,
+      "rms": 0.41150122,
+      "sha256": "0ccddeff19f903d69787d29362c2c85a25b13fdcaf5a3e18b223343ad16db0d6",
+      "bytes": 441044
+    },
+    {
+      "index": 9,
+      "title": "Marimba / Mallet",
+      "file": "09_marimba_mallet_C3.wav",
+      "recipe": "Struck-bar modal synthesis using four non-harmonic resonant modes with progressively shorter decays plus a tiny filtered mallet-noise transient.",
+      "peak_amplitude": 0.78,
+      "rms": 0.17105939,
+      "sha256": "f1c0080782c7d390ff799323e64372844fe4537c133a8e93d3d1c88e5ff6aef1",
+      "bytes": 441044
+    },
+    {
+      "index": 10,
+      "title": "Dub Chord / Organ Stab",
+      "file": "10_dub_chord_organ_stab_C3.wav",
+      "recipe": "Additive drawbar-inspired organ partials plus a quiet fifth, short stab envelope, low-pass tone shaping, mild saturation, and one deterministic short echo tap.",
+      "peak_amplitude": 0.78,
+      "rms": 0.14472245,
+      "sha256": "13043c396764af7721fbf39f960f072459cb3db554829fe54ca4b404f4ad8df3",
+      "bytes": 441044
+    }
+  ]
+}

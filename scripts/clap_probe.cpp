@@ -9,8 +9,10 @@
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -269,6 +271,14 @@ struct MemoryInput {
     }
 };
 
+std::vector<std::uint8_t> read_bytes(const std::filesystem::path &path) {
+    std::ifstream stream(path, std::ios::binary);
+    if (!stream) {
+        throw std::runtime_error("could not open state file: " + path.string());
+    }
+    return {std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
+}
+
 struct OneInputEvent {
     const clap_event_header_t *event;
     clap_input_events_t list{};
@@ -341,7 +351,9 @@ double mutation_value(const clap_param_info_t &info, double current) {
     return info.max_value;
 }
 
-ProbeResult run(const std::filesystem::path &plugin_path) {
+ProbeResult run(const std::filesystem::path &plugin_path,
+                const std::optional<std::filesystem::path> &state_path,
+                bool inspect_only) {
     PluginLibrary library(plugin_path);
     const auto *factory = library.factory();
     auto host = make_host();
@@ -356,6 +368,18 @@ ProbeResult run(const std::filesystem::path &plugin_path) {
     }
     if (!state) {
         throw std::runtime_error("the plugin does not expose clap.state");
+    }
+
+    std::vector<std::uint8_t> loaded_state;
+    if (state_path) {
+        loaded_state = read_bytes(*state_path);
+        if (loaded_state.empty()) {
+            throw std::runtime_error("state file is empty");
+        }
+        MemoryInput state_input(loaded_state);
+        if (!state->load(plugin, &state_input.stream)) {
+            throw std::runtime_error("clap.state.load failed");
+        }
     }
 
     std::vector<clap_param_info_t> inventory;
@@ -388,27 +412,32 @@ ProbeResult run(const std::filesystem::path &plugin_path) {
         throw std::runtime_error("clap.state.save failed or returned no bytes");
     }
 
-    const auto requested = mutation_value(*selected, before);
-    instance.activate();
-    process_parameter(plugin, *selected, requested);
-    instance.stop();
+    double requested = before;
+    double after = before;
+    double restored = before;
+    bool changed = false;
+    bool restored_ok = true;
+    if (!inspect_only) {
+        requested = mutation_value(*selected, before);
+        instance.activate();
+        process_parameter(plugin, *selected, requested);
+        instance.stop();
 
-    double after = 0.0;
-    if (!params->get_value(plugin, selected->id, &after)) {
-        throw std::runtime_error("clap.params.get_value failed after mutation");
-    }
+        if (!params->get_value(plugin, selected->id, &after)) {
+            throw std::runtime_error("clap.params.get_value failed after mutation");
+        }
 
-    MemoryInput restore_stream(saved_state.bytes);
-    if (!state->load(plugin, &restore_stream.stream)) {
-        throw std::runtime_error("clap.state.load failed");
-    }
-    double restored = 0.0;
-    if (!params->get_value(plugin, selected->id, &restored)) {
-        throw std::runtime_error("clap.params.get_value failed after state restore");
-    }
+        MemoryInput restore_stream(saved_state.bytes);
+        if (!state->load(plugin, &restore_stream.stream)) {
+            throw std::runtime_error("clap.state.load failed");
+        }
+        if (!params->get_value(plugin, selected->id, &restored)) {
+            throw std::runtime_error("clap.params.get_value failed after state restore");
+        }
 
-    const bool changed = nearly_equal(after, requested) && !nearly_equal(after, before);
-    const bool restored_ok = nearly_equal(restored, before);
+        changed = nearly_equal(after, requested) && !nearly_equal(after, before);
+        restored_ok = nearly_equal(restored, before);
+    }
 
     const auto *descriptor = instance.descriptor();
     std::ostringstream output;
@@ -441,29 +470,51 @@ ProbeResult run(const std::filesystem::path &plugin_path) {
     output << "  ],\n"
            << "  \"state_bytes\": " << saved_state.bytes.size() << ",\n"
            << "  \"state_base64\": \"" << base64_encode(saved_state.bytes) << "\",\n"
-           << "  \"mutation\": {\"parameter_id\": " << selected->id
-           << ", \"parameter_name\": \"" << json_escape(selected->name)
-           << "\", \"before\": " << before << ", \"requested\": " << requested
-           << ", \"after\": " << after << ", \"restored\": " << restored
-           << ", \"changed\": " << (changed ? "true" : "false")
-           << ", \"restore_verified\": " << (restored_ok ? "true" : "false")
-           << "}\n"
+           << "  \"mutation\": ";
+    if (inspect_only) {
+        output << "null\n";
+    } else {
+        output << "{\"parameter_id\": " << selected->id
+               << ", \"parameter_name\": \"" << json_escape(selected->name)
+               << "\", \"before\": " << before << ", \"requested\": " << requested
+               << ", \"after\": " << after << ", \"restored\": " << restored
+               << ", \"changed\": " << (changed ? "true" : "false")
+               << ", \"restore_verified\": " << (restored_ok ? "true" : "false")
+               << "}\n";
+    }
+    output
            << "}\n";
 
-    return {output.str(), changed && restored_ok ? 0 : 2};
+    return {output.str(), inspect_only || (changed && restored_ok) ? 0 : 2};
 }
 
 } // namespace
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        std::cerr << "usage: clap-probe /path/to/plugin.clap\n";
+    if (argc < 2) {
+        std::cerr << "usage: clap-probe /path/to/plugin.clap "
+                     "[--state STATE.bin] [--inspect-only]\n";
         return 64;
     }
     try {
+        std::optional<std::filesystem::path> state_path;
+        bool inspect_only = false;
+        for (int index = 2; index < argc; ++index) {
+            const std::string option = argv[index];
+            if (option == "--state") {
+                if (++index >= argc) {
+                    throw std::runtime_error("--state requires a path");
+                }
+                state_path = argv[index];
+            } else if (option == "--inspect-only") {
+                inspect_only = true;
+            } else {
+                throw std::runtime_error("unknown option: " + option);
+            }
+        }
         const auto result = [&]() {
             StdoutToStderr redirect;
-            return run(argv[1]);
+            return run(argv[1], state_path, inspect_only);
         }();
         std::cout << result.json;
         return result.exit_code;

@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1120" viewBox="0 0 1800 1120">
+  <rect width="1800" height="1120" fill="#08111d"/>
+  <style>
+    .title{font:700 42px Arial,Helvetica,sans-serif;fill:#f4f7fb}
+    .sub{font:600 20px Arial,Helvetica,sans-serif;fill:#9db0c6}
+    .panel{fill:#0e1a29;stroke:#294058;stroke-width:2}
+    .panelTitle{font:700 20px Arial,Helvetica,sans-serif;fill:#f4f7fb}
+    .num{font:700 18px Arial,Helvetica,sans-serif;fill:#08111d}
+    .body{font:600 16px Arial,Helvetica,sans-serif;fill:#b9c7d7}
+    .tiny{font:600 14px Arial,Helvetica,sans-serif;fill:#8fa3b8}
+    .label{font:700 15px Arial,Helvetica,sans-serif;fill:#f4f7fb}
+    .blue{fill:#39a0ff}.green{fill:#38d58a}.orange{fill:#ff9a45}.purple{fill:#a978ff}.red{fill:#ff6471}.cyan{fill:#42d6d0}
+    .wire{stroke:#5f7892;stroke-width:3;fill:none}
+    .wireStrong{stroke:#39a0ff;stroke-width:4;fill:none}
+    .wave{stroke:#42d6d0;stroke-width:3;fill:none}
+    .bottom{fill:#0b1623;stroke:#294058;stroke-width:2}
+    .bottomHead{font:700 14px Arial,Helvetica,sans-serif;fill:#89a0b7}
+    .bottomBody{font:700 17px Arial,Helvetica,sans-serif;fill:#f4f7fb}
+  </style>
+
+  <text x="70" y="72" class="title">MILESTONE 9 FOLLOW-UP · EXTERNAL TARGET BANK → PLAYABLE SURGE PATCH</text>
+  <text x="70" y="108" class="sub">Ten non-Surge reference sounds become selectable targets; retrieval is immediate, refinement starts only when the user asks.</text>
+
+  <!-- panel 1 -->
+  <rect x="70" y="160" width="255" height="520" class="panel"/>
+  <circle cx="102" cy="194" r="18" class="cyan"/><text x="96" y="201" class="num">1</text>
+  <text x="132" y="202" class="panelTitle">EXTERNAL TARGETS</text>
+  <text x="92" y="240" class="body">Canonical WAVs · C3 · 2.5 s</text>
+  <text x="92" y="267" class="tiny">No Surge · no third-party samples</text>
+  <g transform="translate(92 300)">
+    <rect width="211" height="31" fill="#13263b" stroke="#2b4663"/><text x="12" y="21" class="label">01  Analog Sub Bass</text>
+    <rect y="38" width="211" height="31" fill="#13263b" stroke="#2b4663"/><text x="12" y="59" class="label">02  FM Bell</text>
+    <rect y="76" width="211" height="31" fill="#13263b" stroke="#2b4663"/><text x="12" y="97" class="label">03  Electric Guitar</text>
+    <rect y="114" width="211" height="31" fill="#13263b" stroke="#2b4663"/><text x="12" y="135" class="label">04  Rhodes-style EP</text>
+    <rect y="152" width="211" height="31" fill="#13263b" stroke="#2b4663"/><text x="12" y="173" class="label">05  Muted Synth Pluck</text>
+    <rect y="190" width="211" height="31" fill="#13263b" stroke="#2b4663"/><text x="12" y="211" class="label">06  Analog Brass Stab</text>
+    <rect y="228" width="211" height="31" fill="#13263b" stroke="#2b4663"/><text x="12" y="249" class="label">07  Warm Poly Pad</text>
+    <rect y="266" width="211" height="31" fill="#13263b" stroke="#2b4663"/><text x="12" y="287" class="label">08  Sync / Hard Lead</text>
+    <rect y="304" width="211" height="31" fill="#13263b" stroke="#2b4663"/><text x="12" y="325" class="label">09  Marimba / Mallet</text>
+    <rect y="342" width="211" height="31" fill="#13263b" stroke="#2b4663"/><text x="12" y="363" class="label">10  Dub Chord / Organ</text>
+  </g>
+
+  <!-- panel 2 -->
+  <rect x="355" y="160" width="255" height="520" class="panel"/>
+  <circle cx="387" cy="194" r="18" class="blue"/><text x="381" y="201" class="num">2</text>
+  <text x="417" y="202" class="panelTitle">SELECT TARGET</text>
+  <rect x="382" y="248" width="202" height="86" fill="#102337" stroke="#39a0ff" stroke-width="3"/>
+  <text x="398" y="279" class="label">Rhodes-style EP</text>
+  <path d="M398 312 C410 288 420 333 431 304 S451 327 463 298 S485 323 500 304 S523 315 544 291" class="wave"/>
+  <text x="382" y="372" class="body">PLAY TARGET</text>
+  <rect x="382" y="392" width="160" height="38" fill="#16314c" stroke="#39a0ff"/>
+  <text x="414" y="417" class="label">▶ exact WAV</text>
+  <text x="382" y="472" class="body">Selection action:</text>
+  <text x="382" y="500" class="tiny">• validate file + SHA-256</text>
+  <text x="382" y="526" class="tiny">• prepare target reference</text>
+  <text x="382" y="552" class="tiny">• rank cached presets</text>
+  <text x="382" y="593" class="tiny">NO CMA SEARCH YET</text>
+
+  <!-- panel 3 -->
+  <rect x="640" y="160" width="255" height="520" class="panel"/>
+  <circle cx="672" cy="194" r="18" class="orange"/><text x="666" y="201" class="num">3</text>
+  <text x="702" y="202" class="panelTitle">PRESET CACHE</text>
+  <text x="667" y="244" class="body">Build once · reuse across targets</text>
+  <g transform="translate(675 287)">
+    <rect x="0" y="0" width="184" height="44" fill="#182839" stroke="#ff9a45"/>
+    <rect x="12" y="12" width="160" height="44" fill="#152536" stroke="#ff9a45"/>
+    <rect x="24" y="24" width="136" height="44" fill="#122232" stroke="#ff9a45"/>
+    <text x="43" y="52" class="label">FACTORY PRESETS</text>
+  </g>
+  <text x="667" y="392" class="tiny">Existing deterministic eligibility:</text>
+  <text x="667" y="420" class="tiny">factory-only · non-silent · non-clipped</text>
+  <text x="667" y="447" class="tiny">reproducible rendered WAV + state</text>
+  <text x="667" y="501" class="body">Cache key includes:</text>
+  <text x="667" y="529" class="tiny">plugin hash · content · audition</text>
+  <text x="667" y="556" class="tiny">preset selection · overrides</text>
+  <text x="667" y="610" class="tiny">Target switching must NOT</text>
+  <text x="667" y="634" class="tiny">rerender the preset library.</text>
+
+  <!-- panel 4 -->
+  <rect x="925" y="160" width="255" height="520" class="panel"/>
+  <circle cx="957" cy="194" r="18" class="purple"/><text x="951" y="201" class="num">4</text>
+  <text x="987" y="202" class="panelTitle">RETRIEVE TOP 5</text>
+  <text x="952" y="244" class="body">Same audio objective as M9</text>
+  <g transform="translate(952 286)">
+    <rect width="200" height="46" fill="#1a2538" stroke="#a978ff" stroke-width="2"/><text x="12" y="20" class="label">#1  Closest preset</text><text x="12" y="38" class="tiny">loss 0.xxxx</text>
+    <rect y="57" width="200" height="42" fill="#131f30" stroke="#384d64"/><text x="12" y="83" class="label">#2  Factory preset</text>
+    <rect y="110" width="200" height="42" fill="#131f30" stroke="#384d64"/><text x="12" y="136" class="label">#3  Factory preset</text>
+    <rect y="163" width="200" height="42" fill="#131f30" stroke="#384d64"/><text x="12" y="189" class="label">#4  Factory preset</text>
+    <rect y="216" width="200" height="42" fill="#131f30" stroke="#384d64"/><text x="12" y="242" class="label">#5  Factory preset</text>
+  </g>
+  <text x="952" y="577" class="tiny">Rank #1 becomes BASE.</text>
+  <text x="952" y="603" class="tiny">Preset names/categories never</text>
+  <text x="952" y="627" class="tiny">enter the acoustic score.</text>
+  <text x="952" y="651" class="tiny">Ranking updates per target.</text>
+
+  <!-- panel 5 -->
+  <rect x="1210" y="160" width="255" height="520" class="panel"/>
+  <circle cx="1242" cy="194" r="18" class="green"/><text x="1236" y="201" class="num">5</text>
+  <text x="1272" y="202" class="panelTitle">START SEARCH</text>
+  <rect x="1237" y="247" width="202" height="44" fill="#143326" stroke="#38d58a" stroke-width="2"/>
+  <text x="1280" y="276" class="label">START SEARCH</text>
+  <text x="1237" y="329" class="body">Explicit user action</text>
+  <g transform="translate(1238 365)">
+    <line x1="0" y1="8" x2="178" y2="8" class="wire"/><circle cx="114" cy="8" r="7" class="green"/>
+    <line x1="0" y1="44" x2="178" y2="44" class="wire"/><circle cx="72" cy="44" r="7" class="green"/>
+    <line x1="0" y1="80" x2="178" y2="80" class="wire"/><circle cx="139" cy="80" r="7" class="green"/>
+    <line x1="0" y1="116" x2="178" y2="116" class="wire"/><circle cx="96" cy="116" r="7" class="green"/>
+    <line x1="0" y1="152" x2="178" y2="152" class="wire"/><circle cx="126" cy="152" r="7" class="green"/>
+  </g>
+  <text x="1237" y="560" class="tiny">8 existing real CLAP parameters</text>
+  <text x="1237" y="587" class="tiny">120 CMA-ES evaluations</text>
+  <text x="1237" y="610" class="tiny">Every candidate = real Surge render</text>
+  <text x="1237" y="634" class="tiny">No automatic random control</text>
+  <text x="1237" y="658" class="tiny">in external interactive mode.</text>
+
+  <!-- panel 6 -->
+  <rect x="1495" y="160" width="235" height="520" class="panel"/>
+  <circle cx="1527" cy="194" r="18" class="red"/><text x="1521" y="201" class="num">6</text>
+  <text x="1557" y="202" class="panelTitle">BEST PATCH</text>
+  <text x="1522" y="244" class="body">Target · Base · Best</text>
+  <g transform="translate(1522 276)">
+    <text x="0" y="0" class="tiny">TARGET</text><path d="M0 24 C18 2 30 45 48 17 S80 42 98 15 S132 37 176 13" class="wave"/>
+    <text x="0" y="74" class="tiny">BASE</text><path d="M0 98 C18 80 32 113 51 89 S85 116 106 88 S145 103 176 86" stroke="#ff9a45" stroke-width="3" fill="none"/>
+    <text x="0" y="148" class="tiny">BEST</text><path d="M0 172 C18 151 31 191 49 162 S82 188 101 160 S135 182 176 158" stroke="#38d58a" stroke-width="3" fill="none"/>
+  </g>
+  <text x="1522" y="493" class="tiny">Playable keyboard remains.</text>
+  <text x="1522" y="521" class="tiny">Exact state + hashes persisted.</text>
+  <text x="1522" y="549" class="tiny">Results are target-specific.</text>
+  <text x="1522" y="599" class="tiny">No claim of exact reconstruction.</text>
+  <text x="1522" y="627" class="tiny">Human audition stays manual.</text>
+
+  <!-- arrows -->
+  <path d="M325 420 L355 420" class="wireStrong"/><polygon points="355,420 342,412 342,428" class="blue"/>
+  <path d="M610 420 L640 420" class="wireStrong"/><polygon points="640,420 627,412 627,428" class="blue"/>
+  <path d="M895 420 L925 420" class="wireStrong"/><polygon points="925,420 912,412 912,428" class="blue"/>
+  <path d="M1180 420 L1210 420" class="wireStrong"/><polygon points="1210,420 1197,412 1197,428" class="blue"/>
+  <path d="M1465 420 L1495 420" class="wireStrong"/><polygon points="1495,420 1482,412 1482,428" class="blue"/>
+
+  <!-- separation -->
+  <line x1="70" y1="720" x2="1730" y2="720" stroke="#294058" stroke-width="2"/>
+  <text x="70" y="756" class="sub">USER-FACING CONTRACT</text>
+  <rect x="70" y="780" width="1660" height="102" class="bottom"/>
+  <text x="94" y="811" class="bottomHead">TARGET SELECTION</text><text x="94" y="842" class="bottomBody">loads + ranks</text>
+  <text x="375" y="811" class="bottomHead">SEARCH</text><text x="375" y="842" class="bottomBody">explicit Start Search</text>
+  <text x="705" y="811" class="bottomHead">TARGET SWITCH DURING SEARCH</text><text x="705" y="842" class="bottomBody">blocked until Stop</text>
+  <text x="1110" y="811" class="bottomHead">RESULT</text><text x="1110" y="842" class="bottomBody">independent state per target</text>
+  <text x="1432" y="811" class="bottomHead">QUALITY CLAIM</text><text x="1432" y="842" class="bottomBody">report, do not guarantee</text>
+
+  <!-- mandatory bottom state row -->
+  <g transform="translate(70 920)">
+    <rect width="390" height="108" class="bottom"/><text x="20" y="31" class="bottomHead">CURRENT STATE</text><text x="20" y="61" class="bottomBody">One hidden Surge target</text><text x="20" y="86" class="tiny">fixed regression experiment</text>
+    <rect x="415" width="390" height="108" class="bottom"/><text x="435" y="31" class="bottomHead">CHANGES IN THIS PR</text><text x="435" y="61" class="bottomBody">10 external selectable targets</text><text x="435" y="86" class="tiny">shared preset cache + target-aware run</text>
+    <rect x="830" width="390" height="108" class="bottom"/><text x="850" y="31" class="bottomHead">UNCHANGED / OUT OF SCOPE</text><text x="850" y="61" class="bottomBody">Surge 1.3.4 · objective · 8 params</text><text x="850" y="86" class="tiny">no upload · no realtime host · no LOCK</text>
+    <rect x="1245" width="415" height="108" class="bottom"/><text x="1265" y="31" class="bottomHead">END RESULT</text><text x="1265" y="61" class="bottomBody">Choose sound → retrieve → refine</text><text x="1265" y="86" class="tiny">playable target-specific Surge patch</text>
+  </g>
+
+  <!-- layer strip -->
+  <text x="70" y="1082" class="tiny">LAYER IMPACT  ·  INPUT TARGETS  |  TARGET CONTROLLER  |  PRESET CACHE  |  RETRIEVAL  |  CMA SEARCH  |  COCKPIT / EVIDENCE</text>
+</svg>

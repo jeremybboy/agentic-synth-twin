@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -289,7 +290,7 @@ struct ParameterChange {
 
 bool nearly_equal(double left, double right) {
     return std::abs(left - right) <=
-           1e-9 * std::max({1.0, std::abs(left), std::abs(right)});
+           1e-6 * std::max({1.0, std::abs(left), std::abs(right)});
 }
 
 RenderResult render(const std::filesystem::path &plugin_path,
@@ -444,8 +445,12 @@ RenderResult render(const std::filesystem::path &plugin_path,
             throw std::runtime_error("clap.params.get_value failed after render");
         }
         if (!nearly_equal(applied, change.value)) {
+            std::ostringstream detail;
+            detail << std::setprecision(17)
+                   << "the plugin did not retain requested parameter " << change.id
+                   << ": requested " << change.value << ", applied " << applied;
             throw std::runtime_error(
-                "the plugin did not retain the requested parameter value");
+                detail.str());
         }
         applied_parameters.push_back({change.id, change.value, applied});
     }

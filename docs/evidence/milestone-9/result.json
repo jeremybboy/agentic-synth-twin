@@ -1,0 +1,483 @@
+{
+  "schema": "agentic-synth-twin/surge-one-note-match/v1",
+  "result": {
+    "surge_integrity": true,
+    "preset_retrieval_completed": true,
+    "local_optimization_gate_percent": 25.0,
+    "local_optimization_pass": true,
+    "human_listening": "PENDING_OWNER_AUDITION"
+  },
+  "run": {
+    "run_id": "m9-3c7ac0505b01",
+    "status": "COMPLETE",
+    "stopping_reason": "fixed_budget_exhausted",
+    "generations": 15,
+    "population_size": 8,
+    "evaluations": 120,
+    "budget": 120,
+    "seed": 20260930,
+    "initial_sigma": 0.18,
+    "normalized_bounds": [
+      0.0,
+      1.0
+    ],
+    "base_loss": 0.281768571357,
+    "best_loss": 0.028968679924,
+    "improvement_percent": 89.718981153758,
+    "invalid_clipped_candidates": 2
+  },
+  "plugin": {
+    "id": "org.surge-synth-team.surge-xt",
+    "name": "Surge XT",
+    "vendor": "Surge Synth Team",
+    "version": "1.3.4",
+    "sha256": "1564f4c9cd77b0e9c20c39293a1319b6a77a8e508f6084517b71625030be4902"
+  },
+  "preset_library": {
+    "release_artifacts": {
+      "release": "1.3.4",
+      "plugin_url": "https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-macos-1.3.4-pluginsonly.zip",
+      "plugin_md5": "8afca4159d9b417c5e07ebc1a5e96ed3",
+      "content_url": "https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-portable-content-1.3.4.tar.gz",
+      "content_md5": "089b26486e9680aa4fe5121a7fd4c8c4"
+    },
+    "scope": "factory presets only",
+    "selected": 120,
+    "indexed": 65,
+    "failed": 55,
+    "selection": "deterministic category-round-robin, bounded before target scoring",
+    "index_workers": 4,
+    "top_five": [
+      {
+        "rank": 1,
+        "preset_name": "Attacky",
+        "preset_category": "Basses",
+        "preset_relative_path": "Basses/Attacky.fxp",
+        "spectral_loss": 0.402672264936,
+        "envelope_loss": 0.067238996378,
+        "loudness_loss": 0.03221850054,
+        "total_loss": 0.281768571357,
+        "state_sha256": "7f0a2977666cbc7cd2d8a761816c66ea285b8f4b2a3fb1a4edea968d899a6969",
+        "wav_sha256": "99935cd244ac14e3680351858d92505892d28ab536c1560cd87606d0e4e2cd54"
+      },
+      {
+        "rank": 2,
+        "preset_name": "Kick Tech 2",
+        "preset_category": "Percussion",
+        "preset_relative_path": "Percussion/Kick Tech 2.fxp",
+        "spectral_loss": 0.574151781021,
+        "envelope_loss": 0.243378883961,
+        "loudness_loss": 0.021487828267,
+        "total_loss": 0.43619216148,
+        "state_sha256": "a49659038fe2f12720e42ee75d24bf816e70f36cfe742c9498dbc0a9eec8767c",
+        "wav_sha256": "31103ab0be0e8c8a2262661b03255f0a47096907168c3485caa73970812eef7e"
+      },
+      {
+        "rank": 3,
+        "preset_name": "Bass 3",
+        "preset_category": "Basses",
+        "preset_relative_path": "Basses/Bass 3.fxp",
+        "spectral_loss": 0.586547037001,
+        "envelope_loss": 0.298090201651,
+        "loudness_loss": 0.120385833543,
+        "total_loss": 0.467816707818,
+        "state_sha256": "c79d648a8e1a824f2d50baf07a3eeee89cbc4ed2362ae1d3aa9d4771007f9ee9",
+        "wav_sha256": "5259b0449ea1ead0958258ed9ef80f79407f5f19ab2410766a1605318e49655b"
+      },
+      {
+        "rank": 4,
+        "preset_name": "Kick Tech 1",
+        "preset_category": "Percussion",
+        "preset_relative_path": "Percussion/Kick Tech 1.fxp",
+        "spectral_loss": 0.571444162902,
+        "envelope_loss": 0.38313426826,
+        "loudness_loss": 0.199310043897,
+        "total_loss": 0.487153277341,
+        "state_sha256": "48e55ca5ab1be0a10047570e8aaf2cf96b2efba7a89e8780a9ba86305fc80d7e",
+        "wav_sha256": "eaa636aba4b4a4b2727913a1a91cec181bf2c06ff9998802e0ad3baeb294282d"
+      },
+      {
+        "rank": 5,
+        "preset_name": "Bass 4",
+        "preset_category": "Basses",
+        "preset_relative_path": "Basses/Bass 4.fxp",
+        "spectral_loss": 0.517430939514,
+        "envelope_loss": 0.517574166364,
+        "loudness_loss": 0.393240172004,
+        "total_loss": 0.505047669475,
+        "state_sha256": "5dd56083dea91e91a00b7b0731b8323c7a55fa9cc6a2928aa3cedf4b638a1322",
+        "wav_sha256": "450c6511560f4bfb0581e1371657cfab44beb3d01a06fce7ea6fa1a1956cef90"
+      }
+    ]
+  },
+  "audition": {
+    "midi_key": 48,
+    "velocity": 100,
+    "sample_rate": 44100,
+    "block_size": 64,
+    "note_frames": 88200,
+    "tail_frames": 22050
+  },
+  "objective": {
+    "formula": "0.65*spectral + 0.25*envelope + 0.10*loudness",
+    "weights": {
+      "spectral": 0.65,
+      "envelope": 0.25,
+      "loudness": 0.1
+    },
+    "spectral": {
+      "representation": "multi-resolution Hann log-magnitude STFT",
+      "resolutions": [
+        {
+          "fft_size": 256,
+          "hop_size": 64
+        },
+        {
+          "fft_size": 1024,
+          "hop_size": 256
+        },
+        {
+          "fft_size": 4096,
+          "hop_size": 1024
+        }
+      ],
+      "log_magnitude_scale": 100.0,
+      "normalization_scale": 0.05
+    },
+    "envelope": {
+      "representation": "full frame-level log RMS envelope",
+      "window": 512,
+      "hop": 128,
+      "normalization_scale": 1.5
+    },
+    "loudness": {
+      "representation": "absolute whole-file RMS dBFS difference",
+      "normalization_db": 24.0
+    }
+  },
+  "selected_base": {
+    "preset_name": "Attacky",
+    "preset_category": "Basses",
+    "preset_relative_path": "Basses/Attacky.fxp",
+    "total_loss": 0.281768571357
+  },
+  "active_parameters": {
+    "count": 8,
+    "categorical_parameters": "excluded",
+    "approved": [
+      {
+        "id": 627352114,
+        "name": "A Osc 1 Shape",
+        "label": "Osc 1 Shape",
+        "module": "/A Oscillators/",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "current": 0.5,
+        "approval": "SEARCH",
+        "approval_basis": "real inventory plus bounded continuous-control screen"
+      },
+      {
+        "id": 627352115,
+        "name": "A Osc 1 Width 1",
+        "label": "Osc 1 Width 1",
+        "module": "/A Oscillators/",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "current": 0.14017799496650696,
+        "approval": "SEARCH",
+        "approval_basis": "real inventory plus bounded continuous-control screen"
+      },
+      {
+        "id": 627352119,
+        "name": "A Osc 1 Unison Detune",
+        "label": "Osc 1 Unison Detune",
+        "module": "/A Oscillators/",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "current": 0.20000000298023224,
+        "approval": "SEARCH",
+        "approval_basis": "real inventory plus bounded continuous-control screen"
+      },
+      {
+        "id": 4092842705,
+        "name": "A Filter 1 Cutoff",
+        "label": "Filter 1 Cutoff",
+        "module": "/A Filters/",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "current": 0.3513459861278534,
+        "approval": "SEARCH",
+        "approval_basis": "real inventory plus bounded continuous-control screen"
+      },
+      {
+        "id": 8095466,
+        "name": "A Filter 1 Resonance",
+        "label": "Filter 1 Resonance",
+        "module": "/A Filters/",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "current": 0.0,
+        "approval": "SEARCH",
+        "approval_basis": "real inventory plus bounded continuous-control screen"
+      },
+      {
+        "id": 2005836581,
+        "name": "A Amp EG Attack",
+        "label": "Amp EG Attack",
+        "module": "/A Envelopes/",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "current": 0.0,
+        "approval": "SEARCH",
+        "approval_basis": "real inventory plus bounded continuous-control screen"
+      },
+      {
+        "id": 3946337085,
+        "name": "A Amp EG Decay",
+        "label": "Amp EG Decay",
+        "module": "/A Envelopes/",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "current": 0.6153846383094788,
+        "approval": "SEARCH",
+        "approval_basis": "real inventory plus bounded continuous-control screen"
+      },
+      {
+        "id": 3817344714,
+        "name": "A Amp EG Release",
+        "label": "Amp EG Release",
+        "module": "/A Envelopes/",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.0,
+        "current": 0.23076923191547394,
+        "approval": "SEARCH",
+        "approval_basis": "real inventory plus bounded continuous-control screen"
+      }
+    ]
+  },
+  "final_result": {
+    "base_synth": {
+      "id": "org.surge-synth-team.surge-xt",
+      "name": "Surge XT",
+      "vendor": "Surge Synth Team",
+      "version": "1.3.4"
+    },
+    "base_preset": "Basses/Attacky.fxp",
+    "base_preset_state_sha256": "7f0a2977666cbc7cd2d8a761816c66ea285b8f4b2a3fb1a4edea968d899a6969",
+    "target_audio_sha256": "a0ea00885a5b0a5c40d89729ba725d87d82d0959d6d99365eae57ce765da6b5a",
+    "changed_parameters": [
+      {
+        "id": 627352114,
+        "name": "A Osc 1 Shape",
+        "base_value": 0.5,
+        "optimized_value": 0.519666439982
+      },
+      {
+        "id": 627352115,
+        "name": "A Osc 1 Width 1",
+        "base_value": 0.140177994967,
+        "optimized_value": 0.287741720477
+      },
+      {
+        "id": 627352119,
+        "name": "A Osc 1 Unison Detune",
+        "base_value": 0.20000000298,
+        "optimized_value": 0.883666913167
+      },
+      {
+        "id": 4092842705,
+        "name": "A Filter 1 Cutoff",
+        "base_value": 0.351345986128,
+        "optimized_value": 0.581074236053
+      },
+      {
+        "id": 8095466,
+        "name": "A Filter 1 Resonance",
+        "base_value": 0.0,
+        "optimized_value": 0.204403989507
+      },
+      {
+        "id": 2005836581,
+        "name": "A Amp EG Attack",
+        "base_value": 0.0,
+        "optimized_value": 0.190558701533
+      },
+      {
+        "id": 3946337085,
+        "name": "A Amp EG Decay",
+        "base_value": 0.615384638309,
+        "optimized_value": 0.188693108796
+      },
+      {
+        "id": 3817344714,
+        "name": "A Amp EG Release",
+        "base_value": 0.230769231915,
+        "optimized_value": 0.012697292718
+      }
+    ],
+    "objective_before": 0.281768571357,
+    "objective_after": 0.028968679924,
+    "final_audio_sha256": "7e1f0848eadf30fa622da32f1a3be1883e6a4ab11ba2495b54501ab4a63f49b1",
+    "final_state": "base native state plus exact changed parameter values"
+  },
+  "final_verification": {
+    "sample_rate": 44100,
+    "channels": 2,
+    "bits_per_sample": 16,
+    "midi_key": 48,
+    "velocity": 100,
+    "note_frames": 88200,
+    "tail_frames": 22050,
+    "total_frames": 110250,
+    "block_size": 64,
+    "peak_float": 0.7618130445480347,
+    "clipped_samples": 0,
+    "parameter_change": null,
+    "parameter_changes": [
+      {
+        "id": 627352114,
+        "requested": 0.519666439982,
+        "applied": 0.5196664333343506
+      },
+      {
+        "id": 627352115,
+        "requested": 0.287741720477,
+        "applied": 0.2877417206764221
+      },
+      {
+        "id": 627352119,
+        "requested": 0.883666913167,
+        "applied": 0.8836669325828552
+      },
+      {
+        "id": 4092842705,
+        "requested": 0.581074236053,
+        "applied": 0.5810742378234863
+      },
+      {
+        "id": 8095466,
+        "requested": 0.204403989507,
+        "applied": 0.20440399646759033
+      },
+      {
+        "id": 2005836581,
+        "requested": 0.190558701533,
+        "applied": 0.19055873155593872
+      },
+      {
+        "id": 3946337085,
+        "requested": 0.188693108796,
+        "applied": 0.1886931210756302
+      },
+      {
+        "id": 3817344714,
+        "requested": 0.012697292718,
+        "applied": 0.012697293423116207
+      },
+      {
+        "id": 3365237974,
+        "requested": 1,
+        "applied": 1
+      },
+      {
+        "id": 1568286615,
+        "requested": 1,
+        "applied": 1
+      },
+      {
+        "id": 4066302552,
+        "requested": 1,
+        "applied": 1
+      },
+      {
+        "id": 2854703797,
+        "requested": 1,
+        "applied": 1
+      },
+      {
+        "id": 1057752438,
+        "requested": 1,
+        "applied": 1
+      },
+      {
+        "id": 3555768375,
+        "requested": 1,
+        "applied": 1
+      }
+    ],
+    "wav_sha256": "7e1f0848eadf30fa622da32f1a3be1883e6a4ab11ba2495b54501ab4a63f49b1",
+    "state_sha256": "7f0a2977666cbc7cd2d8a761816c66ea285b8f4b2a3fb1a4edea968d899a6969",
+    "applied_values": {
+      "627352114": 0.519666439982,
+      "627352115": 0.287741720477,
+      "627352119": 0.883666913167,
+      "4092842705": 0.581074236053,
+      "8095466": 0.204403989507,
+      "2005836581": 0.190558701533,
+      "3946337085": 0.188693108796,
+      "3817344714": 0.012697292718,
+      "3365237974": 1.0,
+      "1568286615": 1.0,
+      "4066302552": 1.0,
+      "2854703797": 1.0,
+      "1057752438": 1.0,
+      "3555768375": 1.0
+    },
+    "verification_renders": 2,
+    "byte_identical": true,
+    "matches_search_best": true,
+    "search_best_sha256": "7e1f0848eadf30fa622da32f1a3be1883e6a4ab11ba2495b54501ab4a63f49b1"
+  },
+  "random_control": {
+    "method": "bounded_local_random_search",
+    "seed": 20260931,
+    "budget": 120,
+    "same_target_base_parameters_bounds_objective": true,
+    "best": {
+      "evaluation": 110,
+      "parameter_values_normalized": [
+        0.980539541371,
+        0.223720522668,
+        0.602823470012,
+        0.669268827449,
+        0.184964842271,
+        0.066311616927,
+        0.482493606596,
+        0.139992420434
+      ],
+      "parameter_values_real": {
+        "627352114": 0.980539541371,
+        "627352115": 0.223720522668,
+        "627352119": 0.602823470012,
+        "4092842705": 0.669268827449,
+        "8095466": 0.184964842271,
+        "2005836581": 0.066311616927,
+        "3946337085": 0.482493606596,
+        "3817344714": 0.139992420434
+      },
+      "spectral_loss": 0.25610307771,
+      "envelope_loss": 0.069605696573,
+      "loudness_loss": 0.005081090057,
+      "total_loss": 0.184376533661,
+      "candidate_rms_dbfs": -14.420810970357,
+      "target_rms_dbfs": -14.298864808985,
+      "wav_sha256": "6a453e8251b7c46a37d9d327005c7f6f3fa29f63a0663526646dee7d2ae9b7f7",
+      "clipped_samples": 0,
+      "invalid_reason": null
+    }
+  },
+  "limitations": [
+    "The objective is a transparent proxy, not human perceptual equivalence.",
+    "Only C3 at one velocity and duration is optimized and validated.",
+    "Playing other notes is exploratory listening, not multi-note validation.",
+    "Factory categories are retained as metadata, not acoustic truth."
+  ]
+}

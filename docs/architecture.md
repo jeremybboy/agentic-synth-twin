@@ -46,11 +46,11 @@ The human supplies sonic intent, evaluates controlled A/B movements, chooses act
 
 ### Experiment controller
 
-The controller coordinates deterministic auditions and records configuration, seeds, parameter states, judgments, artifact paths, and lifecycle status. It does not implement plugin hosting, signal analysis, or model training.
+The controller coordinates deterministic auditions and records configuration, seeds, parameter states, judgments, artifact paths, and lifecycle status. Milestone 9 adds an external-target controller: it owns the selected immutable target and target-specific run while referencing one target-independent preset-render cache. Changing target is rejected during active or paused search, and a completed target's history, state, hashes, and audio are never reused as another target's run. The controller does not implement plugin hosting, signal analysis, or model training.
 
-### CLAP host and synth controller
+### CLAP host, synth adapter, and synth controllers
 
-Milestone 1 proves that a small CLAP C API probe can load the pinned `clap-saw-demo` build, discover parameters directly from the plugin, read and modify one value, and restore saved state. Milestone 2 converts that direct evidence into a validated canonical contract containing both a readable parameter inventory and the exact opaque CLAP state. The probe remains feasibility evidence rather than a general-purpose host. No parameter names or semantics may be invented.
+Milestone 1 proves that a small CLAP C API probe can load the pinned `clap-saw-demo` build, discover parameters directly from the plugin, read and modify one value, and restore saved state. Milestone 2 converts that direct evidence into a validated canonical contract containing both a readable parameter inventory and the exact opaque CLAP state. Milestone 9 introduces a reusable process-isolated `ClapSynthAdapter`; `SurgeXTAdapter` adds native factory-preset extraction and exact data-home provenance without moving search, objective, cockpit, keyboard, or cache logic into Surge-specific code. The probe remains feasibility evidence rather than a general-purpose host, and no parameter names or semantics may be invented.
 
 ### Audio renderer
 
@@ -63,6 +63,8 @@ Milestone 5 implements deterministic whole-file RMS and peak, power-spectrum cen
 ### Surrogate model and optimizers
 
 The Milestone 7 surrogate experiment is separate evidence about predicting descriptors in a bounded sampled region. Milestone 8A intentionally bypasses it: bounded CMA-ES proposes four normalized continuous parameters, every proposal is rendered on the real synth, and a transparent multi-resolution spectral, envelope, and loudness objective scores the resulting WAV. An equal-budget random search is the scientific control; the fixed demonstration did not establish CMA-ES superiority.
+
+Milestone 9 keeps the same transparent objective but changes initialization. Ten canonical non-Surge procedural C3 WAVs are validated against an exact manifest and presented as discrete targets. A bounded, category-balanced factory subset is rendered once under the same C3 contract; only presets exposing the exact authorized eight-control inventory remain eligible. Each target rescores that shared cache, the closest eligible real preset becomes its Base, and CMA-ES refines those eight controls only after the user starts search. The equal-budget random control and 25% gate remain attached to the separately reproducible hidden reachable-target regression; interactive external-target runs omit that extra latency. This is one-note timbre matching only; other keyboard notes are exploratory audition.
 
 ### Real synth verification, human validation, and LOCK
 
@@ -77,6 +79,7 @@ Names may evolve as evidence arrives, but the backend should expose operations e
 - human calibration: `generate_probe`, `record_probe_answer`
 - learning/search: `generate_dataset`, `train_surrogate`, `optimize_target`
 - direct search: `create_search_run`, `compute_audio_objective`, `benchmark_random_search`
+- synth adapters and rich-preset matching: `ClapSynthAdapter`, `SurgeXTAdapter`, `create_surge_match_run`, `create_external_target_controller`
 - playable audition: `render_playable_note` with an explicit patch vector, MIDI key, and velocity
 - authority/reproducibility: `verify_candidate`, `lock_patch`
 
@@ -92,19 +95,19 @@ Names may evolve as evidence arrives, but the backend should expose operations e
 
 ## Scope boundary
 
-Prototype 0 deliberately excludes:
+The current prototype deliberately excludes:
 
 - LLM APIs
 - MIDI 2.0
 - ML-CLAP semantic embeddings
 - diffusion or generated-audio models
-- multiple synthesizers
+- global parameter search across an entire production synth
 - autonomous agent loops
 - cloud backends
 - production-quality UI
 
-Surge XT is not introduced. `clap-saw-demo` is the sole planned prototype synth until the experiment earns expansion.
+Surge XT 1.3.4 is the first rich reference adapter; `clap-saw-demo` remains the deterministic minimal adapter. This does not make the product Surge-specific, and no third synth or hardware integration is in scope.
 
 ## Delivery boundaries
 
-Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md). Milestone 7 retains the separately reviewed surrogate result; Milestone 8A owns the direct search described in [`direct-real-synth-search.md`](direct-real-synth-search.md) and does not depend on the surrogate. Milestone 8B owns the rendered-note instrument described in [`playable-cockpit.md`](playable-cockpit.md).
+Every roadmap milestone is a small pull request with independently reviewable evidence. Milestone 1 owns the pinned CLAP feasibility proof documented in [`clap-feasibility.md`](clap-feasibility.md). Milestone 2 owns the state contract documented in [`canonical-synth-state.md`](canonical-synth-state.md). Milestone 3 owns the fixed render and one-button preview documented in [`deterministic-audition.md`](deterministic-audition.md). Milestone 4 owns the terminal human calibration path documented in [`human-ab-probe.md`](human-ab-probe.md). Milestone 5 owns the bounded DSP analyzer documented in [`dsp-features.md`](dsp-features.md). Milestone 6 owns the bounded, traceable dataset documented in [`synthetic-dataset.md`](synthetic-dataset.md). Milestone 7 retains the separately reviewed surrogate result; Milestone 8A owns the direct search described in [`direct-real-synth-search.md`](direct-real-synth-search.md) and does not depend on the surrogate. Milestone 8B owns the rendered-note instrument described in [`playable-cockpit.md`](playable-cockpit.md). Milestone 9 owns the additive Surge preset-retrieval and local-refinement proof described in [`surge-one-note-match.md`](surge-one-note-match.md).

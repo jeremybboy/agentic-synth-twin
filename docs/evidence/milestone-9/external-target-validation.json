@@ -1,0 +1,837 @@
+{
+  "schema": "agentic-synth-twin/external-target-validation/v1",
+  "generated_at": "2026-09-28T18:14:47.313367+00:00",
+  "claim_boundary": "Automated similarity is a transparent fixed one-note proxy; human perceptual acceptance remains pending.",
+  "target_bank": {
+    "identity_sha256": "80a3791a448eb4982c1180232c2da8132b107300d78c6e2e4a9eef6b97a460d4",
+    "count": 10,
+    "surge_used": false,
+    "third_party_samples_used": false,
+    "preset_library_used": false
+  },
+  "shared_preset_cache": {
+    "identity_sha256": "ce6f61dbab39a3d12e265a8066c90a36097264eba7cc243b428e14dfd512be87",
+    "selected_count": 120,
+    "eligible_indexed_count": 39,
+    "ineligible_or_failed_count": 81,
+    "plugin": {
+      "id": "org.surge-synth-team.surge-xt",
+      "name": "Surge XT",
+      "vendor": "Surge Synth Team",
+      "version": "1.3.4"
+    },
+    "reused_for_all_targets": true
+  },
+  "all_target_rankings": [
+    {
+      "target_id": "analog-sub-bass",
+      "title": "Analog Sub Bass",
+      "file_name": "01_analog_sub_bass_C3.wav",
+      "target_wav_sha256": "0af5a9034cddc4dd53f4f7054a3d9bbab08ee3fa42479f2e539cda442598ea8c",
+      "base_preset": {
+        "preset_name": "Bad Childhood",
+        "preset_category": "Leads",
+        "preset_relative_path": "Leads/Bad Childhood.fxp",
+        "total_loss": 0.632506040371
+      },
+      "top_five": [
+        {
+          "rank": 1,
+          "preset_name": "Bad Childhood",
+          "preset_category": "Leads",
+          "preset_relative_path": "Leads/Bad Childhood.fxp",
+          "total_loss": 0.632506040371,
+          "spectral_loss": 0.864761620684,
+          "envelope_loss": 0.265568321485,
+          "loudness_loss": 0.040189065551,
+          "wav_sha256": "aaeec9f91afbb951e67dda39fa2f6a6e8caf250828e1aa1324db7663563785bb"
+        },
+        {
+          "rank": 2,
+          "preset_name": "Behemoth",
+          "preset_category": "Basses",
+          "preset_relative_path": "Basses/Behemoth.fxp",
+          "total_loss": 0.663498367943,
+          "spectral_loss": 0.908722046386,
+          "envelope_loss": 0.260687869197,
+          "loudness_loss": 0.076570704934,
+          "wav_sha256": "cf33ec465af4f6a7fad5832c09a20c79faca9b36b33d79d72b90972a1f097dd5"
+        },
+        {
+          "rank": 3,
+          "preset_name": "Bass 2",
+          "preset_category": "Basses",
+          "preset_relative_path": "Basses/Bass 2.fxp",
+          "total_loss": 0.726938732054,
+          "spectral_loss": 0.949180472377,
+          "envelope_loss": 0.42246357766,
+          "loudness_loss": 0.043555305938,
+          "wav_sha256": "776836bcd889ff2d4b972a0f8b4ff791a067ba02029b9a5b11f1072c40b5a2d7"
+        },
+        {
+          "rank": 4,
+          "preset_name": "Bolibompa",
+          "preset_category": "Polysynths",
+          "preset_relative_path": "Polysynths/Bolibompa.fxp",
+          "total_loss": 0.743883649147,
+          "spectral_loss": 0.830807519228,
+          "envelope_loss": 0.658995778348,
+          "loudness_loss": 0.391098170616,
+          "wav_sha256": "552e00da52e4fbeebffd6259f106003c266120cee9dcb2e544d8a9e862f49398"
+        },
+        {
+          "rank": 5,
+          "preset_name": "Banter",
+          "preset_category": "Leads",
+          "preset_relative_path": "Leads/Banter.fxp",
+          "total_loss": 0.77848978137,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.446394750449,
+          "loudness_loss": 0.168910937573,
+          "wav_sha256": "8611feb7a02a5f100f607cadd0378760ab0c64376e4ddd83781ec5ff89816ab8"
+        }
+      ]
+    },
+    {
+      "target_id": "fm-bell",
+      "title": "FM Bell",
+      "file_name": "02_fm_bell_C3.wav",
+      "target_wav_sha256": "98f94f2774fb6c82b435cbedd293ce0da2004980b147aaa40f9ee590dbd2f494",
+      "base_preset": {
+        "preset_name": "Minor 7",
+        "preset_category": "Chords",
+        "preset_relative_path": "Chords/Minor 7.fxp",
+        "total_loss": 0.569000234719
+      },
+      "top_five": [
+        {
+          "rank": 1,
+          "preset_name": "Minor 7",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Minor 7.fxp",
+          "total_loss": 0.569000234719,
+          "spectral_loss": 0.651878467661,
+          "envelope_loss": 0.48137762722,
+          "loudness_loss": 0.249348239347,
+          "wav_sha256": "85904d054c1eeaed2e43157287862c58382d1030810b1cee2df08dbb3e29cebe"
+        },
+        {
+          "rank": 2,
+          "preset_name": "Major 7 MkI",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Major 7 MkI.fxp",
+          "total_loss": 0.572110668181,
+          "spectral_loss": 0.658152503844,
+          "envelope_loss": 0.479098932996,
+          "loudness_loss": 0.245368074331,
+          "wav_sha256": "dfaed50ec3bb4bf042011f6e951018fc65b38f1ecef71315d5ac0d7a35b24af8"
+        },
+        {
+          "rank": 3,
+          "preset_name": "Circus 1",
+          "preset_category": "Keys",
+          "preset_relative_path": "Keys/Circus 1.fxp",
+          "total_loss": 0.57404815871,
+          "spectral_loss": 0.683016849853,
+          "envelope_loss": 0.481099074776,
+          "loudness_loss": 0.098124376111,
+          "wav_sha256": "e10308001c047a07a842219b91138865f867da5ddd6d125984d8fbd757b5e9ac"
+        },
+        {
+          "rank": 4,
+          "preset_name": "Acid Seq 3",
+          "preset_category": "Sequences",
+          "preset_relative_path": "Sequences/Acid Seq 3.fxp",
+          "total_loss": 0.576822885191,
+          "spectral_loss": 0.735936013921,
+          "envelope_loss": 0.360643858459,
+          "loudness_loss": 0.083035115275,
+          "wav_sha256": "1e098ada93567e26741b15089a6bdb90f655860aef7baec68f6d2f41750c097a"
+        },
+        {
+          "rank": 5,
+          "preset_name": "Major 7 MkII",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Major 7 MkII.fxp",
+          "total_loss": 0.584022403279,
+          "spectral_loss": 0.641889455887,
+          "envelope_loss": 0.537020842193,
+          "loudness_loss": 0.325390464037,
+          "wav_sha256": "c63109852e0e42cb2f025aa619394c24039bb8adf2fd113435a2b4f43a003728"
+        }
+      ]
+    },
+    {
+      "target_id": "plucked-electric-guitar",
+      "title": "Plucked Electric Guitar",
+      "file_name": "03_plucked_electric_guitar_C3.wav",
+      "target_wav_sha256": "df50fb833eb93d9827dc4c18ee46036b5b72c0071383b75a4d6eb6e2e20f4c1b",
+      "base_preset": {
+        "preset_name": "The Elephant Told You",
+        "preset_category": "MPE",
+        "preset_relative_path": "MPE/The Elephant Told You.fxp",
+        "total_loss": 0.753502603642
+      },
+      "top_five": [
+        {
+          "rank": 1,
+          "preset_name": "The Elephant Told You",
+          "preset_category": "MPE",
+          "preset_relative_path": "MPE/The Elephant Told You.fxp",
+          "total_loss": 0.753502603642,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.308466469953,
+          "loudness_loss": 0.263859861534,
+          "wav_sha256": "7b01559245ea8fe4bdc9c18977e8569430f2bb443e565bc29c414f53efbb9baa"
+        },
+        {
+          "rank": 2,
+          "preset_name": "Minor 7",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Minor 7.fxp",
+          "total_loss": 0.754541345206,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.40064156609,
+          "loudness_loss": 0.043809536833,
+          "wav_sha256": "85904d054c1eeaed2e43157287862c58382d1030810b1cee2df08dbb3e29cebe"
+        },
+        {
+          "rank": 3,
+          "preset_name": "Major 7 MkI",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Major 7 MkI.fxp",
+          "total_loss": 0.755669673129,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.40674694379,
+          "loudness_loss": 0.039829371817,
+          "wav_sha256": "dfaed50ec3bb4bf042011f6e951018fc65b38f1ecef71315d5ac0d7a35b24af8"
+        },
+        {
+          "rank": 4,
+          "preset_name": "Major 7 MkII",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Major 7 MkII.fxp",
+          "total_loss": 0.757823435406,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.383353037014,
+          "loudness_loss": 0.119851761523,
+          "wav_sha256": "c63109852e0e42cb2f025aa619394c24039bb8adf2fd113435a2b4f43a003728"
+        },
+        {
+          "rank": 5,
+          "preset_name": "Lead With A Bell Attack",
+          "preset_category": "MPE",
+          "preset_relative_path": "MPE/Lead With A Bell Attack.fxp",
+          "total_loss": 0.759511466847,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.374340978565,
+          "loudness_loss": 0.159262222062,
+          "wav_sha256": "fb01d608d86d1c573f28240ecde724b1b92a43925a104781a83c7986c1ddfdea"
+        }
+      ]
+    },
+    {
+      "target_id": "rhodes-style-electric-piano",
+      "title": "Rhodes-style Electric Piano",
+      "file_name": "04_rhodes_style_electric_piano_C3.wav",
+      "target_wav_sha256": "59b854a5df929ad5d13f4c84796ca055bc7913dc890bc81fae1a930a334c2154",
+      "base_preset": {
+        "preset_name": "Bass 2",
+        "preset_category": "Basses",
+        "preset_relative_path": "Basses/Bass 2.fxp",
+        "total_loss": 0.5190149151
+      },
+      "top_five": [
+        {
+          "rank": 1,
+          "preset_name": "Bass 2",
+          "preset_category": "Basses",
+          "preset_relative_path": "Basses/Bass 2.fxp",
+          "total_loss": 0.5190149151,
+          "spectral_loss": 0.579109203435,
+          "envelope_loss": 0.554154433764,
+          "loudness_loss": 0.040553244256,
+          "wav_sha256": "776836bcd889ff2d4b972a0f8b4ff791a067ba02029b9a5b11f1072c40b5a2d7"
+        },
+        {
+          "rank": 2,
+          "preset_name": "Behemoth",
+          "preset_category": "Basses",
+          "preset_relative_path": "Basses/Behemoth.fxp",
+          "total_loss": 0.52971253309,
+          "spectral_loss": 0.703243453889,
+          "envelope_loss": 0.258588045602,
+          "loudness_loss": 0.079572766616,
+          "wav_sha256": "cf33ec465af4f6a7fad5832c09a20c79faca9b36b33d79d72b90972a1f097dd5"
+        },
+        {
+          "rank": 3,
+          "preset_name": "Bad Childhood",
+          "preset_category": "Leads",
+          "preset_relative_path": "Leads/Bad Childhood.fxp",
+          "total_loss": 0.563918582511,
+          "spectral_loss": 0.720258302718,
+          "envelope_loss": 0.365726292084,
+          "loudness_loss": 0.043191127233,
+          "wav_sha256": "aaeec9f91afbb951e67dda39fa2f6a6e8caf250828e1aa1324db7663563785bb"
+        },
+        {
+          "rank": 4,
+          "preset_name": "Acid Seq 3",
+          "preset_category": "Sequences",
+          "preset_relative_path": "Sequences/Acid Seq 3.fxp",
+          "total_loss": 0.581714800247,
+          "spectral_loss": 0.616376743104,
+          "envelope_loss": 0.608298311079,
+          "loudness_loss": 0.289953394594,
+          "wav_sha256": "1e098ada93567e26741b15089a6bdb90f655860aef7baec68f6d2f41750c097a"
+        },
+        {
+          "rank": 5,
+          "preset_name": "Circus 1",
+          "preset_category": "Keys",
+          "preset_relative_path": "Keys/Circus 1.fxp",
+          "total_loss": 0.603110794369,
+          "spectral_loss": 0.584922802516,
+          "envelope_loss": 0.769626828763,
+          "loudness_loss": 0.30504265543,
+          "wav_sha256": "e10308001c047a07a842219b91138865f867da5ddd6d125984d8fbd757b5e9ac"
+        }
+      ]
+    },
+    {
+      "target_id": "muted-synth-pluck",
+      "title": "Muted Synth Pluck",
+      "file_name": "05_muted_synth_pluck_C3.wav",
+      "target_wav_sha256": "9c2f07c2c2164e17fe41dcfee498b235e3b5339da853ac730b5289a891456207",
+      "base_preset": {
+        "preset_name": "Synth Tom 2",
+        "preset_category": "Percussion",
+        "preset_relative_path": "Percussion/Synth Tom 2.fxp",
+        "total_loss": 0.344249478541
+      },
+      "top_five": [
+        {
+          "rank": 1,
+          "preset_name": "Synth Tom 2",
+          "preset_category": "Percussion",
+          "preset_relative_path": "Percussion/Synth Tom 2.fxp",
+          "total_loss": 0.344249478541,
+          "spectral_loss": 0.31468782177,
+          "envelope_loss": 0.448665028185,
+          "loudness_loss": 0.275361373444,
+          "wav_sha256": "b0e0162232511113c9f8a7cc8edf9fb7b2af0bc573629783dd86ece95144c65e"
+        },
+        {
+          "rank": 2,
+          "preset_name": "Synth Tom 1",
+          "preset_category": "Percussion",
+          "preset_relative_path": "Percussion/Synth Tom 1.fxp",
+          "total_loss": 0.398133393852,
+          "spectral_loss": 0.33444977031,
+          "envelope_loss": 0.565700220167,
+          "loudness_loss": 0.393159881085,
+          "wav_sha256": "c0d3f69d3c2ff4fdc649556003a71ec33d5eac31138eccabb1b419c6abb5679e"
+        },
+        {
+          "rank": 3,
+          "preset_name": "Tek Stab",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Tek Stab.fxp",
+          "total_loss": 0.426195140675,
+          "spectral_loss": 0.320063862472,
+          "envelope_loss": 0.579477350763,
+          "loudness_loss": 0.732842923773,
+          "wav_sha256": "dacec9166dc40c806e7b40ab15bc64ab6bbf7d4e66f54a9e4ce73f8e526a6af5"
+        },
+        {
+          "rank": 4,
+          "preset_name": "Asymmetry",
+          "preset_category": "Plucks",
+          "preset_relative_path": "Plucks/Asymmetry.fxp",
+          "total_loss": 0.44663015723,
+          "spectral_loss": 0.407309067698,
+          "envelope_loss": 0.605977039037,
+          "loudness_loss": 0.303850034671,
+          "wav_sha256": "3c7cd815a1c902e8e43755d19aefd807c5b7fa6e57a8c702128c59344157be63"
+        },
+        {
+          "rank": 5,
+          "preset_name": "Major 7 MkII",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Major 7 MkII.fxp",
+          "total_loss": 0.492389776818,
+          "spectral_loss": 0.469507478543,
+          "envelope_loss": 0.692237101421,
+          "loudness_loss": 0.141506404097,
+          "wav_sha256": "c63109852e0e42cb2f025aa619394c24039bb8adf2fd113435a2b4f43a003728"
+        }
+      ]
+    },
+    {
+      "target_id": "analog-brass-stab",
+      "title": "Analog Brass Stab",
+      "file_name": "06_analog_brass_stab_C3.wav",
+      "target_wav_sha256": "367b332b1520a85f252240faca7e2ab7469ec99f1ad5f1b9927c3e710c126e78",
+      "base_preset": {
+        "preset_name": "Bolibompa",
+        "preset_category": "Polysynths",
+        "preset_relative_path": "Polysynths/Bolibompa.fxp",
+        "total_loss": 0.529768719958
+      },
+      "top_five": [
+        {
+          "rank": 1,
+          "preset_name": "Bolibompa",
+          "preset_category": "Polysynths",
+          "preset_relative_path": "Polysynths/Bolibompa.fxp",
+          "total_loss": 0.529768719958,
+          "spectral_loss": 0.657555127346,
+          "envelope_loss": 0.335910554393,
+          "loudness_loss": 0.183802485851,
+          "wav_sha256": "552e00da52e4fbeebffd6259f106003c266120cee9dcb2e544d8a9e862f49398"
+        },
+        {
+          "rank": 2,
+          "preset_name": "Major 7 MkI",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Major 7 MkI.fxp",
+          "total_loss": 0.621717381528,
+          "spectral_loss": 0.730792224203,
+          "envelope_loss": 0.490014300302,
+          "loudness_loss": 0.241988607204,
+          "wav_sha256": "dfaed50ec3bb4bf042011f6e951018fc65b38f1ecef71315d5ac0d7a35b24af8"
+        },
+        {
+          "rank": 3,
+          "preset_name": "Minor 7",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Minor 7.fxp",
+          "total_loss": 0.621936285322,
+          "spectral_loss": 0.730238372839,
+          "envelope_loss": 0.490737863019,
+          "loudness_loss": 0.24596877222,
+          "wav_sha256": "85904d054c1eeaed2e43157287862c58382d1030810b1cee2df08dbb3e29cebe"
+        },
+        {
+          "rank": 4,
+          "preset_name": "Minor Chord Retro Stab",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Minor Chord Retro Stab.fxp",
+          "total_loss": 0.630900582053,
+          "spectral_loss": 0.73266192483,
+          "envelope_loss": 0.517079016227,
+          "loudness_loss": 0.254005768576,
+          "wav_sha256": "3e2c7d5d88479d1a6bbf992a263a69f48a07b5a33a4662fb717b903f7f00b589"
+        },
+        {
+          "rank": 5,
+          "preset_name": "Acid Seq 3",
+          "preset_category": "Sequences",
+          "preset_relative_path": "Sequences/Acid Seq 3.fxp",
+          "total_loss": 0.632590146544,
+          "spectral_loss": 0.818979892755,
+          "envelope_loss": 0.369150605752,
+          "loudness_loss": 0.079655648148,
+          "wav_sha256": "1e098ada93567e26741b15089a6bdb90f655860aef7baec68f6d2f41750c097a"
+        }
+      ]
+    },
+    {
+      "target_id": "warm-poly-pad",
+      "title": "Warm Poly Pad",
+      "file_name": "07_warm_poly_pad_C3.wav",
+      "target_wav_sha256": "c9d7e27e041e8823138376cf08acdbaecccb987e0657f222faf33d2f303eca50",
+      "base_preset": {
+        "preset_name": "Behemoth",
+        "preset_category": "Basses",
+        "preset_relative_path": "Basses/Behemoth.fxp",
+        "total_loss": 0.714009167783
+      },
+      "top_five": [
+        {
+          "rank": 1,
+          "preset_name": "Behemoth",
+          "preset_category": "Basses",
+          "preset_relative_path": "Basses/Behemoth.fxp",
+          "total_loss": 0.714009167783,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.243092807164,
+          "loudness_loss": 0.032359659916,
+          "wav_sha256": "cf33ec465af4f6a7fad5832c09a20c79faca9b36b33d79d72b90972a1f097dd5"
+        },
+        {
+          "rank": 2,
+          "preset_name": "Bolibompa",
+          "preset_category": "Polysynths",
+          "preset_relative_path": "Polysynths/Bolibompa.fxp",
+          "total_loss": 0.728103201648,
+          "spectral_loss": 0.910127062828,
+          "envelope_loss": 0.433215320932,
+          "loudness_loss": 0.282167805765,
+          "wav_sha256": "552e00da52e4fbeebffd6259f106003c266120cee9dcb2e544d8a9e862f49398"
+        },
+        {
+          "rank": 3,
+          "preset_name": "Banter",
+          "preset_category": "Leads",
+          "preset_relative_path": "Leads/Banter.fxp",
+          "total_loss": 0.746719739104,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.362886727327,
+          "loudness_loss": 0.059980572723,
+          "wav_sha256": "8611feb7a02a5f100f607cadd0378760ab0c64376e4ddd83781ec5ff89816ab8"
+        },
+        {
+          "rank": 4,
+          "preset_name": "Bad Childhood",
+          "preset_category": "Leads",
+          "preset_relative_path": "Leads/Bad Childhood.fxp",
+          "total_loss": 0.758884022955,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.4080395721,
+          "loudness_loss": 0.068741299299,
+          "wav_sha256": "aaeec9f91afbb951e67dda39fa2f6a6e8caf250828e1aa1324db7663563785bb"
+        },
+        {
+          "rank": 5,
+          "preset_name": "Acid Seq 3",
+          "preset_category": "Sequences",
+          "preset_relative_path": "Sequences/Acid Seq 3.fxp",
+          "total_loss": 0.771878758075,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.416306645076,
+          "loudness_loss": 0.178020968062,
+          "wav_sha256": "1e098ada93567e26741b15089a6bdb90f655860aef7baec68f6d2f41750c097a"
+        }
+      ]
+    },
+    {
+      "target_id": "sync-hard-lead",
+      "title": "Sync / Hard Lead",
+      "file_name": "08_sync_hard_lead_C3.wav",
+      "target_wav_sha256": "0ccddeff19f903d69787d29362c2c85a25b13fdcaf5a3e18b223343ad16db0d6",
+      "base_preset": {
+        "preset_name": "Behemoth",
+        "preset_category": "Basses",
+        "preset_relative_path": "Basses/Behemoth.fxp",
+        "total_loss": 0.750892228384
+      },
+      "top_five": [
+        {
+          "rank": 1,
+          "preset_name": "Behemoth",
+          "preset_category": "Basses",
+          "preset_relative_path": "Basses/Behemoth.fxp",
+          "total_loss": 0.750892228384,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.346510740829,
+          "loudness_loss": 0.142645431768,
+          "wav_sha256": "cf33ec465af4f6a7fad5832c09a20c79faca9b36b33d79d72b90972a1f097dd5"
+        },
+        {
+          "rank": 2,
+          "preset_name": "Bad Childhood",
+          "preset_category": "Leads",
+          "preset_relative_path": "Leads/Bad Childhood.fxp",
+          "total_loss": 0.753355366075,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.370915947348,
+          "loudness_loss": 0.106263792385,
+          "wav_sha256": "aaeec9f91afbb951e67dda39fa2f6a6e8caf250828e1aa1324db7663563785bb"
+        },
+        {
+          "rank": 3,
+          "preset_name": "Bass 2",
+          "preset_category": "Basses",
+          "preset_relative_path": "Basses/Bass 2.fxp",
+          "total_loss": 0.755809071285,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.414228516782,
+          "loudness_loss": 0.022519420896,
+          "wav_sha256": "776836bcd889ff2d4b972a0f8b4ff791a067ba02029b9a5b11f1072c40b5a2d7"
+        },
+        {
+          "rank": 4,
+          "preset_name": "Banter",
+          "preset_category": "Leads",
+          "preset_relative_path": "Leads/Banter.fxp",
+          "total_loss": 0.815674588603,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.568704088648,
+          "loudness_loss": 0.234985664407,
+          "wav_sha256": "8611feb7a02a5f100f607cadd0378760ab0c64376e4ddd83781ec5ff89816ab8"
+        },
+        {
+          "rank": 5,
+          "preset_name": "Acid Seq 3",
+          "preset_category": "Sequences",
+          "preset_relative_path": "Sequences/Acid Seq 3.fxp",
+          "total_loss": 0.869765282092,
+          "spectral_loss": 1.0,
+          "envelope_loss": 0.73785070447,
+          "loudness_loss": 0.353026059746,
+          "wav_sha256": "1e098ada93567e26741b15089a6bdb90f655860aef7baec68f6d2f41750c097a"
+        }
+      ]
+    },
+    {
+      "target_id": "marimba-mallet",
+      "title": "Marimba / Mallet",
+      "file_name": "09_marimba_mallet_C3.wav",
+      "target_wav_sha256": "f1c0080782c7d390ff799323e64372844fe4537c133a8e93d3d1c88e5ff6aef1",
+      "base_preset": {
+        "preset_name": "Minor 7",
+        "preset_category": "Chords",
+        "preset_relative_path": "Chords/Minor 7.fxp",
+        "total_loss": 0.433033289162
+      },
+      "top_five": [
+        {
+          "rank": 1,
+          "preset_name": "Minor 7",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Minor 7.fxp",
+          "total_loss": 0.433033289162,
+          "spectral_loss": 0.463684054289,
+          "envelope_loss": 0.445893643719,
+          "loudness_loss": 0.201652429439,
+          "wav_sha256": "85904d054c1eeaed2e43157287862c58382d1030810b1cee2df08dbb3e29cebe"
+        },
+        {
+          "rank": 2,
+          "preset_name": "Major 7 MkI",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Major 7 MkI.fxp",
+          "total_loss": 0.436758892404,
+          "spectral_loss": 0.470807395255,
+          "envelope_loss": 0.443867436186,
+          "loudness_loss": 0.197672264422,
+          "wav_sha256": "dfaed50ec3bb4bf042011f6e951018fc65b38f1ecef71315d5ac0d7a35b24af8"
+        },
+        {
+          "rank": 3,
+          "preset_name": "Circus 1",
+          "preset_category": "Keys",
+          "preset_relative_path": "Keys/Circus 1.fxp",
+          "total_loss": 0.437660293038,
+          "spectral_loss": 0.486241539745,
+          "envelope_loss": 0.466241742333,
+          "loudness_loss": 0.050428566202,
+          "wav_sha256": "e10308001c047a07a842219b91138865f867da5ddd6d125984d8fbd757b5e9ac"
+        },
+        {
+          "rank": 4,
+          "preset_name": "Major 7 MkII",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Major 7 MkII.fxp",
+          "total_loss": 0.441418773922,
+          "spectral_loss": 0.443583141519,
+          "envelope_loss": 0.501281066086,
+          "loudness_loss": 0.277694654129,
+          "wav_sha256": "c63109852e0e42cb2f025aa619394c24039bb8adf2fd113435a2b4f43a003728"
+        },
+        {
+          "rank": 5,
+          "preset_name": "Attacky",
+          "preset_category": "Basses",
+          "preset_relative_path": "Basses/Attacky.fxp",
+          "total_loss": 0.449127166393,
+          "spectral_loss": 0.484064372942,
+          "envelope_loss": 0.533521037645,
+          "loudness_loss": 0.011050645699,
+          "wav_sha256": "99935cd244ac14e3680351858d92505892d28ab536c1560cd87606d0e4e2cd54"
+        }
+      ]
+    },
+    {
+      "target_id": "dub-chord-organ-stab",
+      "title": "Dub Chord / Organ Stab",
+      "file_name": "10_dub_chord_organ_stab_C3.wav",
+      "target_wav_sha256": "13043c396764af7721fbf39f960f072459cb3db554829fe54ca4b404f4ad8df3",
+      "base_preset": {
+        "preset_name": "Major 7 MkII",
+        "preset_category": "Chords",
+        "preset_relative_path": "Chords/Major 7 MkII.fxp",
+        "total_loss": 0.399173307682
+      },
+      "top_five": [
+        {
+          "rank": 1,
+          "preset_name": "Major 7 MkII",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Major 7 MkII.fxp",
+          "total_loss": 0.399173307682,
+          "spectral_loss": 0.390249980643,
+          "envelope_loss": 0.495169088528,
+          "loudness_loss": 0.217185481322,
+          "wav_sha256": "c63109852e0e42cb2f025aa619394c24039bb8adf2fd113435a2b4f43a003728"
+        },
+        {
+          "rank": 2,
+          "preset_name": "Minor 7",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Minor 7.fxp",
+          "total_loss": 0.421799784181,
+          "spectral_loss": 0.419225921359,
+          "envelope_loss": 0.540754438537,
+          "loudness_loss": 0.141143256632,
+          "wav_sha256": "85904d054c1eeaed2e43157287862c58382d1030810b1cee2df08dbb3e29cebe"
+        },
+        {
+          "rank": 3,
+          "preset_name": "Major 7 MkI",
+          "preset_category": "Chords",
+          "preset_relative_path": "Chords/Major 7 MkI.fxp",
+          "total_loss": 0.425462506503,
+          "spectral_loss": 0.424250274031,
+          "envelope_loss": 0.543934076886,
+          "loudness_loss": 0.137163091616,
+          "wav_sha256": "dfaed50ec3bb4bf042011f6e951018fc65b38f1ecef71315d5ac0d7a35b24af8"
+        },
+        {
+          "rank": 4,
+          "preset_name": "1804",
+          "preset_category": "Polysynths",
+          "preset_relative_path": "Polysynths/1804.fxp",
+          "total_loss": 0.430014661021,
+          "spectral_loss": 0.446670669755,
+          "envelope_loss": 0.464344690106,
+          "loudness_loss": 0.235925531535,
+          "wav_sha256": "21935ff030a53d3a18160ee6174b37250f4e10496c6e3a8106993fd1861b657f"
+        },
+        {
+          "rank": 5,
+          "preset_name": "Circus 1",
+          "preset_category": "Keys",
+          "preset_relative_path": "Keys/Circus 1.fxp",
+          "total_loss": 0.439420281039,
+          "spectral_loss": 0.432605279962,
+          "envelope_loss": 0.628875153611,
+          "loudness_loss": 0.010080606604,
+          "wav_sha256": "e10308001c047a07a842219b91138865f867da5ddd6d125984d8fbd757b5e9ac"
+        }
+      ]
+    }
+  ],
+  "representative_full_searches": [
+    {
+      "target_id": "analog-sub-bass",
+      "status": "COMPLETE",
+      "run_id": "m9-08da67324ea0",
+      "evaluations": 120,
+      "starting_loss": 0.632506040371,
+      "best_loss": 0.551329863204,
+      "improvement_percent": 12.834055643071,
+      "best_parameter_values_normalized": [
+        0.652195960002,
+        0.531558031674,
+        0.228867020514,
+        0.641042591202,
+        0.546233001636,
+        0.030149469049,
+        0.634744638323,
+        0.560784800554
+      ],
+      "best_parameter_values_real": {
+        "627352114": 0.652195960002,
+        "627352115": 0.531558031674,
+        "627352119": 0.228867020514,
+        "4092842705": 0.641042591202,
+        "8095466": 0.546233001636,
+        "2005836581": 0.030149469049,
+        "3946337085": 0.634744638323,
+        "3817344714": 0.560784800554
+      },
+      "best_wav_sha256": "f51940617bd2161893884b8a2da43f769ad902a10acedb21adefd9aa480575e9",
+      "clipped_samples": 0,
+      "final_rerender": {
+        "wav_sha256": "f51940617bd2161893884b8a2da43f769ad902a10acedb21adefd9aa480575e9",
+        "search_best_sha256": "f51940617bd2161893884b8a2da43f769ad902a10acedb21adefd9aa480575e9",
+        "matches_search_best": true,
+        "byte_identical": true,
+        "verification_renders": 2
+      },
+      "human_listening": "PENDING_OWNER_AUDITION"
+    },
+    {
+      "target_id": "plucked-electric-guitar",
+      "status": "COMPLETE",
+      "run_id": "m9-5e942c145f36",
+      "evaluations": 120,
+      "starting_loss": 0.753502603642,
+      "best_loss": 0.746253377588,
+      "improvement_percent": 0.962070471815,
+      "best_parameter_values_normalized": [
+        0.449949905578,
+        0.127556463292,
+        0.049817769617,
+        0.333788310215,
+        0.034341447978,
+        0.085318629881,
+        0.192923631946,
+        0.175048759534
+      ],
+      "best_parameter_values_real": {
+        "627352114": 0.449949905578,
+        "627352115": 0.127556463292,
+        "627352119": 0.049817769617,
+        "4092842705": 0.333788310215,
+        "8095466": 0.034341447978,
+        "2005836581": 0.085318629881,
+        "3946337085": 0.192923631946,
+        "3817344714": 0.175048759534
+      },
+      "best_wav_sha256": "8ccd1c29b330b80c17ea432fdef8e8d888e6aa8770a07daadc6180d1298dc49a",
+      "clipped_samples": 0,
+      "final_rerender": {
+        "wav_sha256": "8ccd1c29b330b80c17ea432fdef8e8d888e6aa8770a07daadc6180d1298dc49a",
+        "search_best_sha256": "8ccd1c29b330b80c17ea432fdef8e8d888e6aa8770a07daadc6180d1298dc49a",
+        "matches_search_best": true,
+        "byte_identical": true,
+        "verification_renders": 2
+      },
+      "human_listening": "PENDING_OWNER_AUDITION"
+    },
+    {
+      "target_id": "rhodes-style-electric-piano",
+      "status": "COMPLETE",
+      "run_id": "m9-59a9526e0a77",
+      "evaluations": 120,
+      "starting_loss": 0.5190149151,
+      "best_loss": 0.346360554143,
+      "improvement_percent": 33.26578021823,
+      "best_parameter_values_normalized": [
+        0.787735719738,
+        0.567822211055,
+        0.454251354536,
+        0.525460126585,
+        0.886002324252,
+        0.347143394956,
+        0.899742677211,
+        0.673005561778
+      ],
+      "best_parameter_values_real": {
+        "627352114": 0.787735719738,
+        "627352115": 0.567822211055,
+        "627352119": 0.454251354536,
+        "4092842705": 0.525460126585,
+        "8095466": 0.886002324252,
+        "2005836581": 0.347143394956,
+        "3946337085": 0.899742677211,
+        "3817344714": 0.673005561778
+      },
+      "best_wav_sha256": "c42483e3b6137f3854344d073cba0fd5424ef52087bc3457bc857b4aead5f216",
+      "clipped_samples": 0,
+      "final_rerender": {
+        "wav_sha256": "c42483e3b6137f3854344d073cba0fd5424ef52087bc3457bc857b4aead5f216",
+        "search_best_sha256": "c42483e3b6137f3854344d073cba0fd5424ef52087bc3457bc857b4aead5f216",
+        "matches_search_best": true,
+        "byte_identical": true,
+        "verification_renders": 2
+      },
+      "human_listening": "PENDING_OWNER_AUDITION"
+    }
+  ],
+  "human_acceptance": "PENDING_OWNER_AUDITION"
+}

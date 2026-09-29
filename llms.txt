@@ -14,13 +14,14 @@
 - [Synthetic dataset](docs/synthetic-dataset.md): three-parameter sampling, local WAV policy, committed evidence, explorer, and limitations
 - [Direct real-synth search](docs/direct-real-synth-search.md): four-parameter CMA-ES, audio objective, live cockpit, random control, and actual result
 - [Playable cockpit](docs/playable-cockpit.md): editable working patch, virtual/computer/USB MIDI inputs, real-synth rendered-note cache, and limitations
+- [Surge one-note match](docs/surge-one-note-match.md): ten external targets, shared eligible-preset retrieval, target-specific local refinement, hidden regression fixture, preserved playable instrument, and evidence
 - [Agent contract](AGENTS.md): repository rules, current milestone boundary, and checks
 - [Contributing](CONTRIBUTING.md): focused PR workflow
 - [Security](SECURITY.md): private vulnerability reporting guidance
 
 ## Current status
 
-Milestone 8B adds a playable, editable working copy to the local direct-search cockpit. Every new pitch/velocity/patch combination is rendered by the real CLAP synth and cached locally; browser playback is intentionally not claimed as a native realtime host. The Milestone 8A adaptive-search gate remains failed, and LOCK remains incomplete.
+Milestone 9 additively routes ten named external procedural C3 targets through one hash-bound eligible Surge XT 1.3.4 factory-preset cache and target-specific bounded local refinement. Target selection produces an auditionable Top 5 and Base but never starts CMA-ES; the same virtual/computer/USB MIDI keyboard and editable working-copy contract remain authoritative. The hidden reachable-target experiment remains a separate regression fixture; other notes are exploratory, objective similarity is not human perception, and LOCK remains incomplete.
 
 ## Source
 
